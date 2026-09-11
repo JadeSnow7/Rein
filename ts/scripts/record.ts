@@ -192,6 +192,17 @@ export async function main(argv: readonly string[]): Promise<number> {
   if (recording.redacted.length > 0) {
     console.log(`已去除：${recording.redacted.join('、')}`)
   }
+
+  const status = recording.response.status
+  if (status < 200 || status >= 300) {
+    // 失败响应同样值得录制，但不能顶着成功场景的名字入库——后面章节按文件名取样本。
+    console.warn(
+      `\n注意：这次录到的是 ${status}，不是一次成功调用。` +
+        `\n样本仍然有效，但请确认 --scenario ${args.scenario} 描述的就是这个失败，` +
+        `\n否则改名后重录，避免用失败样本冒充成功路径。`,
+    )
+    return 3
+  }
   return 0
 }
 

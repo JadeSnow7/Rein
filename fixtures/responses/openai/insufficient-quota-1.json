@@ -1,0 +1,38 @@
+{
+  "provider": "openai",
+  "scenario": "insufficient-quota",
+  "recordedAt": "2026-09-11T17:50:39.589Z",
+  "request": {
+    "method": "POST",
+    "url": "https://api.openai.com/v1/chat/completions",
+    "headers": {
+      "content-type": "application/json",
+      "authorization": "REDACTED"
+    },
+    "body": "{\"model\":\"gpt-5.4-mini\",\"messages\":[{\"role\":\"user\",\"content\":\"用一句话说明什么是 Agent Harness。\"}]}"
+  },
+  "response": {
+    "status": 429,
+    "statusText": "",
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "body": "{\n    \"error\": {\n        \"message\": \"You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\",\n        \"type\": \"insufficient_quota\",\n        \"param\": null,\n        \"code\": \"credit_balance_exhausted\"\n    }\n}\n"
+  },
+  "redacted": [
+    "request.headers.authorization",
+    "response.headers.access-control-expose-headers",
+    "response.headers.alt-svc",
+    "response.headers.cf-cache-status",
+    "response.headers.cf-ray",
+    "response.headers.content-length",
+    "response.headers.date",
+    "response.headers.server",
+    "response.headers.set-cookie",
+    "response.headers.strict-transport-security",
+    "response.headers.vary",
+    "response.headers.x-content-type-options",
+    "response.headers.x-openai-proxy-wasm",
+    "response.headers.x-request-id"
+  ]
+}
