@@ -1,0 +1,17 @@
+:root { --vp-c-brand-1: #087f78; --vp-c-brand-2: #096a65; --vp-c-brand-3: #0a958c; --vp-c-bg: #f6f2e9; --vp-c-bg-alt: #efeade; --vp-c-bg-soft: #ece8de; --vp-c-text-1: #183331; --vp-c-text-2: #526562; --vp-c-divider: #d9d2c2; --vp-font-family-base: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; --vp-font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.dark { --vp-c-bg: #112322; --vp-c-bg-alt: #162c2b; --vp-c-bg-soft: #1b3533; --vp-c-text-1: #edf1e9; --vp-c-text-2: #b7c7c2; --vp-c-divider: #31504c; }
+.VPNav { background: color-mix(in srgb, var(--vp-c-bg) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--vp-c-divider); }
+.VPNavBarTitle .title { font-family: var(--vp-font-family-mono); font-size: 12px; letter-spacing: .12em; }
+.VPHomeHero .name { font-family: 'Songti SC', 'STSong', Georgia, serif; letter-spacing: -.04em; color: var(--vp-c-text-1); }
+.VPHomeHero .text { max-width: 720px; font-family: 'Songti SC', 'STSong', Georgia, serif; font-weight: 600; line-height: 1.3; }
+.VPHomeHero .tagline { max-width: 620px; color: var(--vp-c-text-2); }
+.VPHomeHero .image-bg { background: radial-gradient(circle, rgba(8,127,120,.18), transparent 65%); }
+.VPHomeHero .image-container::after { content: '01—16'; position: absolute; right: -18px; bottom: 12px; color: var(--vp-c-brand-1); font: 500 12px var(--vp-font-family-mono); letter-spacing: .18em; }
+.VPFeature { background: transparent; border: 1px solid var(--vp-c-divider); border-radius: 2px; transition: border-color .25s, transform .25s; }
+.VPFeature:hover { border-color: var(--vp-c-brand-1); transform: translateY(-3px); }
+.VPFeature .title { font-family: 'Songti SC', 'STSong', Georgia, serif; }
+.vp-doc h1, .vp-doc h2, .vp-doc h3 { font-family: 'Songti SC', 'STSong', Georgia, serif; letter-spacing: -.025em; }
+.vp-doc h2 { border-top: 1px solid var(--vp-c-divider); padding-top: 1.6rem; }
+.vp-doc code { color: var(--vp-c-brand-2); }
+.vp-doc a { text-underline-offset: 3px; }
+@media (max-width: 640px) { .VPHomeHero .name { font-size: 40px; } .VPHomeHero .text { font-size: 24px; } }
