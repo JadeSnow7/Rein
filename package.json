@@ -2,11 +2,16 @@
   "name": "rein-book",
   "version": "0.1.0",
   "private": true,
-  "description": "《Rein：从零手写一个 Agent Harness》书籍网站",
+  "description": "《Rein：从零手写一个 Agent Harness》书籍网站与配套实现",
+  "workspaces": [
+    "ts"
+  ],
   "scripts": {
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
-    "preview": "vitepress preview docs"
+    "preview": "vitepress preview docs",
+    "test": "npm run test --workspace ts",
+    "typecheck": "npm run typecheck --workspace ts"
   },
   "devDependencies": {
     "vitepress": "1.6.4"

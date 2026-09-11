@@ -1,0 +1,53 @@
+name: Test code
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ts/**'
+      - 'contracts/**'
+      - 'fixtures/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/test.yml'
+  pull_request:
+    paths:
+      - 'ts/**'
+      - 'contracts/**'
+      - 'fixtures/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/test.yml'
+  workflow_dispatch:
+
+jobs:
+  ts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Detect TypeScript sources
+        id: detect
+        run: |
+          if [ -n "$(find ts/src ts/tests -name '*.ts' -print -quit 2>/dev/null)" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "ts/ 尚无 TypeScript 源码，跳过类型检查与测试。"
+          fi
+        shell: bash
+      - name: Setup Node
+        if: steps.detect.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        if: steps.detect.outputs.present == 'true'
+        run: npm ci
+      - name: Typecheck
+        if: steps.detect.outputs.present == 'true'
+        run: npm run typecheck
+      - name: Test
+        if: steps.detect.outputs.present == 'true'
+        run: npm test

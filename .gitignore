@@ -1,4 +1,8 @@
 node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+.env
+.env.local
+ts/dist/
+rust/target/
 .DS_Store
