@@ -14,7 +14,7 @@
 
 ### 阅读材料 0　本书需要的基本知识（已完成·永久免费） {#chread0}
 
-[公共导读 →](./readings/00.md) · [TypeScript 版 →](./readings/00-ts.md) · [Rust 版 →](./readings/00-rust.md)
+[公共导读（阅读材料 0）→](./readings/00.md) · [TypeScript 版 →](./readings/00-ts.md) · [Rust 版 →](./readings/00-rust.md)
 
 两份语言材料围绕同一组本地输入练习数据解析、异步与错误处理；分别补齐 TypeScript 类型系统与 Rust 所有权、借用、枚举等基础。终端、Git、HTTP 与配置放在公共导读中，按需查阅。Rust 预备练习独立于尚待建设的正式 Harness 实现。
 
