@@ -5,6 +5,13 @@
  *   npx tsx --env-file=.env scripts/record.ts --scenario hello
  *   npx tsx --env-file=.env scripts/record.ts --scenario hello --provider openai --prompt "..."
  *
+ * 某些端点要求额外的请求头（例如按会话做路由与缓存），用 --header 传入，可重复：
+ *
+ *   npx tsx --env-file=.env scripts/record.ts --scenario hello \
+ *     --header x-opencode-session=rein-record-hello --header user-agent=rein/0.1
+ *
+ * 这样 record.ts 不必认识任何一家端点的专有约定。
+ *
  * provider 缺省取 REIN_BASE_URL 的主机名首段（api.openai.com → openai）。
  * 序号自动递增，不覆盖已有文件。
  *
@@ -33,17 +40,28 @@ interface Args {
   scenario: string
   provider: string | undefined
   prompt: string
+  /** 额外请求头，可重复传入 --header name=value */
+  headers: Record<string, string>
 }
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export function parseArgs(argv: readonly string[]): Args {
   const flags = new Map<string, string>()
+  const headers: Record<string, string> = {}
   for (let i = 0; i < argv.length; i += 2) {
     const key = argv[i]
     const value = argv[i + 1]
     if (key === undefined || !key.startsWith('--') || value === undefined) {
       throw new Error(`参数格式为 --key value，收到：${argv.slice(i).join(' ')}`)
+    }
+    if (key === '--header') {
+      const separator = value.indexOf('=')
+      if (separator <= 0) {
+        throw new Error(`--header 格式为 name=value，收到：${value}`)
+      }
+      headers[value.slice(0, separator).toLowerCase()] = value.slice(separator + 1)
+      continue
     }
     flags.set(key.slice(2), value)
   }
@@ -60,6 +78,7 @@ export function parseArgs(argv: readonly string[]): Args {
     scenario,
     provider: validateProvider(flags.get('provider')),
     prompt: flags.get('prompt') ?? '用一句话说明什么是 Agent Harness。',
+    headers,
   }
 }
 
@@ -142,6 +161,7 @@ export async function main(argv: readonly string[]): Promise<number> {
       headers: {
         'content-type': 'application/json',
         authorization: `Bearer ${config.apiKey}`,
+        ...args.headers,
       },
       body: JSON.stringify({
         model: config.model,

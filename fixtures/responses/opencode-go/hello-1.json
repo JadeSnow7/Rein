@@ -1,0 +1,32 @@
+{
+  "provider": "opencode-go",
+  "scenario": "hello",
+  "recordedAt": "2026-09-12T04:14:05.605Z",
+  "request": {
+    "method": "POST",
+    "url": "https://opencode.ai/zen/go/v1/chat/completions",
+    "headers": {
+      "content-type": "application/json",
+      "authorization": "REDACTED",
+      "x-opencode-session": "rein-record-hello",
+      "user-agent": "rein/0.1"
+    },
+    "body": "{\"model\":\"mimo-v2.5\",\"messages\":[{\"role\":\"user\",\"content\":\"用一句话说明什么是 Agent Harness。\"}]}"
+  },
+  "response": {
+    "status": 200,
+    "statusText": "",
+    "headers": {
+      "content-encoding": "br",
+      "content-type": "application/json"
+    },
+    "body": "{\"id\":\"gen-1789186435-aZKuom25ntW0WT2zAnam\",\"object\":\"chat.completion\",\"created\":1789186435,\"model\":\"mimo-v2.5\",\"choices\":[{\"index\":0,\"finish_reason\":\"stop\",\"logprobs\":null,\"message\":{\"role\":\"assistant\",\"content\":\"Agent Harness 是一个管理和运行AI代理的框架，负责协调代理与外部工具、数据源及用户交互的全过程。\",\"refusal\":null,\"reasoning\":\"用户问什么是Agent Harness，我需要理解这个概念并用一句话解释。Agent Harness可能指的是AI代理的框架或环境，用于管理和运行AI代理，确保它们安全、有效地执行任务。我需要用中文简洁地回答。\\n\\n想到了Agent Harness类似于一个操作系统或控制台，为AI代理提供工具、约束和接口。可以比作“AI代理的操作系统或管理框架”。\\n\\n回答应该简洁明了，直接解释核心功能。避免复杂术语，确保用户能理解。\",\"reasoning_details\":[{\"type\":\"reasoning.text\",\"text\":\"用户问什么是Agent Harness，我需要理解这个概念并用一句话解释。Agent Harness可能指的是AI代理的框架或环境，用于管理和运行AI代理，确保它们安全、有效地执行任务。我需要用中文简洁地回答。\\n\\n想到了Agent Harness类似于一个操作系统或控制台，为AI代理提供工具、约束和接口。可以比作“AI代理的操作系统或管理框架”。\\n\\n回答应该简洁明了，直接解释核心功能。避免复杂术语，确保用户能理解。\",\"format\":\"unknown\",\"index\":0}]}}],\"usage\":{\"prompt_tokens\":254,\"completion_tokens\":129,\"total_tokens\":383,\"prompt_tokens_details\":{\"audio_tokens\":0,\"cached_tokens\":192,\"cache_write_tokens\":0},\"completion_tokens_details\":{\"audio_tokens\":0,\"reasoning_tokens\":0}},\"cost\":\"0\"}"
+  },
+  "redacted": [
+    "request.headers.authorization",
+    "response.headers.cf-placement",
+    "response.headers.cf-ray",
+    "response.headers.date",
+    "response.headers.server"
+  ]
+}

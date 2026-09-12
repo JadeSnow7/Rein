@@ -41,12 +41,34 @@ describe('回放真实录制', () => {
     expect(httpError.message).toContain('触发限流')
   })
 
-  it('样本里不含密钥：authorization 已置换，redacted 记下了改动', async () => {
+  it('opencode-go/hello-1：200 取出回答文本、模型名与 usage', async () => {
     const recording = await loadRecording(
-      join(RESPONSES_DIR, 'openai', 'insufficient-quota-1.json'),
+      join(RESPONSES_DIR, 'opencode-go', 'hello-1.json'),
     )
-    expect(recording.request.headers['authorization']).toBe('REDACTED')
-    expect(recording.redacted).toContain('request.headers.authorization')
-    expect(JSON.stringify(recording)).not.toMatch(/sk-[A-Za-z0-9_-]{20,}/)
+    expect(recording.response.status).toBe(200)
+
+    const result = await chat(config, createReplayTransport([recording]), {
+      prompt: '用一句话说明什么是 Agent Harness。',
+    })
+
+    // 断言的是形状，不是模型说了什么——回答内容每次都不同，不该被固定下来。
+    expect(result.text.length).toBeGreaterThan(0)
+    expect(result.model).toBe('mimo-v2.5')
+    expect(result.finishReason).toBe('stop')
+    expect(result.usage?.totalTokens).toBeGreaterThan(0)
+    expect(result.usage?.promptTokens).toBeGreaterThan(0)
+    expect(result.usage?.completionTokens).toBeGreaterThan(0)
+  })
+
+  it('样本里不含密钥：authorization 已置换，redacted 记下了改动', async () => {
+    for (const file of [
+      join(RESPONSES_DIR, 'openai', 'insufficient-quota-1.json'),
+      join(RESPONSES_DIR, 'opencode-go', 'hello-1.json'),
+    ]) {
+      const recording = await loadRecording(file)
+      expect(recording.request.headers['authorization']).toBe('REDACTED')
+      expect(recording.redacted).toContain('request.headers.authorization')
+      expect(JSON.stringify(recording)).not.toMatch(/sk-[A-Za-z0-9_-]{20,}/)
+    }
   })
 })
