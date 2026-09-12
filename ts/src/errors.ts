@@ -107,7 +107,9 @@ function describeCause(cause: unknown): string {
 function hintForStatus(status: number): string {
   if (status === 401 || status === 403) return ' 检查 REIN_API_KEY 是否有效。'
   if (status === 404) return ' 检查 REIN_BASE_URL 是否指向兼容端点的根路径。'
-  if (status === 429) return ' 触发限流，稍后重试或降低并发。'
+  if (status === 429) {
+    return ' 可能触发限流，也可能是额度、余额或用量上限问题。请先查看响应体原因：限流时降低请求频率或稍后重试；额度问题请检查账号余额与限制。'
+  }
   if (status >= 500) return ' 服务端故障，请求本身可能是对的。'
   return ''
 }

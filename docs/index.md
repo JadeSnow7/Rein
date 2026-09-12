@@ -19,8 +19,8 @@ features:
     details: 使用 TypeScript，围绕同一个 Rein 工作区助手逐章累积能力。
   - title: 工程证据
     details: 每个阶段都对应运行记录、失败测试、架构图与可展示的成果。
-  - title: 两种视角
-    details: Rust 作为四个关键设计结论的对照 track，帮助理解边界与取舍。
+  - title: 两种语言
+    details: TypeScript 与 Rust 两版预备材料使用同一个练习起步，正式章节实现按进度逐步补齐。
 ---
 
 <div class="home-note">

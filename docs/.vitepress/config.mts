@@ -27,7 +27,7 @@ export default defineConfig({
       '/': [
         { text: '开始阅读', items: [{ text: '关于本书', link: '/about.html' }, { text: '全书目录', link: '/toc.html' }, { text: '开放说明', link: '/access.html' }] },
         { text: '第一阶段 · 直觉', collapsed: false, items: [
-          { text: '00 绪论', link: '/chapters/00.html' }, { text: '阅读材料 0', link: '/readings/00.html' }, { text: '01 从模型调用开始', link: '/chapters/01.html' }, { text: '02 写一份合格的提示词', link: '/chapters/02.html' }, { text: '阅读材料 1', link: '/readings/01.html' }, { text: '03 工具调用', link: '/chapters/03.html' }, { text: '小结', link: '/milestones/01.html' }
+          { text: '00 绪论', link: '/chapters/00.html' }, { text: '阅读材料 0', link: '/readings/00.html' }, { text: '阅读 0 · TypeScript', link: '/readings/00-ts.html' }, { text: '阅读 0 · Rust', link: '/readings/00-rust.html' }, { text: '01 从模型调用开始', link: '/chapters/01.html' }, { text: '02 写一份合格的提示词', link: '/chapters/02.html' }, { text: '阅读材料 1', link: '/readings/01.html' }, { text: '03 工具调用', link: '/chapters/03.html' }, { text: '小结', link: '/milestones/01.html' }
         ] },
         { text: '第二阶段 · 循环', collapsed: true, items: [
           { text: '04 统一协议', link: '/chapters/04.html' }, { text: '05 核心 Agent Loop', link: '/chapters/05.html' }, { text: '06 循环控制', link: '/chapters/06.html' }, { text: '阅读材料 2', link: '/readings/02.html' }, { text: '阅读材料 3', link: '/readings/03.html' }, { text: '阶段汇总 1', link: '/milestones/02.html' }

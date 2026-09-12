@@ -38,7 +38,10 @@ describe('回放真实录制', () => {
     expect(httpError.status).toBe(429)
     // 服务端给的原因要原样出现在错误信息里，读者不必回去翻响应体。
     expect(httpError.message).toContain('insufficient_quota')
-    expect(httpError.message).toContain('触发限流')
+    expect(httpError.message).toContain('可能触发限流，也可能是额度、余额或用量上限问题')
+    expect(httpError.message).toContain('请先查看响应体原因')
+    expect(httpError.message).toContain('额度问题请检查账号余额与限制')
+    expect(httpError.message).not.toContain('触发限流，稍后重试或降低并发。')
   })
 
   it('opencode-go/hello-1：200 取出回答文本、模型名与 usage', async () => {

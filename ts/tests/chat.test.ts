@@ -102,6 +102,41 @@ describe('chat 失败分类', () => {
     expect(httpError.message).toContain('REIN_API_KEY')
   })
 
+  it('429 提示先查看原因，再按限流或额度分别处理', async () => {
+    const body = JSON.stringify({
+      error: { message: 'Too many requests', type: 'rate_limit_error', code: 'rate_limit_exceeded' },
+    })
+    const error = await chat(config, stub({ status: 429, statusText: 'Too Many Requests', headers: {}, body }), {
+      prompt: '你好',
+    }).catch((e: unknown) => e)
+
+    expect(error).toBeInstanceOf(HttpError)
+    const httpError = error as HttpError
+    expect(httpError.body).toBe(body)
+    expect(httpError.message).toContain('可能触发限流')
+    expect(httpError.message).toContain('请先查看响应体原因')
+    expect(httpError.message).toContain('限流时降低请求频率')
+    expect(httpError.message).toContain('稍后重试')
+    expect(httpError.message).toContain('额度问题请检查账号余额与限制')
+  })
+
+  it.each([
+    ['未知原因', JSON.stringify({ error: { message: 'Request rejected' } })],
+    ['非 JSON 响应', '<html>429 Too Many Requests</html>'],
+  ])('429 %s 时保留响应体并提示先检查原因', async (_name, body) => {
+    const error = await chat(config, stub({ status: 429, statusText: 'Too Many Requests', headers: {}, body }), {
+      prompt: '你好',
+    }).catch((e: unknown) => e)
+
+    expect(error).toBeInstanceOf(HttpError)
+    const httpError = error as HttpError
+    expect(httpError.body).toBe(body)
+    expect(httpError.message).toContain('可能触发限流，也可能是额度、余额或用量上限问题')
+    expect(httpError.message).toContain('请先查看响应体原因')
+    expect(httpError.message).toContain('限流时降低请求频率或稍后重试')
+    expect(httpError.message).toContain('额度问题请检查账号余额与限制')
+  })
+
   it('2xx 边界：299 仍按成功状态处理，失败发生在解析阶段', async () => {
     const error = await chat(config, stub({ status: 299, statusText: 'OK', headers: {}, body: '{}' }), {
       prompt: '你好',
