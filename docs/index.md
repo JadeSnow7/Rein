@@ -30,7 +30,7 @@ features:
 
 ## 现在可以读什么
 
-默认从[第 01 章公共导读](./chapters/01.md)开始理解真实调用，或直接跟随 [TS 版](./chapters/01-ts.md)运行代码。需要补充终端、HTTP、配置、类型、异步或错误处理知识时，再按需查阅[阅读 0 公共导读](./readings/00.md)及 [TS](./readings/00-ts.md) / [Rust](./readings/00-rust.md) 版。阅读 0 的示例与练习是可选自测，不是进入正文的条件。第 01 章 Rust 实现待补齐，其余章节仍为规划。
+默认从[第 01 章公共导读](./chapters/01.md)开始理解真实调用，或直接跟随 [TS 版](./chapters/01-ts.md) / [Rust 版](./chapters/01-rust.md)运行 hello 示例。需要补充终端、HTTP、配置、类型、异步或错误处理知识时，再按需查阅[阅读 0 公共导读](./readings/00.md)及 [TS](./readings/00-ts.md) / [Rust](./readings/00-rust.md) 版。阅读 0 的示例与练习是可选自测，不是进入正文的条件。第 01 章两版 SDK 实现已提供，其余章节仍为规划。
 
 <span id="先从一次完整任务开始"></span>
 

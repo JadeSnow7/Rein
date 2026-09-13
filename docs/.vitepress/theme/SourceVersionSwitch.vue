@@ -69,7 +69,8 @@ const syncLanguageFromRoute = () => {
 
 const targetHash = () => {
   if (typeof window === 'undefined' || !pair.value) return ''
-  const headings = Array.from(document.querySelectorAll<HTMLElement>('.vp-doc h2[id], .vp-doc h3[id]'))
+  const headings = Array.from(document.querySelectorAll<HTMLElement>('.vp-doc h2[id], .vp-doc h3[id], .vp-doc span[id]'))
+    .filter((element) => element.matches('h2, h3') || pair.value.commonHashes.includes(element.id))
   if (!headings.length) return ''
   const currentPosition = window.scrollY + getScrollOffset() + 4
   const visibleHeading = headings

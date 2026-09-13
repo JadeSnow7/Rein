@@ -8,12 +8,12 @@
 
 | 目录 | 用途 | 当前状态 |
 | --- | --- | --- |
-| `docs/chapters/` | 00–16 章正文 | 第 01 章公共导读与 TS 版已提供；Rust 待补齐，其余待撰写 |
+| `docs/chapters/` | 00–16 章正文 | 第 01 章公共导读、TS 与 Rust 两版已提供，其余待撰写 |
 | `docs/readings/` | 阅读材料 0–3 | 阅读 0 公共导读、TS 与 Rust 两版及练习已提供；其余待撰写 |
 | `docs/milestones/` | 第一阶段小结与三次阶段汇总 | 已建入口，待撰写 |
 | `docs/appendices/` | 实现对照与深入讨论 A.1–A.5 | 已建入口，待撰写 |
 | `ts/` | TypeScript 实现：源码、测试与独立示例 | 第 01 章实现与测试已落地 |
-| `rust/` | Rust 实现与测试 | 阅读 0 独立练习已落地；正式 Harness 实现待建设 |
+| `rust/` | Rust 实现与测试 | 第 01 章 SDK 调用与测试、阅读 0 独立练习已落地 |
 | `contracts/` | 两条路线重叠能力的共享合同 | 第 04 章定义 |
 | `fixtures/` | 共享验收输入与预期结果 | 已有两份模型响应录制；工具验收用例待第 03 章 |
 
@@ -42,15 +42,23 @@ npm run typecheck
 
 模型密钥复制 `ts/.env.example` 为 `ts/.env` 后填写，不入库。`tsx` 不会自动加载 `.env`，运行真实请求或录制命令时需显式传入 `--env-file=.env`；当前测试使用本地桩、内存数据及回环 HTTP 服务，不访问外网。
 
-## 取某一章的代码
-
-`ts/src/` 只保留一份随正文演进的代码。已建立第 01 章初版快照 `ch01`，包含调用代码、测试和两份响应录制：
+Rust 正式工程的验证在仓库根目录执行：
 
 ```bash
-git checkout ch01
+cargo test --locked --manifest-path rust/Cargo.toml
 ```
 
-第 01 章后续修订补充了教学步骤并修正 429 错误提示，原 `ch01` 快照保持不变；跟随修订正文时请使用包含这些修订的版本。其余章节快照随章节完成并核验后建立。
+两版的真实调用步骤见 [TypeScript 正文](docs/chapters/01-ts.md)和 [Rust 正文](docs/chapters/01-rust.md)。本地测试使用受控响应，不证明真实端点可用。
+
+## 取某一章的代码
+
+`ts/src/` 与 `rust/src/` 随正文演进。新版 SDK 教程使用第 01 章快照 `ch01-helloworld`：
+
+```bash
+git switch --detach ch01-helloworld
+```
+
+原 `ch01` 标签保留手写 HTTP 客户端、测试和两份录制，不包含新版 SDK 教程。`ch01-helloworld` 在本地交付；尚未推送时，新克隆的远程仓库取不到它，请使用交付的本地仓库。其余章节快照随章节完成并核验后建立。
 
 阅读 0 已提供 [TypeScript 知识补充](docs/readings/00-ts.md)与 [Rust 知识补充](docs/readings/00-rust.md)，对应 `ts/examples/reading-00/` 与 `rust/examples/reading-00/` 中的可选示例。它们按需补充正文所需的基础知识，不是进入第 01 章的前置条件；安装依赖后无需密钥即可运行，具体命令见各版材料。专项测试需按材料中的命令单独运行，根目录 `npm test` 仍检查 TS 正式调用代码。
 
@@ -63,16 +71,16 @@ npm run build
 npm run preview
 ```
 
-GitHub Pages 由 `.github/workflows/deploy.yml` 自动发布。推送到 `main` 或手动运行工作流都会构建 `docs/.vitepress/dist` 并部署。仓库设置中需要将 Pages 来源设为 **GitHub Actions**。代码测试由 `.github/workflows/test.yml` 在 `ts/`、`contracts/`、`fixtures/` 变更时运行。
+GitHub Pages 由 `.github/workflows/deploy.yml` 自动发布。推送到 `main` 或手动运行工作流都会构建 `docs/.vitepress/dist` 并部署。仓库设置中需要将 Pages 来源设为 **GitHub Actions**。代码测试由 `.github/workflows/test.yml` 在 `ts/`、`rust/`、`contracts/`、`fixtures/` 等相关路径变更时运行。
 
 网站：https://jadesnow7.github.io/Rein/
 
-当前仓库包含首页、阅读指南、规划目录、第 01 章公共导读与 TS 版、阅读 0 的公共导读与双语言预备材料，以及其余章节占位页。
+当前仓库包含首页、阅读指南、规划目录、第 01 章公共导读与双语言版本、阅读 0 的公共导读与双语言预备材料，以及其余章节占位页。
 
 本书目前限时免费。在持续更新过程中，部分限时免费章节将逐步转为收费；标注"永久免费"的章节将保持免费开放。具体收费范围、时间和价格以届时公告为准。GitHub 与 Pages 的公开历史会保留；政策说明不构成付费墙，未来付费交付将使用独立系统。
 
 ## 双语言阅读结构
 
-全书保留共同章节编号。正文按主线连续推进，阅读材料在需要时补充知识。阅读 0 使用公共导读与 TS / Rust 两版，第 01 章使用公共导读与 TS 版，Rust 正式调用待补齐。当前入口见 [阅读指南](docs/about.md)与[完成状态](docs/toc.md)。
+全书保留共同章节编号。正文按主线连续推进，阅读材料在需要时补充知识。阅读 0 使用公共导读与 TS / Rust 两版，第 01 章使用公共导读与 TS / Rust SDK 调用两版。当前入口见 [阅读指南](docs/about.md)与[完成状态](docs/toc.md)。
 
-每个主题只在侧栏出现一次，语言按钮切换已有版本并尽量保留相同知识点。核心小节和练习编号对齐，语言特有知识放在相关主题下。公共内容、正文、实现和验证进度分别说明，不用本地预备练习代替正式章节交付。章节重组不改变现有代码快照。
+每个主题只在侧栏出现一次，语言按钮切换已有版本并尽量保留相同知识点。核心小节和练习编号对齐，语言特有知识放在相关主题下。公共内容、正文、实现和验证进度分别说明，不用本地预备练习代替正式章节交付。历史 `ch01` 快照保持不变，新版使用单独标签。

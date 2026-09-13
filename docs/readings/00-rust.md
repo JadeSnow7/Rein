@@ -3,8 +3,8 @@ prev:
   text: 阅读指南
   link: /about.html
 next:
-  text: 01 公共导读 · Rust 实现待补齐
-  link: /chapters/01.html
+  text: 01 HelloWorld——从模型调用开始 · Rust 版
+  link: /chapters/01-rust.html
 ---
 
 <span id="阅读材料-0-·-rust-版"></span>
@@ -299,4 +299,4 @@ cargo check --locked
 
 这份程序为了区分 `json` 与 `shape`，保留了先解析 `Value` 的阶段。它还把 `read_text` 的输入按值接收，再借给内部解析函数。阅读时可以追问每一步为什么这样写，无需把这个小程序当作所有 Rust 项目都该采用的模板。
 
-两版共同的输入与结果见[示例输入与结果表](./00.md#acceptance)。当前 Rust 正式模型调用还未提供；需要补充时可打开[第 01 章公共导读](../chapters/01.md)，继续理解从本地响应到真实收发会增加哪些问题，无需先完成本页练习。
+两版共同的输入与结果见[示例输入与结果表](./00.md#acceptance)。第 01 章已提供 [Rust SDK 调用正文](../chapters/01-rust.md)；需要时可直接回到主线，继续理解从本地响应到真实收发会增加哪些问题，无需先完成本页练习。

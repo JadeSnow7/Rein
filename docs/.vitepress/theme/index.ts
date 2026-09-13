@@ -33,7 +33,6 @@ export default {
           : item.link
         return {
           ...item,
-          ...(topic === 'chapter-01' && selectedLanguage.value === 'rust' ? { text: `${item.text} · Rust 待补齐` } : {}),
           ...(link ? { link } : {}),
           ...(item.items ? { items: transformSidebar(item.items) } : {})
         }
