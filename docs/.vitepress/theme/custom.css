@@ -25,3 +25,13 @@
 .home-links { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 2.5rem 0 0; padding-top: 1.1rem; border-top: 1px solid var(--vp-c-divider); }
 .home-links a { color: var(--vp-c-text-2); font: 500 13px var(--vp-font-family-mono); text-decoration: none; transition: color .25s; }
 .home-links a:hover { color: var(--vp-c-brand-1); }
+.source-version-switch { position: fixed; right: 24px; bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 19; display: inline-flex; max-width: calc(100vw - 32px); border: 1px solid var(--vp-c-divider); border-radius: 999px; background: color-mix(in srgb, var(--vp-c-bg) 94%, transparent); box-shadow: 0 8px 24px color-mix(in srgb, var(--vp-c-text-1) 12%, transparent); backdrop-filter: blur(12px); pointer-events: auto; }
+.source-version-switch__buttons { display: inline-flex; border-radius: 999px; overflow: hidden; }
+.source-version-switch button { min-width: 40px; min-height: 32px; padding: 4px 8px; border: 0; background: transparent; color: var(--vp-c-text-2); font: 500 12px var(--vp-font-family-mono); cursor: pointer; }
+.source-version-switch button:hover, .source-version-switch button:focus-visible { color: var(--vp-c-brand-1); outline: 2px solid var(--vp-c-brand-1); outline-offset: -2px; }
+.source-version-switch button.active { background: var(--vp-c-brand-1); color: #fff; }
+.source-version-switch button:disabled { cursor: not-allowed; opacity: .55; }
+.source-version-switch__status { align-self: center; max-width: 180px; padding: 0 10px 0 4px; color: var(--vp-c-text-2); font-size: 11px; line-height: 1.25; }
+.visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
+.Layout .VPContent .VPDoc { padding-bottom: 80px; }
+@media (max-width: 767px) { .source-version-switch { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); max-width: calc(100vw - 24px); } .Layout .VPContent .VPDoc { padding-bottom: 96px; } .VPNavBar .title { flex: 1 1 auto; min-width: 0; max-width: calc(100vw - 96px); overflow: hidden; } .VPNavBarTitle .title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
