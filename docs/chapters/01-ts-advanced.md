@@ -1,0 +1,517 @@
+---
+prev:
+  text: 01 从模型调用开始 · 公共导读
+  link: /chapters/01.html
+next:
+  text: 02 写一份合格的提示词 · 待撰写
+  link: /chapters/02.html
+---
+
+# TypeScript 进阶，手写客户端、录制与回放
+
+本页保存 SDK 改写前的手写 HTTP 教程，作为历史实现的延伸阅读。当前第一章请从 [HelloWorld 主线](./01-ts.md)进入；本页提到的 Rust 待补齐等状态属于旧版背景，当前 Rust SDK 版见[对应正文](./01-rust.md)。
+
+终端里打印出一句回答，这件事到底经过了多少步？
+
+这一章把响应来源接到模型服务。取出一段文本时，地址、密钥、连接和等待时间都成了需要照看的事情。
+
+我们先跑一份已有样本，把这条调用路径看清楚，再按需发出真实请求。手里没有可用密钥，也能完成大部分练习。
+
+本篇按 `ts/` 中的现有代码展开。想先看本章共同解决的问题，读[公共导读](./01.md)；Rust 的正式调用实现还未提供，公共导读列出其后续需要满足的共同要求。
+
+## 本章要完成什么 {#from-reading-0}
+
+本章使用 OpenAI 兼容的 Chat Completions 接口，只处理非流式文本回答。接口选择遵循仓库的工程约定（见 `DECISIONS.md` 的 D3）；不同端点支持的模型、角色与参数仍需以所用服务的说明为准。需要补充基础语法时，可按需查阅[阅读 0 TS 版](../readings/00-ts.md)；它不是本章的前置步骤。
+
+| 本章要解决的问题 | 当前行为 |
+| --- | --- |
+| 响应从哪里来 | 根据配置发送请求，也允许由本地桩或录制提供响应 |
+| 回答位于哪里 | 从 `choices[0].message.content` 提取文本，并保留模型名、结束原因和用量 |
+| 失败如何分类 | 区分配置、网络、HTTP、超时与 `response-format`，用路径和说明区分 |
+| 等待边界在哪里 | 等待连接、响应头与响应体，处理其中的失败 |
+| 什么证据足够 | 分别检查请求构造、历史响应解析与本地 HTTP 行为 |
+
+本章的正式流程是先判断状态，再检查数据，最后决定怎样使用结果。阅读 0 示例中的类型名和错误名服务于补充教学，不是必须原样搬进正式工程的合同。
+
+如果暂时读不懂某种语法，可以按需查[用类型描述一份响应（类型与可选值）](../readings/00-ts.md#types)、[对象与 JSON 文本不是同一个值（JSON 校验）](../readings/00-ts.md#json)或[异步与异常，等到什么，失败去哪里](../readings/00-ts.md#async)。终端、HTTP、配置与 Git 也可查阅[公共导读](../readings/00.md)。下面集中解释真实调用带来的问题。
+
+## 先跑起来 {#first-run}
+
+### 确认环境，先完成一次离线检查
+
+首次运行 TS 主线需要 Git 和 Node.js 22 或更高版本。尚未取得仓库时，在准备存放项目的目录执行；已有仓库的读者直接打开现有目录：
+
+```bash
+git clone https://github.com/JadeSnow7/Rein.git
+cd Rein
+```
+
+这里的仓库根目录是同时包含 `package.json`、`docs/`、`ts/` 和 `rust/` 的目录。安装好 Node.js 后，在根目录检查版本并安装依赖。根目录的 npm workspace 同时管理文档与 `ts/` 依赖，不需要再进入 `ts/` 安装：
+
+```bash
+node --version
+npm --version
+npm ci
+```
+
+前两条应打印版本号，Node.js 的主版本应至少为 22。`npm ci` 按锁文件重建依赖目录；依赖已按当前锁文件安装好的读者可以跳过。命令失败时先处理安装问题，再执行下面的测试。
+
+先在**仓库根目录**运行，
+
+```bash
+npm exec --workspace ts -- vitest run tests/recorded.test.ts --reporter verbose
+```
+
+这组测试读取仓库里的成功响应和 429 失败响应，不读取 `.env`，也不发送 HTTP 请求。应看到三个用例通过，分别涉及成功解析、HTTP 失败处理和样本脱敏检查。429 用例通过，表示客户端把这份响应归类为 HTTP 失败，并在错误信息里保留了服务端给出的 `insufficient_quota` 原因。
+
+阅读 0 的专项测试位于 `ts/examples/reading-00/`，是可选示例；这里运行的是 `ts/tests/` 中的正式调用测试。二者都可以不使用密钥，但处理的数据结构和检查范围已经不同。
+
+继续读[请求与响应](#request-response)及[代码拆解](#implementation)。有可用端点时，接着完成下面的真实调用；没有端点时先跳过配置与发送，在章末把真实连通性标为「未验证」。首次安装依赖需要网络，安装后的这组回放测试不访问外部服务。
+
+### 配置一次真实调用 {#live-call}
+
+准备一个支持本章接口的端点、该端点的密钥和一个可用模型名。从仓库根目录进入 `ts/`，首次配置时复制模板，
+
+```bash
+cd ts
+cp .env.example .env
+```
+
+复制命令适用于 macOS / Linux shell 和 PowerShell；Windows CMD 使用 `copy .env.example .env`。如果已经有 `.env`，直接编辑它。填写下面三项；示例地址和模型名是占位值，需要换成服务提供方给出的值，
+
+```dotenv
+REIN_BASE_URL=https://api.example.com/v1
+REIN_API_KEY=在这里填写密钥
+REIN_MODEL=在这里填写模型名
+```
+
+`REIN_BASE_URL` 是端点根路径，通常以 `/v1` 结尾。程序会追加 `/chat/completions`，所以这里不要再填完整的调用路径。模板中的 `REIN_ALT_*` 留给第 04 章，本章代码不读取它们。
+
+仍在 `ts/` 目录运行，
+
+```bash
+node --import tsx --env-file=.env src/main.ts "用一句话说明什么是 Agent Harness"
+```
+
+该命令会请求你配置的服务，并产生相应的 API 用量。下面只是输出形式示意，文本和数字均不是这条命令的固定预期，
+
+```text
+一个把模型、工具和环境接起来的运行时。
+
+[服务端回报的模型名] finish_reason=stop tokens=21
+```
+
+回答走标准输出，模型名、结束原因和用量走标准错误。这样把标准输出接到文件或下一个程序时，不会混入诊断信息。成功时程序退出码为 `0`；本章定义的调用错误会打印 `失败（类别）：原因`，并以 `1` 退出。
+
+`node --import tsx` 加载执行 TypeScript 所需的支持，`--env-file=.env` 显式加载配置。单纯导入 `tsx` 不会自动读取项目的 `.env`。`.env` 已被 Git 忽略，密钥不应写进源码或提交到仓库。
+
+如果没跑通，先读错误中的类别、变量名或状态码，再对照后面的失败表。不要靠反复改代码来猜配置问题。
+
+## 一句话怎样变成请求与响应 {#request-response}
+
+真实调用命令把提示词交给 `src/main.ts`。入口读取配置，调用 `chat()`，后者把提示词序列化为 JSON，交给 transport 发送到 `<REIN_BASE_URL>/chat/completions`。回放测试从 `chat()` 进入，共用构造请求、检查状态和解析正文的路径；测试直接提供配置与样本，不执行 CLI 的配置加载和输出步骤。
+
+```text
+终端提示词 → main 读取配置 → chat 构造请求 → transport 收发
+                                             ↓
+终端文本与元信息 ← main 输出结果 ← chat 检查状态、解析正文
+```
+
+这里每启动一次 CLI 只发起一次模型请求，没有工具调用，也没有多轮循环。我们先把这一次交换看清楚。
+
+下面是教学用的精简请求体，模型名仍为占位值，
+
+```json
+{
+  "model": "your-model",
+  "messages": [
+    { "role": "user", "content": "用一句话说明什么是 Agent Harness" }
+  ]
+}
+```
+
+本章所选接口要求把提示词放进消息列表。`model` 指定模型，`messages` 按顺序承载消息。这里仅有一条 `user` 消息。代码还允许传入一条可选的 `system` 消息，放在 `user` 之前；CLI 当前只接收提示词，尚未暴露 system 参数。
+
+请求使用 `POST`，请求头中的 `content-type: application/json` 说明正文格式，`authorization: Bearer ...` 携带身份凭据。模型的回答在响应体里，不在 HTTP 状态码里。下面同样是精简示意，并非真实录制，
+
+```json
+{
+  "model": "served-model",
+  "choices": [
+    {
+      "index": 0,
+      "message": { "role": "assistant", "content": "模型负责生成，Harness 负责组织执行。" },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": { "prompt_tokens": 12, "completion_tokens": 8, "total_tokens": 20 }
+}
+```
+
+| 字段 | 在这次调用中的作用 |
+| --- | --- |
+| `choices[0].message.content` | 第一条候选回答的文本，是本章要取出的主要结果 |
+| `model` | 服务端回报的模型标识，可能与请求使用的别名不同 |
+| `finish_reason` | 本次生成为什么结束；`stop` 表示自然结束或命中停止序列，`length` 表示达到生成长度限制 |
+| `usage` | 服务端回报的 token 用量，示例列出输入、输出和合计 |
+
+字段含义可对照 [OpenAI Chat Completions 参考文档](https://developers.openai.com/api/reference/resources/chat)。`finish_reason` 还可能报告工具调用或内容过滤；不能把「拿到字符串」直接当成「回答完整且正确」。本章程序保留结束原因供读者检查，尚未按它决定后续动作。
+
+本章沿 `choices → 第一个候选 → message → content` 逐层读取，最后统一放到程序自己的 `result.text`。服务端字段名与程序内部结果名不必相同。
+
+具体到 Rein，解析器要求 `content` 是字符串；响应中的 `model` 缺失时，结果对象使用字符串 `'(未回报)'`；`finish_reason` 和 `usage` 缺失时，结果对象中的 `finishReason` 和 `usage` 为 `undefined`。CLI 分别打印模型名、结束原因和总 token 数；缺少对应信息时显示 `(未回报)`。这是本章客户端的容错选择，不代表所有提供方的协议都允许省略这些字段。
+
+## 拆解配置与调用代码 {#implementation}
+
+本章把入口、配置、调用、收发与错误职责放进五个文件，均位于 `ts/src/`，
+
+| 文件 | 它回答的问题 |
+| --- | --- |
+| `main.ts` | 用户传了什么提示词，成功与失败怎样输出？ |
+| `config.ts` | 地址、密钥和模型名从哪里来，配置格式是否合格？ |
+| `chat.ts` | 本接口需要什么请求，响应怎样转成 `ChatResult`？ |
+| `transport.ts` | 怎样取得状态码与完整正文，怎样换成回放？ |
+| `errors.ts` | 失败属于哪一层，应保留哪些现场信息？ |
+
+下面按配置、调用、解析的顺序阅读。代码框是现有函数的节选，除非明确写为完整函数，都需要所在文件的导入与上下文，不是让你依次拼接成另一个入口。
+
+### 配置，尽早指出哪里没填好
+
+程序启动先确定三件事，往哪发、用谁的身份、调哪个模型。`loadConfig()` 将它们显式地放在一起，
+
+```ts
+export function loadConfig(env: Env = process.env): Config {
+  return {
+    baseUrl: readBaseUrl(env),
+    apiKey: readNonEmpty(env, 'REIN_API_KEY'),
+    model: readNonEmpty(env, 'REIN_MODEL'),
+  }
+}
+```
+
+`Env` 是变量名到字符串或 `undefined` 的映射，`Config` 是三个只读配置字段。`loadConfig` 的参数允许测试传入自己的对象，因此能稳定制造缺配置、空值与非法地址，而不依赖运行测试的机器。
+
+三个配置项都没有默认值。未设置、空字符串和纯空白都会报错，并指出具体变量。这样 `.env` 中空着的 `REIN_API_KEY=` 会在发请求之前被发现，而不是等服务端拒绝后再猜原因。
+
+`REIN_BASE_URL` 还会检查 URL 格式和 http / https 协议，拒绝内嵌用户名、密码、查询参数与片段，最后去除尾部斜杠。我们采用「根路径加固定接口路径」的拼接方式，这些限制让拼接结果保持明确。配置校验只判断本地格式，不能验证密钥权限或模型是否存在。
+
+### 调用，先写清楚一种协议
+
+`main.ts` 中连接各部分的核心语句是，
+
+```ts
+const config = loadConfig()
+const result = await chat(config, createFetchTransport(), { prompt })
+```
+
+`createFetchTransport()` 提供真实 HTTP 收发能力，先把它看成一个有 `send()` 方法的对象。`chat()` 收到配置、收发对象和提示词后，构造请求，
+
+```ts
+const url = `${config.baseUrl}/chat/completions`
+const messages: Array<{ role: string; content: string }> = []
+if (request.system !== undefined) {
+  messages.push({ role: 'system', content: request.system })
+}
+messages.push({ role: 'user', content: request.prompt })
+
+const response = await transport.send(
+  {
+    method: 'POST',
+    url,
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({ model: config.model, messages }),
+  },
+  { timeoutMs: request.timeoutMs ?? DEFAULT_TIMEOUT_MS },
+)
+```
+
+这是 `chat()` 内部的节选，完整函数见 `ts/src/chat.ts`。`send()` 可能等待真实 I/O，也可能失败。默认超时为 30 秒，覆盖获取响应和读取响应体的过程。
+
+`Transport` 返回的不是已经解析好的模型回答，而是状态码、响应头和正文字符串。于是同一份 `chat()` 可以接收真实网络、手工构造数据或历史录制，不需要分别实现三套协议解析。
+
+这里直接写出了路径、消息角色和字段名。第 04 章会对照另一种接口形状，再从具体差异中提炼统一合同。当前只需把一种协议的调用过程写清楚。
+
+### 解析，HTTP 成功之后还要检查什么
+
+收发对象返回状态码和响应体字符串。`chat()` 先判断 HTTP 状态，再解析内容，
+
+```ts
+if (response.status < 200 || response.status >= 300) {
+  throw new HttpError(url, response.status, response.statusText, response.body)
+}
+
+return parseChatResponse(url, response.body)
+```
+
+2xx 只让程序进入解析阶段。解析器先用 `JSON.parse()` 读取 JSON，再逐层检查顶层对象、`choices` 数组、第一条候选、`message` 对象和 `content` 字符串。任何一步不符合要求，都保留具体路径，
+
+```ts
+const choices = root['choices']
+if (!Array.isArray(choices)) {
+  throw new ResponseFormatError(url, 'choices', '不是数组', body)
+}
+const first = choices[0]
+if (first === undefined) {
+  throw new ResponseFormatError(url, 'choices[0]', '不存在（choices 为空数组）', body)
+}
+```
+
+解析器用 `unknown` 和运行时检查区分「合法 JSON」与「合格数据」，并在顶层不合格时报告 `(root)`，候选为空时报告 `choices[0]`，文本类型不对时报告 `choices[0].message.content`。这样嵌套结构越深，也能保留第一个对不上的位置。
+
+`expectObject()` 在检查后把值表示为 `Record<string, unknown>`，只承诺它是可继续读取的对象，不承诺内部字段合格；后续各层仍然要检查。看到 `choices` 是空数组时，只能说明这次响应没有候选（解析器报告 `choices[0]`），不能据此判断服务端是否做了内容过滤。
+
+与此类似，`content: null` 只是不满足本章的文本要求，不能单靠它断言发生了工具调用；只有响应里同时出现 `tool_calls` 之类的信息，才有继续检查工具调用的依据。第 03 章会扩展这里的处理范围。
+
+本章当前解析器只要求 `content` 是字符串，**空字符串和全空白字符串也会原样返回**。这只能算解析成功，不能算得到了有用回答。程序也没有完整验证服务端所有元信息，只提取本章需要的字段。
+
+## 失败分成几类 {#failures}
+
+先看一条没有帮助的提示，
+
+```text
+解析响应失败
+```
+
+再看保留了现场的提示。以下是故意构造的错误示例，
+
+```text
+失败（response-format）：https://api.example.com/v1/chat/completions 的响应在 choices[0].message.content 处不是字符串，而是 null：{"choices":[{"message":{"content":null}}]}
+```
+
+第二条把接口、错误路径和值放在一起，读者能直接回到对应的解析步骤。JSON 语法错误与字段形状错误都属于 `response-format`：非法 JSON 在 `(root)` 处报告解析原因，字段不合格报告对应路径与值。
+
+真实收发会遇到不同阶段的失败。`errors.ts` 用五种错误表达调用中的不同阶段，
+
+| 类型 / `kind` | 何时发生 | 下一步检查什么 |
+| --- | --- | --- |
+| `ConfigError` / `config` | 配置缺失或格式不对 | 错误指出的环境变量 |
+| `NetworkError` / `network` | 建连、发送或读取响应体时发生非超时故障 | 底层原因、地址和连接状况 |
+| `HttpError` / `http` | 收到非 2xx 响应 | 状态码与服务端响应体 |
+| `TimeoutError` / `timeout` | 在指定时间内未读完响应 | 超时值、服务端耗时和连接情况 |
+| `ResponseFormatError` / `response-format` | 2xx 响应不符合本章要求 | JSON 是否有效，以及报错的字段路径 |
+
+判断时先找「最后确认完成了哪一步」，本地配置检查没有通过，就还没开始发送；拿到了完整的非 2xx 响应，就应该检查服务端返回的信息；进入 `response-format`，则说明已经通过 HTTP 状态检查。
+
+网络错误不一定意味着请求从未送达，响应头已经收到后，读取响应体也可能中断。超时也不能证明服务端没有处理请求。本章记录失败并退出，不自动重试。当前 `NetworkError` 的通用提示文字含有「未能送达」，但它也可能来自读取正文时的中断；诊断时应以发生阶段与底层原因判断，不能把这句提示当作服务端未执行的证据。
+
+这些错误共享 `ReinError` 基类和 `kind` 字段。入口可以统一处理预期内的失败，
+
+```ts
+} catch (error) {
+  if (error instanceof ReinError) {
+    console.error(`失败（${error.kind}）：${error.message}`)
+    return 1
+  }
+  throw error
+}
+```
+
+其他错误继续上抛，便于发现程序缺陷。`HttpError` 保存完整响应体，显示时截取前 400 个字符；`ResponseFormatError` 也保留错误路径和响应体。这些片段用于定位问题，分享日志前仍需检查其中是否包含私人输入或服务端返回的敏感信息。
+
+HTTP 状态码提供线索，但不能单独决定原因。401 可先查密钥，404 可先查端点路径和服务端说明；**429 既可能是限流，也可能是额度、余额或用量上限问题**。只有确认是限流后，降低请求频率或等待才是相应的处理；额度问题需要检查账号状态。这个区别可对照 [OpenAI 错误码说明](https://developers.openai.com/api/docs/guides/error-codes)，仓库的 `insufficient-quota-1.json` 也保存了一次额度不足的历史响应。
+
+当前代码对 429 给出通用提示，让读者结合响应体自行判断，没有实现提供方专用的错误解析或恢复策略。
+
+## 为什么再切出 transport {#transport}
+
+如果把网络请求与解析写死在一起，就很难稳定制造「服务端返回 429」「候选为空」这样的情况。我们需要自己决定测试输入，同时让真实调用与测试经过相同的 `chat()`。
+
+我们把收发能力单独命名为 transport，让调用逻辑可以接收一个替代实现。核心接口如下，
+
+```ts
+export interface Transport {
+  send(request: TransportRequest, options: SendOptions): Promise<TransportResponse>
+}
+```
+
+`TransportRequest` 包含方法、URL、请求头和字符串请求体；`SendOptions` 包含超时值；`TransportResponse` 包含状态码、状态文本、响应头和字符串响应体。完整类型在 `ts/src/transport.ts`。
+
+这层不解释 `messages` 或 `choices`。真实实现调用 `fetch()`，使用超时信号，并在 `response.text()` 读完整个响应体后返回。HTTP 404 或 429 仍是可返回的响应，由上层 `chat()` 判断；连接错误和超时则在收发层转成对应的错误类型。
+
+回放实现按顺序取出预先提供的响应。下面是它的完整函数，
+
+```ts
+export function createReplayTransport(recordings: readonly Recording[]): Transport {
+  let next = 0
+  return {
+    async send(request) {
+      const recording = recordings[next]
+      if (recording === undefined) {
+        throw new Error(
+          `回放样本已用尽：第 ${next + 1} 次请求（${request.url}）没有对应录制，` +
+            `当前共 ${recordings.length} 条。`,
+        )
+      }
+      next += 1
+      return recording.response
+    },
+  }
+}
+```
+
+本章把「响应从哪里来」放在可替换的对象里。传入 `createFetchTransport()` 就进行真实收发；传入 `createReplayTransport(...)` 就按顺序读取给定样本。两者都保留 `send()` 的异步接口。
+
+`Recording` 将一次请求、响应、提供方、场景名、录制时间和脱敏记录保存在一起。`loadRecording()` 从磁盘读取它，测试将结果交给 `createReplayTransport()`。随后仍然调用同一个 `chat()`，配置里的地址和密钥只是测试占位值。
+
+注意样本有两层 JSON，文件本身是录制对象，里面的 `response.body` 仍是响应正文字符串。`loadRecording()` 解析外层文件，`chat()` 再解析内层正文。当前加载器使用 `as Recording` 声明类型，**没有完整校验外层录制结构**，因此这里使用仓库内已知样本；它不是读取任意外部录制文件的通用校验器。内层模型正文仍经过前面介绍的逐层检查。
+
+本章的回放**只按调用顺序返回响应，不校验本次请求是否匹配录制请求，也不模拟延迟或超时**。它能验证已存响应如何被解析；请求 URL、请求头和消息是否构造正确，由 `chat.test.ts` 中记录输入的本地桩另行检查。网络和超时行为则由本地 HTTP 服务测试。三者各有作用。
+
+后面加入工具调用和循环后，我们可以在这个接口上提供多轮响应，用确定的输入检查执行过程。现在引入它，是为了让调用逻辑从第 01 章起就可以独立测试。
+
+## 录制与离线验证 {#verification}
+
+### 先使用已有样本
+
+`fixtures/responses/` 已经包含两份历史录制，
+
+| 文件（相对上述目录） | 内容与用途 |
+| --- | --- |
+| `opencode-go/hello-1.json` | HTTP 200 文本回答，用于检查文本、模型名、结束原因和用量解析 |
+| `openai/insufficient-quota-1.json` | HTTP 429，报告 `insufficient_quota`，用于检查 HTTP 错误保留服务端原因 |
+
+录制是当时接口行为的样本，不能用来证明服务今天仍返回同样结果。回放同一份文件得到的内容是固定的；真实请求重新生成的回答则可能变化。这里主要检查结构与关键字段，不把某一句模型回答当成所有模型都必须给出的标准答案。
+
+在仓库根目录运行完整检查。如果仍在前面的 `ts/` 目录，先执行 `cd ..`，
+
+```bash
+npm run typecheck
+npm test
+```
+
+| 测试文件（位于 `ts/tests/`） | 检查范围 |
+| --- | --- |
+| `config.test.ts` | 缺失、空白、非法 URL，以及没有配置默认值的行为 |
+| `chat.test.ts` | 请求构造、正常解析、失败分类和错误路径 |
+| `transport.test.ts` | 本地 HTTP 收发、连接失败、等待响应与读取响应体的超时、回放顺序 |
+| `record.test.ts` | 录制命令的 provider 参数与名称推导 |
+| `recorded.test.ts` | 两份历史样本的回放，以及已列出的脱敏检查 |
+
+完整测试不访问外网，也不需要密钥；其中 transport 测试会在回环地址启动临时 HTTP 服务，所以运行环境需要允许监听本地端口。只想检查历史响应时，使用开头那条 `recorded.test.ts` 命令即可。
+
+类型检查验证源码是否符合类型约束，测试验证列出的行为，两者都不能证明模型回答正确或某个远程端点当前可用。真实连通性需要单独运行调用命令验证。
+
+### 需要新样本时再录制 {#recording}
+
+从仓库根目录进入 `ts/`，使用已经填写好的 `.env`，
+
+```bash
+cd ts
+node --import tsx --env-file=.env scripts/record.ts --scenario hello --provider my-provider
+```
+
+`my-provider` 是示例目录名，请换成描述所用提供方的小写连字符名称。脚本把样本写到仓库根下的 `fixtures/responses/<provider>/<scenario>-<序号>.json`；该 provider 下尚无 `hello` 场景的录制时，上面的命令会得到 `hello-1.json`；已有录制时，使用最大序号加一，不覆盖已有文件。不指定 `--provider` 时，脚本从端点主机名推导名称。
+
+录制也会发起真实请求。需要记录不同提示词时增加 `--prompt "你的提示词"`；端点要求额外请求头时，可重复传入 `--header name=value`。额外请求头目前仅由录制脚本支持，普通 `main.ts` 入口不支持，因此依赖此类头的服务不一定能直接运行前面的 CLI 命令。
+
+写盘前，脚本替换列出的敏感请求头，只保留少量响应头，并替换请求体、响应体中与配置密钥相同的字面量。`redacted` 数组记录脚本列出的脱敏位置。它不是通用的隐私识别器；自定义请求头和正文中的其他身份信息仍需人工检查，检查后再考虑提交样本。
+
+脚本在收到非 2xx 时仍会保存响应，发出警告并以 `3` 退出。保存成功不代表调用成功，场景名需要描述实际录到的结果。连接失败或超时没有完整响应可存，也不能充当一份成功样本。
+
+## 动手练习与验收 {#exercises}
+
+前面的小节解释了各部分职责。现在用固定输入检查理解，再决定是否已经具备真实连通性的证据。前三个练习不需要模型密钥。
+
+### 练习一，检查正式响应结构 {#exercise-01}
+
+在**仓库根目录**运行，
+
+```bash
+npm exec --workspace ts -- vitest run tests/chat.test.ts --reporter verbose
+```
+
+打开 `ts/tests/chat.test.ts`，找到本地 `stub()` 和 `ok()`，前者返回给定结果并记录收到的请求，后者为给定正文补上 200 状态等字段。输入直接在测试内构造，不调用外部服务。
+
+先预测下列输入的结果，再对照 `chat.ts` 的判断顺序。这里的正文都只是教学输入，
+
+| HTTP 状态与正文 | 当前客户端的结果 | 检查重点 |
+| --- | --- | --- |
+| 200，`{"text":"你好，Rein"}` | `response-format`，路径为 `choices` | 接口要求消息候选结构 |
+| 200，`{"choices":[]}` | `response-format`，路径为 `choices[0]` | 合法数组仍可能没有第一项 |
+| 200，`{"choices":[{"message":{"content":null}}]}` | `response-format`，路径为 `choices[0].message.content` | 字段存在不等于类型合格 |
+| 200，`{"choices":[{"message":{"content":""}}]}` | 返回空文本；`model` 为 `'(未回报)'`，`finishReason`、`usage` 为 `undefined` | 空文本的当前行为 |
+| 500，`{` | `http` | 先判断状态，不用 JSON 错误覆盖 HTTP 失败 |
+
+现有测试包含相应解析分支的代表用例，并不逐条包含上表的所有字面输入。指出每个结果对应的代码位置；如果你判断空文本应被拒绝，把它记录为一项准备修改的行为要求，不要把它写成当前已经实现的事实。
+
+再找到请求构造测试，提示词最终进入哪个字段，认证信息从哪个配置字段来？测试为什么需要查看 `transport.sent[0]`，而不能只断言回答文本正确？
+
+### 练习二，在发送之前制造错误 {#exercise-02}
+
+在 **`ts/` 目录**运行下面的命令。它只为这次 Node.js 进程设置一个非法地址，再加载现有入口，不加载 `.env`，
+
+```bash
+node --import tsx --input-type=module -e "process.env.REIN_BASE_URL = 'not-a-url'; await import('./src/main.ts')"
+```
+
+应看到 `失败（config）` 和 `REIN_BASE_URL 不是合法 URL`。随后立即查看退出码，macOS / Linux shell 使用 `echo $?`，PowerShell 使用 `$LASTEXITCODE`，CMD 使用 `echo %ERRORLEVEL%`，结果应为 `1`。
+
+配置读取首先检查 URL，因此这条命令无需密钥，也不会发送请求。它修改的是子进程中的变量，不会覆盖 `.env` 或修改终端已有配置。源码类型没有问题，失败来自启动时配置的具体值。
+
+### 练习三，读懂历史录制的两层结构 {#exercise-03}
+
+在**仓库根目录**运行，
+
+```bash
+npm exec --workspace ts -- vitest run tests/recorded.test.ts --reporter verbose
+```
+
+打开两份样本和对应测试，完成以下检查，
+
+- 先找到外层 `response.status` 与 `response.body`，再在正文字符串中找到成功回答的字段路径。
+- 在 429 样本中找到 `insufficient_quota`，说明为什么它属于 HTTP 失败，而不是因为缺少 `choices` 被当成格式失败。
+- 在 `recorded.test.ts` 中找到 `createReplayTransport()`，说明为什么测试里的配置占位值不会被用于真实网络请求。
+
+与真实调用相比，响应已经固定。由此说明回放能证明什么，以及它为什么不能证明账号今天还有额度。
+
+### 练习四，完成一次真实调用，并记录证据 {#exercise-04}
+
+有可用端点时，先完成[配置步骤](#live-call)，在 **`ts/` 目录**运行，
+
+```bash
+node --import tsx --env-file=.env src/main.ts "分别用一句话说明模型与 Agent Harness 的职责"
+```
+
+检查标准输出是否有文本，标准错误是否有模型名、结束原因和用量信息，并立即查看退出码。每次启动都是一次独立请求，程序没有保存上一轮对话。若需要留下一份可回放的请求与响应，再按[录制步骤](#recording)获取并检查样本。录制会另发一次请求，保存的是新的一次交换，不会追溯刚才那条 CLI 的响应。不要把含密钥的配置或请求头抄进笔记。
+
+用下面的格式整理本章证据。没有密钥也可以交付前三项，把最后一项保留为未验证，
+
+| 检查项 | 记录内容 |
+| --- | --- |
+| 请求构造 | 测试命令与结果；URL、模型名、提示词和认证信息的来源 |
+| 失败定位 | 一个失败输入、错误类别、路径或状态码，以及下一步检查方向 |
+| 离线回放 | 两份样本各自说明什么；回放没有验证什么 |
+| 真实连通性 | 已验证或未验证；若已验证，记录调用时间、模型标识、退出码和结果摘要 |
+
+Rust 路线的读者可以用同一张表梳理请求、解析与失败边界；Rust 正式实现补齐后，也应对这些输入与验收目标提供自己的证据。
+
+## 换一种语言时，对照哪些地方 {#comparison}
+
+读到这里，可以先把文件名盖住，试着只描述这次调用做了什么。请求怎样拼出来，响应在哪一步被拒绝，失败又带回了哪些线索？能说明这些，才有办法判断另一种实现是否完成了同一件事。
+
+| 对照点 | 当前 TypeScript 实现 | Rust 后续需要提供的证据 |
+| --- | --- | --- |
+| 请求构造 | 本地桩记录 `transport.sent[0]`，检查 URL、认证与消息 | 对同一组输入检查实际构造的请求 |
+| 响应解释 | 逐层检查 `choices[0].message.content`，保留元信息 | 说明字段缺失、类型不符与空文本的处理 |
+| 失败传递 | `ReinError` 子类保存类别与现场，入口统一输出 | 给出本章错误分类和从底层到入口的传递路径 |
+| 收发与回放 | `Transport` 分开真实收发和按顺序回放 | 独立验证真实收发、回放及它们各自的限制 |
+| 验收 | 测试检查本地行为，真实连通性另行记录 | 提供本章对应测试，单独记录真实调用是否验证 |
+
+右栏是后续交付要求，尚无 Rust 第 01 章源码和运行结果。Rust 后续实现需要以自己的代码和测试提供证据。
+
+## 这一章留下的东西 {#next}
+
+当前 TS 实现已经具备配置读取、真实收发、模型协议解析与可替换响应来源，并提供一组保留现场的错误类型和离线验证方式。
+
+程序具备发起请求的能力，与你自己的端点是否已经跑通，要分别记录。无论先完成回放还是实际调用，都应能从一个结果追溯到请求输入、处理阶段与验证证据。
+
+计划中的[第 02 章](./02.md)会继续使用这条路径，在同一任务上调整目标、背景、约束和输出要求。我们已经能把一句话送到模型面前，接下来要判断怎样把任务说明白，并用实际结果比较不同写法。
+
+<div class="chapter-code">
+<span class="chapter-code__label">本章代码</span>
+<p><code>ch01</code> 保存本章初版代码与两份录制样本，仍保留旧版 429 提示，也不包含阅读 0 的双语言材料。跟随本页时使用包含阅读 0 与修订版调用代码的工作版本。<code>git checkout ch01</code> 会切换整个仓库到历史快照，含义与注意事项见<a href="../readings/00.html#git">阅读 0 的 Git 说明</a>。</p>
+<p>主要文件为 <code>ts/src/config.ts</code>、<code>ts/src/transport.ts</code>、<code>ts/src/chat.ts</code>、<code>ts/src/errors.ts</code>、<code>ts/src/main.ts</code>、<code>ts/scripts/record.ts</code> 与 <code>ts/tests/</code>。</p>
+</div>

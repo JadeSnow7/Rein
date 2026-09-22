@@ -1,0 +1,16 @@
+[package]
+name = "rein-ch01-helloworld"
+version = "0.1.0"
+edition = "2021"
+publish = false
+default-run = "rein-ch01-helloworld"
+
+[dependencies]
+async-openai = "0.29"
+backoff = "0.4"
+url = "2"
+dotenvy = "0.15"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
+
+[dev-dependencies]
+serde_json = "1"

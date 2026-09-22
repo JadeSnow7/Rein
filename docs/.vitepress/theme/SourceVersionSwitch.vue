@@ -69,7 +69,8 @@ const syncLanguageFromRoute = () => {
 
 const targetHash = () => {
   if (typeof window === 'undefined' || !pair.value) return ''
-  const headings = Array.from(document.querySelectorAll<HTMLElement>('.vp-doc h2[id], .vp-doc h3[id]'))
+  const headings = Array.from(document.querySelectorAll<HTMLElement>('.vp-doc h2[id], .vp-doc h3[id], .vp-doc span[id]'))
+    .filter((element) => element.matches('h2, h3') || pair.value.commonHashes.includes(element.id))
   if (!headings.length) return ''
   const currentPosition = window.scrollY + getScrollOffset() + 4
   const visibleHeading = headings
@@ -102,7 +103,7 @@ watch(() => route.path, syncLanguageFromRoute)
 </script>
 
 <template>
-  <div class="source-version-switch" :class="`source-version-switch--${variant}`" :aria-label="statusText">
+  <div v-if="pair?.rust" class="source-version-switch" :class="`source-version-switch--${variant}`" :aria-label="statusText">
     <div class="source-version-switch__buttons" role="group" aria-label="切换源码语言">
       <button
         v-for="option in (['ts', 'rust'] as Language[])"

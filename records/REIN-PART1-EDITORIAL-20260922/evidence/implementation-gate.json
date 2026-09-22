@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "gate": "implementation",
+  "current_revision": null,
+  "spec_version": "PART1-TEXT-1",
+  "spec_sha256": "c457c2f47eb79bcb773e6021780ba5e881fe3be484ed0f9a717d9c84e7b4eec9",
+  "spec_satisfaction": "not_assessed",
+  "spec_unmet_conditions": [],
+  "errors": [],
+  "warnings": [
+    {
+      "code": "BASELINE_UNLISTED_CHANGES",
+      "message": "uncommitted paths are neither in a file_scope nor baseline.foreign_paths: architecture/decisions.json, book/chapters.json, fixtures/evolution/adapter-good.cjs, fixtures/evolution/adapter-regressing.cjs, fixtures/evolution/current-check.cjs, fixtures/evolution/legacy-check.cjs, fixtures/evolution/seed.md, fixtures/evolution/validator.cjs, records/REIN-BOOK-V2-20260917/evidence/baseline-supplement.json, records/REIN-BOOK-V2-20260917/evidence/baseline.json"
+    }
+  ],
+  "limits": "Structural consistency is not proof of product success or authorization authenticity."
+}

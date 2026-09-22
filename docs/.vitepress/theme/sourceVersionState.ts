@@ -3,7 +3,7 @@ import type { InjectionKey, Ref } from 'vue'
 export type Language = 'ts' | 'rust'
 export const sourceVersionStateKey: InjectionKey<Ref<Language>> = Symbol('rein-source-version')
 
-export type SourceTopic = 'reading-00' | 'chapter-01'
+export type SourceTopic = 'reading-00' | 'chapter-01' | 'chapter-model-hello'
 
 export type SourceEdition = {
   shared: string
@@ -24,7 +24,14 @@ export const sourceEditions: Record<SourceTopic, SourceEdition> = {
   'chapter-01': {
     shared: '/chapters/01.html',
     ts: '/chapters/01-ts.html',
-    commonHashes: ['from-reading-0', 'first-run', 'live-call', 'request-response', 'implementation', 'failures', 'transport', 'verification', 'recording', 'exercises', 'comparison', 'next']
+    rust: '/chapters/01-rust.html',
+    commonHashes: ['from-reading-0', 'first-run', 'live-call', 'request-response', 'implementation', 'failures', 'transport', 'verification', 'recording', 'exercises', 'exercise-01', 'exercise-02', 'exercise-03', 'exercise-04', 'comparison', 'next']
+  },
+  'chapter-model-hello': {
+    shared: '/chapters/model-hello.html',
+    ts: '/chapters/model-hello.html',
+    rust: '/chapters/model-hello-rust.html',
+    commonHashes: ['from-reading-0', 'first-run', 'live-call', 'request-response', 'implementation', 'failures', 'exercises', 'exercise-01', 'exercise-02', 'exercise-03', 'exercise-04']
   }
 }
 

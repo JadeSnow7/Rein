@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--manifest-path",
+    "rust/Cargo.toml",
+    "--lib"
+  ],
+  "cwd": "/Users/huaodong/workspace/Agent-Learning",
+  "started_at": "2026-09-22T06:51:50.433298Z",
+  "ended_at": "2026-09-22T06:51:51.741591Z",
+  "exit_code": 0,
+  "timed_out": false,
+  "wrapper_exit_code": null,
+  "stdout": "\nrunning 11 tests\ntest tests::status_classification_keeps_key_out_of_public_error ... ok\ntest rein::tests::read_file_rejects_escape ... ok\ntest rein::extension02::tests::validation_binds_generic_identity_and_version ... ok\ntest rein::tests::anthropic_round_trip_shape ... ok\ntest rein::extension02::tests::declarations_only_expose_implemented_read_tools ... ok\ntest tests::config_requires_all_values_and_strips_trailing_slash ... ok\ntest tests::local_http_server_receives_one_openai_request ... ok\ntest tests::timeout_returns_without_waiting_for_the_server ... ok\ntest tests::provider_errors_are_classified_without_echoing_messages ... ok\ntest tests::rate_limit_is_requested_once_and_keeps_provider_code ... ok\ntest tests::malformed_or_empty_sdk_responses_are_failures ... ok\n\ntest result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.89s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.32s\n     Running unittests src/lib.rs (/private/tmp/rein-r0-target-20260921/debug/deps/rein_ch01_helloworld-dff73a8251df3167)\n",
+  "stdout_base64": "CnJ1bm5pbmcgMTEgdGVzdHMKdGVzdCB0ZXN0czo6c3RhdHVzX2NsYXNzaWZpY2F0aW9uX2tlZXBzX2tleV9vdXRfb2ZfcHVibGljX2Vycm9yIC4uLiBvawp0ZXN0IHJlaW46OnRlc3RzOjpyZWFkX2ZpbGVfcmVqZWN0c19lc2NhcGUgLi4uIG9rCnRlc3QgcmVpbjo6ZXh0ZW5zaW9uMDI6OnRlc3RzOjp2YWxpZGF0aW9uX2JpbmRzX2dlbmVyaWNfaWRlbnRpdHlfYW5kX3ZlcnNpb24gLi4uIG9rCnRlc3QgcmVpbjo6dGVzdHM6OmFudGhyb3BpY19yb3VuZF90cmlwX3NoYXBlIC4uLiBvawp0ZXN0IHJlaW46OmV4dGVuc2lvbjAyOjp0ZXN0czo6ZGVjbGFyYXRpb25zX29ubHlfZXhwb3NlX2ltcGxlbWVudGVkX3JlYWRfdG9vbHMgLi4uIG9rCnRlc3QgdGVzdHM6OmNvbmZpZ19yZXF1aXJlc19hbGxfdmFsdWVzX2FuZF9zdHJpcHNfdHJhaWxpbmdfc2xhc2ggLi4uIG9rCnRlc3QgdGVzdHM6OmxvY2FsX2h0dHBfc2VydmVyX3JlY2VpdmVzX29uZV9vcGVuYWlfcmVxdWVzdCAuLi4gb2sKdGVzdCB0ZXN0czo6dGltZW91dF9yZXR1cm5zX3dpdGhvdXRfd2FpdGluZ19mb3JfdGhlX3NlcnZlciAuLi4gb2sKdGVzdCB0ZXN0czo6cHJvdmlkZXJfZXJyb3JzX2FyZV9jbGFzc2lmaWVkX3dpdGhvdXRfZWNob2luZ19tZXNzYWdlcyAuLi4gb2sKdGVzdCB0ZXN0czo6cmF0ZV9saW1pdF9pc19yZXF1ZXN0ZWRfb25jZV9hbmRfa2VlcHNfcHJvdmlkZXJfY29kZSAuLi4gb2sKdGVzdCB0ZXN0czo6bWFsZm9ybWVkX29yX2VtcHR5X3Nka19yZXNwb25zZXNfYXJlX2ZhaWx1cmVzIC4uLiBvawoKdGVzdCByZXN1bHQ6IG9rLiAxMSBwYXNzZWQ7IDAgZmFpbGVkOyAwIGlnbm9yZWQ7IDAgbWVhc3VyZWQ7IDAgZmlsdGVyZWQgb3V0OyBmaW5pc2hlZCBpbiAwLjg5cwoK",
+  "stderr_base64": "ICAgIEZpbmlzaGVkIGB0ZXN0YCBwcm9maWxlIFt1bm9wdGltaXplZCArIGRlYnVnaW5mb10gdGFyZ2V0KHMpIGluIDAuMzJzCiAgICAgUnVubmluZyB1bml0dGVzdHMgc3JjL2xpYi5ycyAoL3ByaXZhdGUvdG1wL3JlaW4tcjAtdGFyZ2V0LTIwMjYwOTIxL2RlYnVnL2RlcHMvcmVpbl9jaDAxX2hlbGxvd29ybGQtZGZmNzNhODI1MWRmMzE2NykK",
+  "stdout_present": true,
+  "stderr_present": true,
+  "stdout_required": false,
+  "inputs": {},
+  "repo": "/Users/huaodong/workspace/Agent-Learning",
+  "cwd_relative": ".",
+  "revision_before": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_after": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version": "PART1-TEXT-1",
+  "spec_sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_before": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_after": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_version_before": "PART1-TEXT-1",
+  "spec_sha256_before": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version_after": "PART1-TEXT-1",
+  "spec_sha256_after": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_changed_paths": [],
+  "input_changed_paths": [],
+  "result": "passed"
+}

@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "node",
+    "scripts/book-links.mjs"
+  ],
+  "cwd": "/Users/huaodong/workspace/Agent-Learning",
+  "started_at": "2026-09-22T06:52:25.024461Z",
+  "ended_at": "2026-09-22T06:52:25.267206Z",
+  "exit_code": 0,
+  "timed_out": false,
+  "wrapper_exit_code": null,
+  "stdout": "{\n  \"base\": \"/Rein/\",\n  \"html_files\": 77,\n  \"checked\": 4012,\n  \"failures\": []\n}\n",
+  "stderr": "",
+  "stdout_base64": "ewogICJiYXNlIjogIi9SZWluLyIsCiAgImh0bWxfZmlsZXMiOiA3NywKICAiY2hlY2tlZCI6IDQwMTIsCiAgImZhaWx1cmVzIjogW10KfQo=",
+  "stderr_base64": "",
+  "stdout_present": true,
+  "stderr_present": false,
+  "stdout_required": false,
+  "inputs": {},
+  "repo": "/Users/huaodong/workspace/Agent-Learning",
+  "cwd_relative": ".",
+  "revision_before": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_after": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version": "PART1-TEXT-1",
+  "spec_sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_before": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_after": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_version_before": "PART1-TEXT-1",
+  "spec_sha256_before": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version_after": "PART1-TEXT-1",
+  "spec_sha256_after": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_changed_paths": [],
+  "input_changed_paths": [],
+  "result": "passed"
+}

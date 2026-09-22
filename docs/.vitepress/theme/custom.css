@@ -6,7 +6,7 @@
 .VPHomeHero .text { max-width: 720px; font-family: 'Songti SC', 'STSong', Georgia, serif; font-weight: 600; line-height: 1.3; }
 .VPHomeHero .tagline { max-width: 620px; color: var(--vp-c-text-2); }
 .VPHomeHero .image-bg { background: radial-gradient(circle, rgba(8,127,120,.18), transparent 65%); }
-.VPHomeHero .image-container::after { content: '01—16'; position: absolute; right: -18px; bottom: 12px; color: var(--vp-c-brand-1); font: 500 12px var(--vp-font-family-mono); letter-spacing: .18em; }
+.VPHomeHero .image-container::after { content: '00—24'; position: absolute; right: -18px; bottom: 12px; color: var(--vp-c-brand-1); font: 500 12px var(--vp-font-family-mono); letter-spacing: .18em; }
 .VPFeature { background: transparent; border: 1px solid var(--vp-c-divider); border-radius: 2px; transition: border-color .25s, transform .25s; }
 .VPFeature:hover { border-color: var(--vp-c-brand-1); transform: translateY(-3px); }
 .VPFeature .title { font-family: 'Songti SC', 'STSong', Georgia, serif; }
