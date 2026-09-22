@@ -1,0 +1,30 @@
+{"ok":true,"path":"hello.md","content":"alpha"}
+{"ok":true,"path":"hello.md","content":"beta"}
+{"ok":false,"error":{"code":"not_found","message":"文件不存在。"}}
+{"ok":false,"error":{"code":"not_found","message":"文件不存在。"}}
+{"ok":false,"error":{"code":"not_found","message":"文件不存在。"}}
+{"ok":false,"error":{"code":"not_found","message":"文件不存在。"}}
+{"ok":false,"error":{"code":"not_found","message":"文件不存在。"}}
+{"ok":false,"error":{"code":"not_found","message":"文件不存在。"}}
+{"ok":false,"error":{"code":"not_found","message":"文件不存在。"}}
+{
+  "source": "docs/chapters/tool-roundtrip.md",
+  "blocks": 7,
+  "markdown_sha256": "9c7ff03895b5cac77337219aa77b6156dfb633005bd18aa25f98596b6ff21534",
+  "typecheck_exit": 0,
+  "executor_codes": [
+    "invalid_arguments",
+    "invalid_path",
+    "not_found"
+  ],
+  "roundtrip_contents": [
+    "alpha",
+    "beta"
+  ],
+  "missing_code": "not_found",
+  "requests": 6,
+  "deepseek_thinking_disabled": true,
+  "bad_response_rejected": true,
+  "hello_missing_model_exit": 1
+}
+temporary evidence: /private/tmp/rein-part1-tool-mvMEj0

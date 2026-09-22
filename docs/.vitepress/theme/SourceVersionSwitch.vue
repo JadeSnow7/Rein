@@ -103,7 +103,7 @@ watch(() => route.path, syncLanguageFromRoute)
 </script>
 
 <template>
-  <div class="source-version-switch" :class="`source-version-switch--${variant}`" :aria-label="statusText">
+  <div v-if="pair?.rust" class="source-version-switch" :class="`source-version-switch--${variant}`" :aria-label="statusText">
     <div class="source-version-switch__buttons" role="group" aria-label="切换源码语言">
       <button
         v-for="option in (['ts', 'rust'] as Language[])"

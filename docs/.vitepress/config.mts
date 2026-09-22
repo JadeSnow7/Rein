@@ -26,20 +26,23 @@ export default defineConfig({
     sidebar: {
       '/': [
         { text: '开始阅读', items: [{ text: '关于本书', link: '/about.html' }, { text: '全书目录', link: '/toc.html' }, { text: '开放说明', link: '/access.html' }] },
-        { text: '第一阶段 · 直觉', collapsed: false, items: [
-          { text: '00 绪论 · 待撰写', link: '/chapters/00.html' }, { text: '阅读 0 基础知识', link: '/readings/00.html' }, { text: 'HelloWorld——从模型调用开始', link: '/chapters/01.html' }, { text: '02 写一份合格的提示词 · 待撰写', link: '/chapters/02.html' }, { text: '阅读材料 1 · 待撰写', link: '/readings/01.html' }, { text: '03 工具调用 · 待撰写', link: '/chapters/03.html' }, { text: '小结 · 待撰写', link: '/milestones/01.html' }
+        { text: '第一部分 · 让模型完成一个小任务', collapsed: false, items: [
+          { text: '00 绪论', link: '/chapters/task-map.html' }, { text: '阅读 0 基础知识', link: '/readings/00.html' }, { text: '01 HelloWorld——从模型调用开始', link: '/chapters/model-hello.html' }, { text: '02 任务与成功标准', link: '/chapters/task-spec.html' }, { text: '03 工具调用', link: '/chapters/tool-roundtrip.html' }, { text: '阶段汇总 1', link: '/milestones/evidence-qa.html' }
         ] },
-        { text: '第二阶段 · 循环', collapsed: true, items: [
-          { text: '04 统一协议 · 待撰写', link: '/chapters/04.html' }, { text: '05 核心 Agent Loop · 待撰写', link: '/chapters/05.html' }, { text: '06 循环控制 · 待撰写', link: '/chapters/06.html' }, { text: '阅读材料 2 · 待撰写', link: '/readings/02.html' }, { text: '阅读材料 3 · 待撰写', link: '/readings/03.html' }, { text: '阶段汇总 1 · 待撰写', link: '/milestones/02.html' }
+        { text: '第二部分 · 建立可控的混合运行时', collapsed: true, items: [
+          { text: '04 模型接口 · 后续章节待发布', link: '/chapters/provider-adapter.html' }, { text: '05 Rust 迁移 · 后续章节待发布', link: '/chapters/rust-migration.html' }, { text: '06 核心 Agent Loop · 后续章节待发布', link: '/chapters/agent-loop.html' }, { text: '07–09 后续章节待发布' }, { text: '阶段汇总 2 · 后续章节待发布' }
         ] },
-        { text: '第三阶段 · 可靠性', collapsed: true, items: [
-          { text: '07 上下文管理 · 待撰写', link: '/chapters/07.html' }, { text: '08 上下文管理方法 · 待撰写', link: '/chapters/08.html' }, { text: '09 验收条件与验证器 · 待撰写', link: '/chapters/09.html' }, { text: '10 失败反馈 · 待撰写', link: '/chapters/10.html' }, { text: '11 防御性编程 · 待撰写', link: '/chapters/11.html' }, { text: '12 权限管理 · 待撰写', link: '/chapters/12.html' }, { text: '阶段汇总 2 · 待撰写', link: '/milestones/03.html' }
+        { text: '第三部分 · 让回答有依据、可检查', collapsed: true, items: [
+          { text: '10–13 后续章节待发布' }, { text: '阶段汇总 3 · 后续章节待发布' }
         ] },
-        { text: '第四阶段 · 应用', collapsed: true, items: [
-          { text: '13 计划与任务审查 · 待撰写', link: '/chapters/13.html' }, { text: '14 多智能体协作 · 待撰写', link: '/chapters/14.html' }, { text: '15 外部扩展 · 待撰写', link: '/chapters/15.html' }, { text: '16 垂直领域设计方法论 · 待撰写', link: '/chapters/16.html' }, { text: '阶段汇总 3 · 待撰写', link: '/milestones/04.html' }
+        { text: '第四部分 · 让修改可审查、可验证', collapsed: true, items: [
+          { text: '14–17 后续章节待发布' }, { text: '阶段汇总 4 · 后续章节待发布' }
         ] },
-        { text: '实现对照与深入讨论', collapsed: true, items: [
-          { text: 'A.1 行为约定与实现边界 · 待撰写', link: '/appendices/a1.html' }, { text: 'A.2 运行状态 · 待撰写', link: '/appendices/a2.html' }, { text: 'A.3 进程与取消 · 待撰写', link: '/appendices/a3.html' }, { text: 'A.4 崩溃恢复 · 待撰写', link: '/appendices/a4.html' }, { text: 'A.5 并发汇总 · 待撰写', link: '/appendices/a5.html' }
+        { text: '第五部分 · 可选能力分支与结项', collapsed: true, items: [
+          { text: '18–24 后续章节待发布' }, { text: '阶段汇总 5 · 后续章节待发布' }
+        ] },
+        { text: '补充入口', collapsed: true, items: [
+          { text: '阅读材料与附录 · 后续章节待发布' }, { text: '历史页面', link: '/history.html' }
         ] }
       ]
     }

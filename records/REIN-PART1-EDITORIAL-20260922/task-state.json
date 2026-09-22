@@ -1,0 +1,491 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "PART1-TEXT-1",
+    "authority": "records/REIN-PART1-EDITORIAL-20260922/spec.md",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "仅修改六份新版正文；保留旧数字原稿、全部既有脏改动、章节验收与快照字段",
+      "保留 Apache-2.0 开放安排",
+      "不调用真实模型、不提交推送发布；不把离线结果当教学验收"
+    ],
+    "exceptions": [
+      "本轮审查文字与本地示例，不完成真实模型、读者试读和逐章快照验收"
+    ],
+    "conditions": [
+      {
+        "id": "SC-TEXT",
+        "metric_ids": [
+          "MET-001"
+        ],
+        "deliverables": [
+          "docs/chapters/task-map.md",
+          "docs/chapters/model-hello.md",
+          "docs/chapters/model-hello-rust.md",
+          "docs/chapters/task-spec.md",
+          "docs/chapters/tool-roundtrip.md",
+          "docs/milestones/evidence-qa.md"
+        ]
+      },
+      {
+        "id": "SC-CHECK",
+        "metric_ids": [
+          "MET-002"
+        ],
+        "deliverables": [
+          "reports/2026-09-22-part1-publication-review.md"
+        ]
+      }
+    ],
+    "contracts": [
+      "book/chapters.json",
+      "reports/ch01-author-style.md",
+      "records/REIN-PART1-EDITORIAL-20260922/spec.md"
+    ],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-PART1-EDITORIAL-20260922",
+    "title": "第一部分文字发布审查与定向修订",
+    "mode": "new",
+    "status": "completed",
+    "source_ids": [
+      "SRC-001"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "从模型调用开始学习 Harness 的读者",
+    "scenario": "根据当前项目进度准备第一部分正文",
+    "problem": "新版初稿有旧链接、操作缺口、提纲式讲解和未经限定的进度表述",
+    "expected_outcome": "六份新版稿件完成内容与行文修订，当前可运行检查有证据，剩余发布门槛准确保留",
+    "scope": "新版00–03、01 Rust对照、阶段汇总1及本轮审查记录",
+    "acceptable_result": "文字问题修订，本地检查通过，真实模型与快照缺口不被标为已完成"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:20260922-part1-review",
+      "summary": "根据现在的进度，审查第一部分的文字至发布标准",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "六份新版稿件完成内容与行文修订，当前可运行检查有证据，剩余发布门槛准确保留",
+      "scope": [
+        "docs/chapters/task-map.md",
+        "docs/chapters/model-hello.md",
+        "docs/chapters/model-hello-rust.md",
+        "docs/chapters/task-spec.md",
+        "docs/chapters/tool-roundtrip.md",
+        "docs/milestones/evidence-qa.md"
+      ],
+      "non_goals": [
+        "产品运行时实现",
+        "历史原稿改写",
+        "实际发布"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "第一部分以当前book索引part-1为准"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-001",
+        "MET-002"
+      ],
+      "implementation_task_ids": [
+        "IT-001",
+        "IT-002"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "内容、行文与当前实现一致",
+      "baseline": "六篇初稿已保存；错误旧章链接、空图占位、缺具体判例及缺失快照入口",
+      "target": "逐页起点动作结果完整；术语、来源、证据边界一致；主线不跳旧主题",
+      "method": "主线程逐页审读及独立事实复核",
+      "environment_data": "当前脏工作区及作者写作风格约定",
+      "evidence_ids": [
+        "EVD-001"
+      ],
+      "status": "passed",
+      "verification": "manual"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "最终正文关键命令和站点检查",
+      "baseline": "修改前保存book检查与源码示例结果",
+      "target": "最终Markdown提取的工具示例通过类型与本地行为检查；hello定向测试、book/build/links通过",
+      "method": "record_execution运行本地检查并审阅原始回执",
+      "environment_data": "锁定依赖，不访问真实模型，练习文件置临时目录",
+      "evidence_ids": [
+        "EVD-002"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "03代码示例与文字及离线验证脚本",
+      "file_scope": [
+        "docs/chapters/tool-roundtrip.md",
+        "records/REIN-PART1-EDITORIAL-20260922/checks/verify-tool-roundtrip.mjs"
+      ],
+      "interface_constraints": [
+        "仅修改六份新版正文；保留旧数字原稿、全部既有脏改动、章节验收与快照字段",
+        "保留 Apache-2.0 开放安排",
+        "不调用真实模型、不提交推送发布；不把离线结果当教学验收"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001",
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "owner": "coder",
+      "status": "verified"
+    },
+    {
+      "id": "IT-002",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "00、01双语、02、阶段汇总及全局审查",
+      "file_scope": [
+        "docs/chapters/task-map.md",
+        "docs/chapters/task-spec.md",
+        "docs/milestones/evidence-qa.md",
+        "docs/chapters/model-hello.md",
+        "docs/chapters/model-hello-rust.md",
+        "reports/2026-09-22-part1-publication-review.md"
+      ],
+      "interface_constraints": [
+        "仅修改六份新版正文；保留旧数字原稿、全部既有脏改动、章节验收与快照字段",
+        "保留 Apache-2.0 开放安排",
+        "不调用真实模型、不提交推送发布；不把离线结果当教学验收"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001",
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "owner": "main-thread",
+      "status": "verified"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EVD-001",
+      "path": "records/REIN-PART1-EDITORIAL-20260922/evidence/final-review.json",
+      "kind": "review",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:00:57.590504+00:00",
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:dfbd29ff5fe4d7b029aedaf0b9359e734b2415d6feff0daea5adabd676e61bd0:spec:c457c2f47eb79bcb773e6021780ba5e881fe3be484ed0f9a717d9c84e7b4eec9",
+      "spec_version": "PART1-TEXT-1",
+      "spec_sha256": "c457c2f47eb79bcb773e6021780ba5e881fe3be484ed0f9a717d9c84e7b4eec9",
+      "sha256": "0bd7feb3e6e62dba552579d28ddf90311e7b37685ea82dc9f1cf63cd5ab28497"
+    },
+    {
+      "id": "EVD-002",
+      "path": "records/REIN-PART1-EDITORIAL-20260922/evidence/final-checks-v3.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:00:02.688518Z",
+      "sha256": "69961b370e0bde644aa53c9b8b96bb35f6a671b3b48ce1e6615695014d5f4421"
+    }
+  ],
+  "changes": [
+    {
+      "id": "CHG-001",
+      "implementation_task_ids": [
+        "IT-001",
+        "IT-002"
+      ],
+      "paths": [
+        "docs/chapters/task-map.md",
+        "docs/chapters/model-hello.md",
+        "docs/chapters/model-hello-rust.md",
+        "docs/chapters/task-spec.md",
+        "docs/chapters/tool-roundtrip.md",
+        "docs/milestones/evidence-qa.md",
+        "records/REIN-PART1-EDITORIAL-20260922/checks/verify-tool-roundtrip.mjs",
+        "reports/2026-09-22-part1-publication-review.md"
+      ],
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:dfbd29ff5fe4d7b029aedaf0b9359e734b2415d6feff0daea5adabd676e61bd0:spec:c457c2f47eb79bcb773e6021780ba5e881fe3be484ed0f9a717d9c84e7b4eec9",
+      "status": "reviewed"
+    }
+  ],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002"
+    ],
+    "evidence_ids": [
+      "EVD-001",
+      "EVD-002"
+    ],
+    "status": "passed",
+    "scope": "仅本任务Spec约定的文字与离线检查；全书、逐章教学与整库验收仍未完成"
+  },
+  "baseline": {
+    "git_ref": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+    "worktree_status": "dirty_dependency_confirmed",
+    "ownership": "本轮六篇稿件已保存原字节；其他脏改动属于既有工作",
+    "foreign_paths": [
+      ".github/workflows/test.yml",
+      ".gitignore",
+      "DECISIONS.md",
+      "MIGRATIONS.md",
+      "README.md",
+      "contracts/README.md",
+      "docs/.vitepress/config.mts",
+      "docs/.vitepress/theme/SourceVersionSwitch.vue",
+      "docs/.vitepress/theme/custom.css",
+      "docs/.vitepress/theme/sourceVersionState.test.ts",
+      "docs/.vitepress/theme/sourceVersionState.ts",
+      "docs/about.md",
+      "docs/access.md",
+      "docs/appendices/a1.md",
+      "docs/appendices/a2.md",
+      "docs/appendices/a3.md",
+      "docs/appendices/a4.md",
+      "docs/appendices/a5.md",
+      "docs/chapters/00.md",
+      "docs/chapters/01-rust.md",
+      "docs/chapters/01-ts-advanced.md",
+      "docs/chapters/01-ts.md",
+      "docs/chapters/01.md",
+      "docs/chapters/02.md",
+      "docs/chapters/03.md",
+      "docs/chapters/04.md",
+      "docs/chapters/05.md",
+      "docs/chapters/06.md",
+      "docs/chapters/07.md",
+      "docs/chapters/08.md",
+      "docs/chapters/09.md",
+      "docs/chapters/10.md",
+      "docs/chapters/11.md",
+      "docs/chapters/12.md",
+      "docs/chapters/13.md",
+      "docs/chapters/14.md",
+      "docs/chapters/15.md",
+      "docs/chapters/16.md",
+      "docs/index.md",
+      "docs/milestones/01.md",
+      "docs/milestones/02.md",
+      "docs/milestones/03.md",
+      "docs/milestones/04.md",
+      "docs/readings/00-rust.md",
+      "docs/readings/00-ts.md",
+      "docs/readings/00.md",
+      "docs/readings/02.md",
+      "docs/toc.md",
+      "package-lock.json",
+      "package.json",
+      "reports/ch01-writing-plan.md",
+      "rust/Cargo.lock",
+      "rust/Cargo.toml",
+      "rust/README.md",
+      "rust/examples/reading-00/Cargo.toml",
+      "rust/src/lib.rs",
+      "ts/README.md",
+      "ts/examples/README.md",
+      "ts/package.json",
+      "ts/src/transport.ts",
+      "Cargo.lock",
+      "Cargo.toml",
+      "LICENSE",
+      "REIN-DESIGN.md",
+      "REIN-FILE-TREE.md",
+      "REIN-IMPLEMENTATION-PLAN.md",
+      "REIN-INTEGRATION-SPEC.md",
+      "REIN-MODULES.md",
+      "chapter-snapshots/",
+      "contracts/extension-v0.1.md",
+      "contracts/extension-v0.2.md",
+      "contracts/maintenance-session-v1.md",
+      "contracts/maintenance-v1.md",
+      "contracts/runtime/",
+      "core/",
+      "docs/chapters/05-rust.md",
+      "docs/chapters/06-plugin.md",
+      "docs/chapters/06-rust.md",
+      "docs/chapters/07-rust.md",
+      "docs/chapters/agent-loop.md",
+      "docs/chapters/approved-patch.md",
+      "docs/chapters/bounded-delegation.md",
+      "docs/chapters/bounded-repair.md",
+      "docs/chapters/cancellation.md",
+      "docs/chapters/context-compression.md",
+      "docs/chapters/context-retrieval.md",
+      "docs/chapters/context-state.md",
+      "docs/chapters/durable-recovery.md",
+      "docs/chapters/execution-hooks.md",
+      "docs/chapters/extension-sdk.md",
+      "docs/chapters/loop-budget.md",
+      "docs/chapters/mcp-tools.md",
+      "docs/chapters/patch-candidate.md",
+      "docs/chapters/project-evaluation.md",
+      "docs/chapters/provider-adapter.md",
+      "docs/chapters/rust-migration.md",
+      "docs/chapters/task-planning.md",
+      "docs/chapters/task-verification.md",
+      "docs/chapters/tool-host.md",
+      "docs/chapters/trust-permissions.md",
+      "docs/history.md",
+      "docs/milestones/controlled-harness.md",
+      "docs/milestones/grounded-answer.md",
+      "docs/milestones/project-defense.md",
+      "docs/milestones/single-agent-maintainer.md",
+      "docs/prompt-examples.md",
+      "examples/",
+      "fixtures/cases/ch05-loop.json",
+      "fixtures/cases/ch06-control.json",
+      "fixtures/cases/ch07-context.json",
+      "fixtures/cases/prerequisites.json",
+      "fixtures/ch08-context/",
+      "fixtures/document-maintenance/",
+      "fixtures/hybrid-marker.txt",
+      "fixtures/runtime-r1a/",
+      "fixtures/workspaces/prerequisites/",
+      "reports/2026-09-17-book-structure-plan.md",
+      "reports/2026-09-17-book-v2-implementation.md",
+      "reports/2026-09-17-maintenance-integration.md",
+      "reports/2026-09-20-rein-architecture-research.md",
+      "reports/2026-09-20-rein-core-harness-checks.json",
+      "reports/2026-09-20-rein-research-checks.json",
+      "reports/2026-09-20-rein-research-sources.json",
+      "reports/2026-09-21-product-line-plan-checks.json",
+      "runtime/",
+      "rust/examples/ch05_compare.rs",
+      "rust/examples/ch05_loop.rs",
+      "rust/examples/ch06_loop.rs",
+      "rust/examples/ch07_context.rs",
+      "rust/examples/ch08_context.rs",
+      "rust/examples/document_maintenance.rs",
+      "rust/examples/hybrid_stdio.rs",
+      "rust/src/rein/",
+      "rust/tests/ch08_context.rs",
+      "rust/tests/extension02.rs",
+      "rust/tests/loop.rs",
+      "rust/tests/maintenance.rs",
+      "rust/tests/maintenance_profile.rs",
+      "rust/tests/maintenance_session.rs",
+      "rust/tests/prerequisites.rs",
+      "rust/tests/stdio_host.rs",
+      "scripts/",
+      "ts/examples/ch05-compare.ts",
+      "ts/examples/ch05-live.ts",
+      "ts/examples/ch05-loop.ts",
+      "ts/examples/ch06-loop.ts",
+      "ts/examples/ch07-context.ts",
+      "ts/src/hybrid-host.ts",
+      "ts/src/rein/",
+      "ts/tests/ch05-live.test.ts",
+      "ts/tests/ch07-context.test.ts",
+      "ts/tests/fixtures/",
+      "ts/tests/hybrid-host.test.ts",
+      "ts/tests/loop.test.ts",
+      "ts/tests/maintenance-tools.test.ts",
+      "ts/tests/rein-prerequisites.test.ts",
+      "records/REIN-EVOLUTION-20260922/"
+    ],
+    "prepared_at": "2026-09-22T06:29:28.867800+00:00"
+  },
+  "binding": {
+    "receipt_paths": [
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-tool.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-ts.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-rust.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-book.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-build.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-links.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-typecheck.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-cli.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-manifest.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-checks.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-checks-v2.json",
+      "records/REIN-PART1-EDITORIAL-20260922/evidence/final-checks-v3.json"
+    ]
+  },
+  "authorization": {
+    "commit": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "push": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "merge": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "deploy": {
+      "status": "not_authorized",
+      "source_id": null
+    }
+  },
+  "delivery": {
+    "local_validation": "passed",
+    "remote_ci": "not_started",
+    "remote_ci_revision": null
+  },
+  "actions": [],
+  "decisions": [],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "后续文字或示例改动使本轮检查不再适用",
+    "steps": [
+      "保留当前修订与历史baseline",
+      "对比对应文件hash并重跑受影响检查",
+      "仅按本轮路径修订，不覆盖其他工作"
+    ],
+    "owner": "main-thread"
+  }
+}

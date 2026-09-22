@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "npm",
+    "test",
+    "--workspace",
+    "ts",
+    "--",
+    "tests/hello.test.ts",
+    "tests/config.test.ts"
+  ],
+  "cwd": "/Users/huaodong/workspace/Agent-Learning",
+  "started_at": "2026-09-22T06:51:28.212014Z",
+  "ended_at": "2026-09-22T06:51:29.738571Z",
+  "exit_code": 0,
+  "timed_out": false,
+  "wrapper_exit_code": null,
+  "stdout": "\n> @rein/ts@0.0.0 test\n> vitest run --passWithNoTests tests/hello.test.ts tests/config.test.ts\n\n\n RUN  v2.1.9 /Users/huaodong/workspace/Agent-Learning/ts\n\n ✓ tests/config.test.ts (13 tests) 9ms\n ✓ tests/hello.test.ts (18 tests) 39ms\n\n Test Files  2 passed (2)\n      Tests  31 passed (31)\n   Start at  14:51:28\n   Duration  708ms (transform 137ms, setup 0ms, collect 262ms, tests 48ms, environment 0ms, prepare 233ms)\n\n",
+  "stderr": "stderr | tests/hello.test.ts > hello SDK entry points > 安全 CLI 缺配置时返回退出码 1，且不打印密钥\n失败（config）：REIN_BASE_URL 未设置。参考 ts/.env.example，复制为 ts/.env 后填写。\n\n",
+  "stdout_base64": "Cj4gQHJlaW4vdHNAMC4wLjAgdGVzdAo+IHZpdGVzdCBydW4gLS1wYXNzV2l0aE5vVGVzdHMgdGVzdHMvaGVsbG8udGVzdC50cyB0ZXN0cy9jb25maWcudGVzdC50cwoKCiBSVU4gIHYyLjEuOSAvVXNlcnMvaHVhb2Rvbmcvd29ya3NwYWNlL0FnZW50LUxlYXJuaW5nL3RzCgog4pyTIHRlc3RzL2NvbmZpZy50ZXN0LnRzICgxMyB0ZXN0cykgOW1zCiDinJMgdGVzdHMvaGVsbG8udGVzdC50cyAoMTggdGVzdHMpIDM5bXMKCiBUZXN0IEZpbGVzICAyIHBhc3NlZCAoMikKICAgICAgVGVzdHMgIDMxIHBhc3NlZCAoMzEpCiAgIFN0YXJ0IGF0ICAxNDo1MToyOAogICBEdXJhdGlvbiAgNzA4bXMgKHRyYW5zZm9ybSAxMzdtcywgc2V0dXAgMG1zLCBjb2xsZWN0IDI2Mm1zLCB0ZXN0cyA0OG1zLCBlbnZpcm9ubWVudCAwbXMsIHByZXBhcmUgMjMzbXMpCgo=",
+  "stderr_base64": "c3RkZXJyIHwgdGVzdHMvaGVsbG8udGVzdC50cyA+IGhlbGxvIFNESyBlbnRyeSBwb2ludHMgPiDlronlhaggQ0xJIOe8uumFjee9ruaXtui/lOWbnumAgOWHuueggSAx77yM5LiU5LiN5omT5Y2w5a+G6ZKlCuWksei0pe+8iGNvbmZpZ++8ie+8mlJFSU5fQkFTRV9VUkwg5pyq6K6+572u44CC5Y+C6ICDIHRzLy5lbnYuZXhhbXBsZe+8jOWkjeWItuS4uiB0cy8uZW52IOWQjuWhq+WGmeOAggoK",
+  "stdout_present": true,
+  "stderr_present": true,
+  "stdout_required": false,
+  "inputs": {},
+  "repo": "/Users/huaodong/workspace/Agent-Learning",
+  "cwd_relative": ".",
+  "revision_before": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_after": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version": "PART1-TEXT-1",
+  "spec_sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_before": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_after": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_version_before": "PART1-TEXT-1",
+  "spec_sha256_before": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version_after": "PART1-TEXT-1",
+  "spec_sha256_after": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_changed_paths": [],
+  "input_changed_paths": [],
+  "result": "passed"
+}

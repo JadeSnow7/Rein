@@ -9,6 +9,7 @@ import './custom.css'
 const topicForSharedPath = (path: string) => {
   if (path === sourceEditions['reading-00'].shared) return 'reading-00' as const
   if (path === sourceEditions['chapter-01'].shared) return 'chapter-01' as const
+  if (path === sourceEditions['chapter-model-hello'].shared) return 'chapter-model-hello' as const
   return undefined
 }
 

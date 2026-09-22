@@ -7,6 +7,10 @@ test('resolves the TypeScript and Rust language routes', () => {
   assert.equal(sourceTopicForPath('/chapters/01-rust.html'), 'chapter-01')
   assert.equal(sourcePathFor('chapter-01', 'rust'), '/chapters/01-rust.html')
   assert.equal(sourcePathFor('chapter-01', 'ts'), '/chapters/01-ts.html')
+  assert.equal(sourceTopicForPath('/chapters/model-hello.html'), 'chapter-model-hello')
+  assert.equal(sourceTopicForPath('/chapters/model-hello-rust.html'), 'chapter-model-hello')
+  assert.equal(sourcePathFor('chapter-model-hello', 'rust'), '/chapters/model-hello-rust.html')
+  assert.equal(sourcePathFor('chapter-model-hello', 'ts'), '/chapters/model-hello.html')
 })
 
 test('keeps only recognized common anchors and maps language-specific aliases', () => {
@@ -26,4 +30,11 @@ test('keeps chapter 01 common anchors available to both editions', () => {
   assert.equal(resolveAnchorHash('comparison', chapter), '#comparison')
   assert.equal(resolveAnchorHash('recording', chapter), '#recording')
   assert.equal(resolveAnchorHash('legacy', chapter), '')
+})
+
+test('keeps the published hello pair on shared anchors', () => {
+  const chapter = sourceEditions['chapter-model-hello']
+  assert.equal(resolveAnchorHash('request-response', chapter), '#request-response')
+  assert.equal(resolveAnchorHash('api-key', chapter, 'live-call'), '#live-call')
+  assert.equal(resolveAnchorHash('setup', chapter), '')
 })

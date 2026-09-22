@@ -1,0 +1,18 @@
+{
+  "reviewer": "publish_dependency_audit",
+  "result": "passed",
+  "scope": [
+    "docs/index.md",
+    "docs/about.md",
+    "docs/access.md",
+    "docs/toc.md",
+    "docs/history.md",
+    "docs/chapters/provider-adapter.md",
+    "docs/chapters/rust-migration.md",
+    "docs/chapters/agent-loop.md"
+  ],
+  "findings": [],
+  "links_and_anchors_missing": 0,
+  "six_editorial_files_unchanged": true,
+  "notes": "五篇25章与00–17→24规划一致；Apache-2.0当前许可与历史政策区分；文字发布不升级教学验收。未审config与scanner代码。"
+}
