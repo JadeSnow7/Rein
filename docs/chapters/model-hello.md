@@ -36,6 +36,8 @@ cd Rein
 
 本章使用当前配套工作副本中的 `ts/src/hello.ts` 和 `ts/src/hello-safe.ts`。新版教材尚未冻结逐章快照，远程克隆与本地修订稿也可能不同；如果缺少这两个入口，先核对取得的配套版本，不要把任意旧版当作本章代码。旧 `ch01-helloworld` 标签用于历史复现，不是新版教材的起始快照。
 
+读源码时沿着一条短路径走即可：先看 `ts/src/hello.ts` 的入口怎样取得命令行输入并调用 `loadConfig`，再看 `requestHello` 怎样接收配置并调用 SDK，最后看 `readHelloText` 怎样从响应中取出文本；需要分类错误时，再打开 `ts/src/hello-safe.ts`，沿着它调用的配置、请求和诊断函数回看。先找这几个入口和函数名，再阅读函数内部的防御性检查，可以避免一开始就在整个工程里来回跳转。
+
 在仓库根目录安装锁定的依赖，再做本章的本地检查：
 
 ```bash
@@ -137,6 +139,8 @@ const response = await client.chat.completions.create({
 
 `model` 选择模型，`messages` 是消息列表，`role: 'user'` 表示内容来自用户。入口将终端参数交给 `options.prompt`；`?? 'hello'` 在未提供参数时使用默认问候。`await` 等待请求返回，`stream: false` 表示一次取得完整响应，而不是逐段处理输出。
 
+每次 CLI 运行只把本次命令得到的输入放进这一条 `user` 消息；程序没有把上一次输入写入文件、缓存或下一次请求，所以它不会自动记住上一次运行的内容。想延续上下文，必须在程序中明确保存并重新传入消息；本章的入口没有这层行为。
+
 ## 7、沿着 HTTP 响应找到回答
 
 看起来像一次方法调用，背后仍然是网络请求：
@@ -150,6 +154,22 @@ const response = await client.chat.completions.create({
 API key 随请求用于鉴权，HTTPS 保护传输中的内容。配置加载、网络传输和响应解析各有自己的失败方式，不能只看“请求已经发出”就认为任务完成。
 
 `choices` 是服务返回的候选列表，本章取第一个候选中 `message.content` 的文本。`readHelloText()` 依次检查响应是否为对象、候选是否存在、消息是否存在，以及文本是否为空。HTTP 成功并不保证这些条件都满足；即使取得了文本，也还需要读者检查它的意思。
+
+可以把本章需要读取的响应层级压缩成下面这个示意。它只展示取值路径，其他响应字段省略：
+
+```json
+{
+  "choices": [
+    {
+      "message": {
+        "content": "模型返回的文本"
+      }
+    }
+  ]
+}
+```
+
+因此，程序读取的是 `response.choices[0].message.content`，不是响应顶层的 `content`。只要其中一层缺失、类型不对或文本为空，解析就应停下来并进入诊断路径。
 
 <span id="failures"></span>
 
