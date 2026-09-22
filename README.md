@@ -8,12 +8,13 @@
 
 | 目录 | 用途 | 当前状态 |
 | --- | --- | --- |
-| `docs/chapters/` | 00–16 章正文 | 第 01 章公共导读、TS 与 Rust 两版已提供，其余待撰写 |
+| `docs/chapters/` | Python 00–03 章正文与旧版章节 | Python 主线 00–03 已发布；旧版 TS/Rust 与其余规划页面保留 |
 | `docs/readings/` | 阅读材料 0–3 | 阅读 0 公共导读、TS 与 Rust 两版及练习已提供；其余待撰写 |
 | `docs/milestones/` | 第一阶段小结与三次阶段汇总 | 已建入口，待撰写 |
 | `docs/appendices/` | 实现对照与深入讨论 A.1–A.5 | 已建入口，待撰写 |
 | `ts/` | TypeScript 实现：源码、测试与独立示例 | 第 01 章实现与测试已落地 |
 | `rust/` | Rust 实现与测试 | 第 01 章 SDK 调用与测试、阅读 0 独立练习已落地 |
+| `python/part1/` | Python 00–03 章配套源码、fixtures 与测试 | 离线主线与 SDK mock 已验证 |
 | `contracts/` | 两条路线重叠能力的共享合同 | 第 04 章定义 |
 | `fixtures/` | 共享验收输入与预期结果 | 已有两份模型响应录制；工具验收用例待第 03 章 |
 
@@ -29,6 +30,13 @@ npm run dev
 ```
 
 打开终端提示的本地地址即可预览。
+
+当前推荐阅读路线是 Python 00–03 章，从 [最小 Agent](docs/chapters/minimal-agent.md) 开始；配套代码位于 `python/part1/`。
+
+```bash
+python3 python/part1/rein.py hello
+python3 -m unittest discover -s python/part1/tests -v
+```
 
 ## 运行代码
 
@@ -71,7 +79,7 @@ npm run build
 npm run preview
 ```
 
-GitHub Pages 由 `.github/workflows/deploy.yml` 自动发布。推送到 `main` 或手动运行工作流都会构建 `docs/.vitepress/dist` 并部署。仓库设置中需要将 Pages 来源设为 **GitHub Actions**。代码测试由 `.github/workflows/test.yml` 在 `ts/`、`rust/`、`contracts/`、`fixtures/` 等相关路径变更时运行。
+GitHub Pages 由 `.github/workflows/deploy.yml` 自动发布。推送到 `main` 或手动运行工作流都会构建 `docs/.vitepress/dist` 并部署。仓库设置中需要将 Pages 来源设为 **GitHub Actions**。代码测试由 `.github/workflows/test.yml` 在 `python/`、`ts/`、`rust/`、`contracts/`、`fixtures/` 等相关路径变更时运行。
 
 网站：https://jadesnow7.github.io/Rein/
 

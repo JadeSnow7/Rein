@@ -8,19 +8,26 @@ Rein 从一个工作区文档维护任务出发，逐步学习模型调用、工
 
 ## 从第一部分开始 {#start}
 
-从[00 从一次文档维护任务认识 Rein](./chapters/task-map.md)进入，依次阅读[01 模型调用](./chapters/model-hello.md)、[02 任务与成功标准](./chapters/task-spec.md)、[03 工具调用](./chapters/tool-roundtrip.md)，最后完成[阶段汇总 1](./milestones/evidence-qa.md)。
+从[00 最小 Agent](./chapters/minimal-agent.md)进入，依次阅读[01 Python 模型调用](./chapters/python-model-call.md)、[02 Python 读取文件](./chapters/python-file-read.md)、[03 Python 生成建议](./chapters/python-suggestions.md)。
 
-主线先使用 TypeScript。第一章提供可独立跟做的 [Rust 对照](./chapters/model-hello-rust.md)，不要求两种语言同时学习。遇到终端、Git、HTTP、配置、类型或异步知识缺口时，再按需查阅[阅读 0](./readings/00.md)及 [TS](./readings/00-ts.md) / [Rust](./readings/00-rust.md) 材料；这些可选练习不是进入正文的条件。
+当前主线使用 Python；后续 Rust 迁移尚未完成。旧版 TypeScript/Rust 内容与原五部分目录历史语义保留，可从[历史目录](./history.md)独立访问。遇到终端、Git、HTTP、配置、类型或异步知识缺口时，再按需查阅[阅读 0](./readings/00.md)及 [TS](./readings/00-ts.md) / [Rust](./readings/00-rust.md) 材料。
 
 <span id="两条-track"></span>
 
 ## 使用已有的语言对照 {#languages}
 
-已有配对内容的页面显示 TS / Rust 按钮，切换时尽量保留对应知识点。第一章以外的后续迁移、循环与扩展主题按[新版目录](./toc.md)推进，不能由两版 hello 推断其他章节已经实现。
+旧版配对内容的页面显示 TS / Rust 按钮；这些是历史语言对照页面，不是当前 Python 主线的语言切换。第一章以外的后续迁移、循环与扩展主题按[新版目录](./toc.md)推进，不能由旧版两版 hello 推断其他章节已经实现。
 
 ## 取得配套代码 {#code}
 
-跟随第一章克隆当前仓库，按正文准备依赖和配置。`ts/` 与 `rust/` 提供教学代码；练习在指定目录进行。当前发布含第一部分需要的 hello 入口，第三章工具程序由读者按正文逐段组装。 第 00 章提及的产品 `core/`、`runtime/` 属于另一条开发进度，尚未随本次第一部分发布，不需要在当前克隆中查找或构建这些目录。
+跟随 Python 主线取得当前仓库后，按正文准备依赖和配置：
+
+```bash
+git clone https://github.com/JadeSnow7/Rein.git
+cd Rein
+```
+
+`python/part1/` 提供 00–03 章配套代码；`ts/` 与 `rust/` 保留旧版教学实现。第 00 章提及的产品 `core/`、`runtime/` 属于另一条开发进度，不需要在当前克隆中查找或构建这些目录。
 
 旧 `ch01`、`ch01-helloworld` 标签保留历史意义。切换标签会改变整个仓库，不是启动章节或切换网页语言。新版章节输入和输出快照仍待建立，当前工作副本不能冒充已封存的逐章快照。
 
@@ -28,7 +35,7 @@ Rein 从一个工作区文档维护任务出发，逐步学习模型调用、工
 
 类型检查说明源码满足类型约束；本地测试说明选定样本符合预期；真实模型记录用于检查实际服务与回答；读者跟做用于检验教学步骤。它们不能互相替代。
 
-第一部分文字已开放，本地示例经过离线检查。真实模型、读者跟做与新版章节快照仍待验收，正文继续保留相应状态。运行练习时保存输入、命令、输出与失败，不以模型声称完成代替任务结果。
+Python 00–03 章正文与配套代码已发布，本地离线示例和测试已检查。真实模型、读者跟做与逐章快照仍需分别验收；运行练习时保存输入、命令、输出与失败，不以模型声称完成代替任务结果。
 
 <span id="参与建设"></span>
 

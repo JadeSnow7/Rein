@@ -10,7 +10,7 @@ hero:
   actions:
     - theme: brand
       text: 开始阅读
-      link: /chapters/task-map.html
+      link: /chapters/minimal-agent.html
     - theme: alt
       text: 查看全书目录
       link: /toc.html
@@ -19,8 +19,8 @@ features:
     details: 围绕同一个 Rein 工作区助手，沿共同章节逐步完成模型调用、工具执行与结果验证。
   - title: 工程证据
     details: 每个阶段都对应运行记录、失败测试、架构图与可展示的成果。
-  - title: 两种语言
-    details: TypeScript 主线建立模型调用与工具执行，第一章另有 Rust 对照；每篇分别说明实现与验收进度。
+  - title: 一条可运行的 Python 主线
+    details: 从最小 Agent、模型调用、读取文件到生成建议，正文与 python/part1 配套代码同步推进。
 ---
 
 <div class="home-note">
@@ -30,7 +30,7 @@ features:
 
 ## 现在可以读什么
 
-第一部分已经开放：从[00 从一次文档维护任务认识 Rein](./chapters/task-map.md)开始，依次阅读[01 HelloWorld](./chapters/model-hello.md)、[02 任务与成功标准](./chapters/task-spec.md)、[03 工具调用](./chapters/tool-roundtrip.md)，最后用[阶段汇总 1](./milestones/evidence-qa.md)复查。想对照 Rust 时，可在 HelloWorld 页面切换到 [Rust 版](./chapters/model-hello-rust.md)。需要补充终端、HTTP、配置、类型、异步或错误处理知识时，再按需查阅[阅读 0](./readings/00.md)及对应语言版本。第二部分从[模型接口](./chapters/provider-adapter.md)开始，当前仅提供待发布承接页。
+当前阅读主线从[00 最小 Agent](./chapters/minimal-agent.md)开始，依次阅读[01 Python 模型调用](./chapters/python-model-call.md)、[02 Python 读取文件](./chapters/python-file-read.md)、[03 Python 生成建议](./chapters/python-suggestions.md)。旧版 TypeScript/Rust 页面仍可从[历史目录](./history.md)进入，Python 主线之后的 Rust 迁移尚未完成；后续规划见[全书目录](./toc.md)。
 
 <span id="先从一次完整任务开始"></span>
 

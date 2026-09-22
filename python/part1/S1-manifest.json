@@ -1,0 +1,456 @@
+{
+  "version": "S1-python/1",
+  "framework": "six-parts-framework/1",
+  "scope": "00-03 Python suggestion-only teaching artifact; not a Git tag or Rust migration",
+  "environment": {
+    "python": "3.14.6",
+    "sdk": "openai==2.26.0; validated separately with HTTPX MockTransport"
+  },
+  "limits": {
+    "default_deadline_seconds": 30,
+    "max_file_bytes": 4096
+  },
+  "source_files": {
+    "python/part1/.gitignore": "d69c04e3cf117f2566b362472b6e24a0fb66ea4d35098667df146b05564a9913",
+    "python/part1/API-CONTRACT.md": "ec12afb60411e5eb5b23616e33ce9065b69d7ca518afd3dd9e5e5ace4fd5292f",
+    "python/part1/fixtures/correct/README.md": "45a0ef7a2cf0db2672f426f497c5f9bfa8accd0d6b36bf3f2b71899953ffedd0",
+    "python/part1/fixtures/duplicate/README.md": "97cdced6953c5a1366f5bce294663e323159965c2483019375c6ac99799504f8",
+    "python/part1/fixtures/outdated/README.md": "093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6",
+    "python/part1/fixtures/responses/c01.json": "9fd9e358d2d2b0448179aa122010be62a78dd07ddd9ccb75d3798abc772d203e",
+    "python/part1/fixtures/responses/empty.json": "4a5986ef64bd46c6ca92383551c3c128dd9173d9183051c6cd2847c93bcc98b7",
+    "python/part1/fixtures/responses/hello.json": "18205728fb806dae8b5eab39b27b01c0d678640c02f4247c277df3e98d541d9c",
+    "python/part1/fixtures/responses/suggest.json": "7d6a3463b078e1328b0e06f221a1f2a956d6c2082e90c57665a1892a950cca2e",
+    "python/part1/fixtures/responses/timeout.json": "f7b3c5f857e79311b860bbf19a32f789a1f1f9f62d448f3d1e2294b3b0b5fa0a",
+    "python/part1/fixtures/responses/tool-call.json": "3f12e738fa7c966cee98b576071a648560ea4d09808062d443b8e8eb6b991c04",
+    "python/part1/rein.py": "b6e5d98e940f2736536ca3ae90b537e36ad40f992844c9abd34923893a26db67",
+    "python/part1/rein_core.py": "6ac5ee64ad6a097a12e5d4d285ab27212bee748988aebb90b511cb74a9ec76b7",
+    "python/part1/requirements.txt": "1b9accce10d5c89b9e3f5e7cd786721a8aaae233114577890976e6d696690905",
+    "python/part1/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "python/part1/tests/test_part1_contract.py": "f729af9dede893340d26d264e393699c9e5c15c994e2e81dc90ea66fa0423fb5",
+    "python/part1/tests/test_sdk_mock.py": "4410efda1ecb1a2dfad0003c152ff709bf665473fbe3d88e5cca25e09c88aa77"
+  },
+  "cases": [
+    {
+      "case": "F01-opinion",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "hello"
+      ],
+      "exit": 0,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 1,
+        "status": "opinion",
+        "error": null,
+        "messages": null
+      },
+      "result": {
+        "status": "opinion",
+        "text": "请检查 README 的 start 命令",
+        "provider": "offline",
+        "raw_digest": "1b810f3c75ec68e88cfa26152b44b54660b6f2b74c5bb6605d08d2f0f8d818fa"
+      }
+    },
+    {
+      "case": "F02-direct",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "read",
+        "--read-mode",
+        "direct"
+      ],
+      "exit": 0,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 1,
+        "status": "read",
+        "error": null,
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是只读文件建议器。请依据资料回答读取结果，不要修改文件。"
+          },
+          {
+            "role": "user",
+            "content": "维护者给出的当前开发命令是 npm run dev；请检查 README"
+          },
+          {
+            "role": "user",
+            "content": "{\"path\": \"README.md\", \"text\": \"# Preview site\\n\\nThis small site is used by the tutorial.\\n\\nInstall dependencies with `npm install`.\\n\\nThe preview uses the development server.\\nnpm run start\\n\\nOpen http://localhost:4173 after the server starts.\\n\", \"digest\": \"093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6\"}"
+          }
+        ]
+      },
+      "result": {
+        "status": "read",
+        "path": "README.md",
+        "text": "preview uses the development command",
+        "source_digest": "093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6",
+        "provider": "offline",
+        "raw_digest": "b8ac6765e4ab38ba81c1a6fe3d388615322842284fcb8439e7eea2727530b2cf"
+      }
+    },
+    {
+      "case": "F02-tool",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "read"
+      ],
+      "exit": 0,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 2,
+        "status": "read",
+        "error": null,
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是只读文件建议器。请依据资料回答读取结果，不要修改文件。"
+          },
+          {
+            "role": "user",
+            "content": "维护者给出的当前开发命令是 npm run dev；请检查 README"
+          },
+          {
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "id": "offline_read_1",
+                "type": "function",
+                "function": {
+                  "name": "read_file",
+                  "arguments": "{\"path\": \"README.md\"}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "offline_read_1",
+            "content": "{\"path\": \"README.md\", \"text\": \"# Preview site\\n\\nThis small site is used by the tutorial.\\n\\nInstall dependencies with `npm install`.\\n\\nThe preview uses the development server.\\nnpm run start\\n\\nOpen http://localhost:4173 after the server starts.\\n\", \"digest\": \"093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6\"}",
+            "ok": true,
+            "output": "{\"path\": \"README.md\", \"text\": \"# Preview site\\n\\nThis small site is used by the tutorial.\\n\\nInstall dependencies with `npm install`.\\n\\nThe preview uses the development server.\\nnpm run start\\n\\nOpen http://localhost:4173 after the server starts.\\n\", \"digest\": \"093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6\"}",
+            "error": null
+          }
+        ]
+      },
+      "result": {
+        "status": "read",
+        "path": "README.md",
+        "text": "preview uses the development command",
+        "source_digest": "093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6",
+        "provider": "offline",
+        "raw_digest": "b8ac6765e4ab38ba81c1a6fe3d388615322842284fcb8439e7eea2727530b2cf"
+      }
+    },
+    {
+      "case": "C01",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "suggest"
+      ],
+      "exit": 0,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 2,
+        "status": "unique",
+        "error": null,
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是只读文件建议器。最终只输出 JSON 对象 path/original/suggested/reason，不包含行号。"
+          },
+          {
+            "role": "user",
+            "content": "维护者给出的当前开发命令是 npm run dev；请检查 README"
+          },
+          {
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "id": "offline_read_1",
+                "type": "function",
+                "function": {
+                  "name": "read_file",
+                  "arguments": "{\"path\": \"README.md\"}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "offline_read_1",
+            "content": "{\"path\": \"README.md\", \"text\": \"# Preview site\\n\\nThis small site is used by the tutorial.\\n\\nInstall dependencies with `npm install`.\\n\\nThe preview uses the development server.\\nnpm run start\\n\\nOpen http://localhost:4173 after the server starts.\\n\", \"digest\": \"093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6\"}",
+            "ok": true,
+            "output": "{\"path\": \"README.md\", \"text\": \"# Preview site\\n\\nThis small site is used by the tutorial.\\n\\nInstall dependencies with `npm install`.\\n\\nThe preview uses the development server.\\nnpm run start\\n\\nOpen http://localhost:4173 after the server starts.\\n\", \"digest\": \"093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6\"}",
+            "error": null
+          }
+        ]
+      },
+      "result": {
+        "path": "README.md",
+        "original": "npm run start",
+        "suggested": "npm run dev",
+        "reason": "preview uses the development command",
+        "source_digest": "093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6",
+        "status": "unique",
+        "start_line": 8,
+        "end_line": 8
+      }
+    },
+    {
+      "case": "C01-replay",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "suggest",
+        "--response",
+        "python/part1/fixtures/responses/c01.json"
+      ],
+      "exit": 0,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 2,
+        "status": "unique",
+        "error": null,
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是只读文件建议器。最终只输出 JSON 对象 path/original/suggested/reason，不包含行号。"
+          },
+          {
+            "role": "user",
+            "content": "维护者给出的当前开发命令是 npm run dev；请检查 README"
+          },
+          {
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "id": "call_c01",
+                "type": "function",
+                "function": {
+                  "name": "read_file",
+                  "arguments": "{\"path\": \"README.md\"}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "call_c01",
+            "content": "{\"path\": \"README.md\", \"text\": \"# Preview site\\n\\nThis small site is used by the tutorial.\\n\\nInstall dependencies with `npm install`.\\n\\nThe preview uses the development server.\\nnpm run start\\n\\nOpen http://localhost:4173 after the server starts.\\n\", \"digest\": \"093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6\"}",
+            "ok": true,
+            "output": "{\"path\": \"README.md\", \"text\": \"# Preview site\\n\\nThis small site is used by the tutorial.\\n\\nInstall dependencies with `npm install`.\\n\\nThe preview uses the development server.\\nnpm run start\\n\\nOpen http://localhost:4173 after the server starts.\\n\", \"digest\": \"093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6\"}",
+            "error": null
+          }
+        ]
+      },
+      "result": {
+        "path": "README.md",
+        "original": "npm run start",
+        "suggested": "npm run dev",
+        "reason": "维护者给出的当前开发命令",
+        "source_digest": "093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6",
+        "status": "unique",
+        "start_line": 8,
+        "end_line": 8
+      }
+    },
+    {
+      "case": "C02-correct",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "suggest",
+        "--workspace",
+        "python/part1/fixtures/correct"
+      ],
+      "exit": 0,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 2,
+        "status": "no_change",
+        "error": null,
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是只读文件建议器。最终只输出 JSON 对象 path/original/suggested/reason，不包含行号。"
+          },
+          {
+            "role": "user",
+            "content": "维护者给出的当前开发命令是 npm run dev；请检查 README"
+          },
+          {
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "id": "offline_read_1",
+                "type": "function",
+                "function": {
+                  "name": "read_file",
+                  "arguments": "{\"path\": \"README.md\"}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "offline_read_1",
+            "content": "{\"path\": \"README.md\", \"text\": \"# Correct example\\n\\nnpm run dev\\n\", \"digest\": \"45a0ef7a2cf0db2672f426f497c5f9bfa8accd0d6b36bf3f2b71899953ffedd0\"}",
+            "ok": true,
+            "output": "{\"path\": \"README.md\", \"text\": \"# Correct example\\n\\nnpm run dev\\n\", \"digest\": \"45a0ef7a2cf0db2672f426f497c5f9bfa8accd0d6b36bf3f2b71899953ffedd0\"}",
+            "error": null
+          }
+        ]
+      },
+      "result": {
+        "path": "README.md",
+        "original": "npm run dev",
+        "suggested": "npm run dev",
+        "reason": "preview already uses the development command",
+        "source_digest": "45a0ef7a2cf0db2672f426f497c5f9bfa8accd0d6b36bf3f2b71899953ffedd0",
+        "status": "no_change",
+        "start_line": 3,
+        "end_line": 3
+      }
+    },
+    {
+      "case": "C02-duplicate",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "suggest",
+        "--workspace",
+        "python/part1/fixtures/duplicate"
+      ],
+      "exit": 1,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 2,
+        "status": "ambiguous_match",
+        "error": "ambiguous_match",
+        "messages": [
+          {
+            "role": "system",
+            "content": "你是只读文件建议器。最终只输出 JSON 对象 path/original/suggested/reason，不包含行号。"
+          },
+          {
+            "role": "user",
+            "content": "维护者给出的当前开发命令是 npm run dev；请检查 README"
+          },
+          {
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "id": "offline_read_1",
+                "type": "function",
+                "function": {
+                  "name": "read_file",
+                  "arguments": "{\"path\": \"README.md\"}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "offline_read_1",
+            "content": "{\"path\": \"README.md\", \"text\": \"# Duplicate example\\n\\nnpm run start\\n\\nThis text is intentionally repeated.\\n\\nKeep this fixture at lines 3 and 9 so ambiguity is visible in terminal output.\\n\\nnpm run start\\n\", \"digest\": \"97cdced6953c5a1366f5bce294663e323159965c2483019375c6ac99799504f8\"}",
+            "ok": true,
+            "output": "{\"path\": \"README.md\", \"text\": \"# Duplicate example\\n\\nnpm run start\\n\\nThis text is intentionally repeated.\\n\\nKeep this fixture at lines 3 and 9 so ambiguity is visible in terminal output.\\n\\nnpm run start\\n\", \"digest\": \"97cdced6953c5a1366f5bce294663e323159965c2483019375c6ac99799504f8\"}",
+            "error": null
+          }
+        ]
+      },
+      "result": {
+        "path": "README.md",
+        "original": "npm run start",
+        "suggested": "npm run dev",
+        "reason": "preview uses the development command",
+        "source_digest": "97cdced6953c5a1366f5bce294663e323159965c2483019375c6ac99799504f8",
+        "status": "ambiguous_match",
+        "candidates": [
+          3,
+          9
+        ]
+      }
+    },
+    {
+      "case": "C03-empty",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "hello",
+        "--response",
+        "python/part1/fixtures/responses/empty.json"
+      ],
+      "exit": 1,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 1,
+        "status": "error",
+        "error": "empty_final",
+        "messages": null
+      },
+      "result": {
+        "status": "empty_final"
+      }
+    },
+    {
+      "case": "C03-timeout",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "hello",
+        "--response",
+        "python/part1/fixtures/responses/timeout.json",
+        "--timeout",
+        "0.02"
+      ],
+      "exit": 1,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 1,
+        "status": "error",
+        "error": "timeout",
+        "messages": null
+      },
+      "result": {
+        "status": "timeout"
+      }
+    },
+    {
+      "case": "C04-path",
+      "argv": [
+        "python3",
+        "python/part1/rein.py",
+        "read",
+        "--path",
+        "../README.md"
+      ],
+      "exit": 1,
+      "record": {
+        "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
+        "request_count": 0,
+        "status": "error",
+        "error": "path_invalid",
+        "messages": null
+      },
+      "result": {
+        "status": "path_invalid"
+      }
+    }
+  ],
+  "further_boundary_cases": [
+    "python/part1/tests/test_part1_contract.py",
+    "python/part1/tests/test_sdk_mock.py"
+  ],
+  "not_verified": [
+    "live model/provider availability and semantic quality",
+    "novice-reader learning acceptance",
+    "Rust equivalence in new chapter04"
+  ],
+  "targets_unchanged": true
+}

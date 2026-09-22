@@ -2,6 +2,8 @@
 
 以下保存本次发布前的目录说明与数字页面入口，章号按旧主题解释，旧稿进度和快照说明保留当时语义。当前主线见[新版目录](./toc.md)，开放政策以[Apache-2.0说明](./access.md)为准。
 
+旧版页面仍可通过稳定路径独立访问：[任务地图](./chapters/task-map.md)、[模型调用](./chapters/model-hello.md)、[任务规格](./chapters/task-spec.md)、[工具往返](./chapters/tool-roundtrip.md)。这些入口保留旧版内容语义，不属于当前 Python 主线的下一章。
+
 # 旧版全书目录
 
 全书按 Rein 的能力递进组织，TypeScript 与 Rust 共用章节编号。公共导读说明任务与验收，语言版展开操作与源码；概念为主的章节保留公共正文，有实现差异时再分别展开。
