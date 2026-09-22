@@ -4,12 +4,14 @@
 
 当前 Python 主线开放 00–03 章及配套代码。Rust 迁移尚未完成；旧版五部分目录和历史页面仍保留，后续新版章节仅列出规划。
 
-## Python 主线：从最小请求到建议
+## Python 主线：生成、修复并验证 Hello World
 
 - [00 最小 Agent](./chapters/minimal-agent.md)
-- [01 Python 模型调用](./chapters/python-model-call.md)
-- [02 Python 读取文件](./chapters/python-file-read.md)
-- [03 Python 生成建议](./chapters/python-suggestions.md)
+- [01 用 Python 完成第一次模型调用](./chapters/python-model-call.md)
+- [02 根据报错修正 Hello World](./chapters/python-file-read.md)
+- [03 做一个终端代码修改助手](./chapters/python-suggestions.md)
+
+当前配套位于 `python/hello_world/`。第一章按环境、请求、完整任务、失败处理、效果检查与练习六节推进；第二章从人工反馈走到文件 / 日志 / 环境工具；第三章展示全文和彩色差异，接受才写入并验证。新框架第04章 Rust 等价迁移尚未交付。
 
 ## 旧版第一部分：让模型完成一个小任务
 

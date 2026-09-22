@@ -38,6 +38,10 @@ jobs:
         run: python -m pip install -r python/part1/requirements.txt
       - name: Test Python part 1
         run: python -m unittest discover -s python/part1/tests -v
+      - name: Install Hello World dependencies
+        run: python -m pip install -r python/hello_world/requirements.txt
+      - name: Test Hello World chapters
+        run: python -m unittest discover -s python/hello_world/tests -v
 
   ts:
     runs-on: ubuntu-latest

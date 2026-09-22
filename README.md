@@ -14,7 +14,8 @@
 | `docs/appendices/` | 实现对照与深入讨论 A.1–A.5 | 已建入口，待撰写 |
 | `ts/` | TypeScript 实现：源码、测试与独立示例 | 第 01 章实现与测试已落地 |
 | `rust/` | Rust 实现与测试 | 第 01 章 SDK 调用与测试、阅读 0 独立练习已落地 |
-| `python/part1/` | Python 00–03 章配套源码、fixtures 与测试 | 离线主线与 SDK mock 已验证 |
+| `python/hello_world/` | 当前三章 Hello World 生成、修复与验证 | 包含 CLI、样本和离线 / SDK 模拟测试 |
+| `python/part1/` | 前一版 README 只读建议器 | 保留实现和历史样本 |
 | `contracts/` | 两条路线重叠能力的共享合同 | 第 04 章定义 |
 | `fixtures/` | 共享验收输入与预期结果 | 已有两份模型响应录制；工具验收用例待第 03 章 |
 
@@ -31,11 +32,11 @@ npm run dev
 
 打开终端提示的本地地址即可预览。
 
-当前推荐阅读路线是 Python 00–03 章，从 [最小 Agent](docs/chapters/minimal-agent.md) 开始；配套代码位于 `python/part1/`。
+当前推荐阅读路线是 Python 00–03 章，从 [最小 Agent](docs/chapters/minimal-agent.md) 开始；配套代码位于 `python/hello_world/`。三章围绕同一个 C++ Hello World，依次完成生成、报错诊断、全文与差异审查、接受后备份及编译验证。修改结构见[三章方案](reports/2026-09-22-hello-world-three-chapters-plan.md)。
 
 ```bash
-python3 python/part1/rein.py hello
-python3 -m unittest discover -s python/part1/tests -v
+python3 python/hello_world/cli.py hello
+python3 -m unittest discover -s python/hello_world/tests -v
 ```
 
 ## 运行代码

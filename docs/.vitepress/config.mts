@@ -1,5 +1,23 @@
 import { defineConfig } from 'vitepress'
 
+const currentChapters = [
+  { text: '00 我们要实现一个怎样的 Agent', link: '/chapters/minimal-agent.html' },
+  { text: '01 用 Python 完成第一次模型调用', link: '/chapters/python-model-call.html' },
+  { text: '02 根据报错修正 Hello World', link: '/chapters/python-file-read.html' },
+  { text: '03 做一个终端代码修改助手', link: '/chapters/python-suggestions.html' }
+]
+
+const chapterNavigation = (pageData: { relativePath: string; frontmatter: Record<string, unknown> }) => {
+  const path = '/' + pageData.relativePath.replace(/\.md$/, '.html')
+  const index = currentChapters.findIndex((chapter) => chapter.link === path)
+  if (index < 0) return
+  pageData.frontmatter ||= {}
+  pageData.frontmatter.prev = index === 0 ? false : currentChapters[index - 1]
+  pageData.frontmatter.next = index === currentChapters.length - 1
+    ? { text: '全书目录', link: '/toc.html' }
+    : currentChapters[index + 1]
+}
+
 export default defineConfig({
   lang: 'zh-CN',
   title: 'Rein',
@@ -7,6 +25,7 @@ export default defineConfig({
   base: '/Rein/',
   cleanUrls: false,
   lastUpdated: true,
+  transformPageData: chapterNavigation,
   themeConfig: {
     logo: '/mark.svg',
     siteTitle: 'REIN / AGENT ENGINEERING',
@@ -26,12 +45,7 @@ export default defineConfig({
     sidebar: {
       '/': [
         { text: '开始阅读', items: [{ text: '关于本书', link: '/about.html' }, { text: '全书目录', link: '/toc.html' }, { text: '开放说明', link: '/access.html' }] },
-        { text: 'Python 主线 · 从最小请求到建议', collapsed: false, items: [
-          { text: '00 最小 Agent', link: '/chapters/minimal-agent.html' },
-          { text: '01 Python 模型调用', link: '/chapters/python-model-call.html' },
-          { text: '02 Python 读取文件', link: '/chapters/python-file-read.html' },
-          { text: '03 Python 生成建议', link: '/chapters/python-suggestions.html' }
-        ] },
+        { text: 'Python 主线 · 生成、修复与验证', collapsed: false, items: currentChapters },
         { text: '旧版第一部分 · 让模型完成一个小任务', collapsed: false, items: [
           { text: '00 绪论', link: '/chapters/task-map.html' }, { text: '阅读 0 基础知识', link: '/readings/00.html' }, { text: '01 HelloWorld——从模型调用开始', link: '/chapters/model-hello.html' }, { text: '02 任务与成功标准', link: '/chapters/task-spec.html' }, { text: '03 工具调用', link: '/chapters/tool-roundtrip.html' }, { text: '阶段汇总 1', link: '/milestones/evidence-qa.html' }
         ] },
