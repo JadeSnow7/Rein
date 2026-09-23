@@ -8,10 +8,10 @@
 
 - [00 最小 Agent](./chapters/minimal-agent.md)
 - [01 用 Python 完成第一次模型调用](./chapters/python-model-call.md)
-- [02 根据报错修正 Hello World](./chapters/python-file-read.md)
+- [02 让 AI 读取代码与日志](./chapters/python-file-read.md)
 - [03 做一个终端代码修改助手](./chapters/python-suggestions.md)
 
-当前配套位于 `python/hello_world/`。第一章按环境、请求、完整任务、失败处理、效果检查与练习六节推进；第二章从人工反馈走到文件 / 日志 / 环境工具；第三章展示全文和彩色差异，接受才写入并验证。新框架第04章 Rust 等价迁移尚未交付。
+当前配套位于 `python/hello_world/`。第一章按环境、请求、完整任务、失败处理、效果检查与练习六节推进；第二章通过 read_file 与受限 Bash 取得源码、日志和有限环境信息；第三章展示全文和彩色差异，接受才写入并验证。新框架第04章 Rust 等价迁移尚未交付。
 
 ## 旧版第一部分：让模型完成一个小任务
 

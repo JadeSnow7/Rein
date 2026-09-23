@@ -19,6 +19,13 @@ from typing import Any
 
 MAX_READ_BYTES = 4096
 ALLOWED_FILES = {"hello.cpp", "compiler.log"}
+MAX_BASH_OUTPUT = 4096
+BASH_TIMEOUT = 2
+BASH_COMMANDS = {
+    "pwd": ("/bin/pwd",),
+    "ls -1": ("/bin/ls", "-1"),
+    "cat compiler.log": ("/bin/cat", "compiler.log"),
+}
 
 
 class HelloError(Exception):
@@ -111,6 +118,47 @@ def environment_snapshot() -> dict[str, str]:
     return {"os": platform.platform(), "python": platform.python_version(), "compiler": compiler, "compiler_version": version}
 
 
+def run_bash(workspace: Path, command: str, *, max_bytes: int = MAX_BASH_OUTPUT, timeout: float = BASH_TIMEOUT) -> dict[str, Any]:
+    """Run one fixed, read-only inspection command in the exercise workspace.
+
+    The command is selected from ``BASH_COMMANDS`` and is never interpreted by
+    a shell.  This deliberately excludes pipes, redirects, substitutions, and
+    every command that could modify the workspace.
+    """
+    if not isinstance(command, str) or command not in BASH_COMMANDS:
+        raise HelloError("bash_command_invalid", "allowed commands are pwd, ls -1 and cat compiler.log")
+    root = Path(workspace)
+    if root.is_symlink() or not root.is_dir():
+        raise HelloError("path_invalid", "workspace must be a regular directory")
+    if command == "cat compiler.log":
+        log = root / "compiler.log"
+        if log.is_symlink() or not log.is_file():
+            raise HelloError("path_invalid", "compiler.log must be a regular file in workspace")
+    try:
+        completed = subprocess.run(
+            list(BASH_COMMANDS[command]),
+            cwd=root,
+            capture_output=True,
+            timeout=timeout,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise HelloError("bash_timeout", f"command timed out after {timeout:g}s") from exc
+    except OSError as exc:
+        raise HelloError("bash_failed", str(exc)) from exc
+    raw = completed.stdout
+    if len(raw) > max_bytes:
+        raise HelloError("bash_output_too_large", f"limit is {max_bytes} bytes")
+    try:
+        text = raw.decode("utf-8")
+        stderr = completed.stderr.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise HelloError("invalid_utf8", str(exc)) from exc
+    if completed.returncode != 0:
+        raise HelloError("bash_failed", stderr.strip() or f"exit code {completed.returncode}")
+    return {"command": command, "stdout": text, "stderr": stderr, "returncode": completed.returncode}
+
+
 def _config(environ: dict[str, str]) -> dict[str, str]:
     names = ("REIN_BASE_URL", "REIN_API_KEY", "REIN_MODEL")
     missing = [name for name in names if not environ.get(name)]
@@ -179,8 +227,8 @@ def hello(prompt: str, *, mode: str = "offline", environ: dict[str, str] | None 
 
 # region dispatch_tool
 def dispatch_tool(workspace: Path, call: dict[str, Any]) -> dict[str, Any]:
-    if not isinstance(call, dict) or call.get("name") not in {"read_file", "read_environment"}:
-        raise HelloError("tool_unknown", "only read_file and read_environment are available")
+    if not isinstance(call, dict) or call.get("name") not in {"bash", "read_file", "read_environment"}:
+        raise HelloError("tool_unknown", "only bash, read_file and read_environment are available")
     if not isinstance(call.get("id"), str) or not call["id"]:
         raise HelloError("tool_invalid", "tool call id must be a non-empty string")
     arguments = call.get("arguments", {})
@@ -190,6 +238,10 @@ def dispatch_tool(workspace: Path, call: dict[str, Any]) -> dict[str, Any]:
         if arguments:
             raise HelloError("tool_invalid", "read_environment takes no arguments")
         return environment_snapshot()
+    if call["name"] == "bash":
+        if set(arguments) != {"command"}:
+            raise HelloError("tool_invalid", "bash requires exactly command")
+        return run_bash(workspace, arguments["command"])
     if set(arguments) != {"path"}:
         raise HelloError("tool_invalid", "read_file requires exactly path")
     result = safe_read(workspace, arguments["path"])

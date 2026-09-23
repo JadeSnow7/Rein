@@ -20,7 +20,7 @@ features:
   - title: 工程证据
     details: 每个阶段都对应运行记录、失败测试、架构图与可展示的成果。
   - title: 一条可运行的 Python 主线
-    details: 用 Python 生成 C++ Hello World，根据报错修复，再审查、接受并编译验证。
+    details: 用 Python 生成 C++ Hello World，通过受限工具读取代码和日志，再审查、接受并编译验证。
 ---
 
 <div class="home-note">
@@ -30,7 +30,7 @@ features:
 
 ## 现在可以读什么
 
-当前阅读主线从[00 最小 Agent](./chapters/minimal-agent.md)开始，依次阅读[01 用 Python 完成第一次模型调用](./chapters/python-model-call.md)、[02 根据报错修正 Hello World](./chapters/python-file-read.md)、[03 做一个终端代码修改助手](./chapters/python-suggestions.md)。旧版 TypeScript/Rust 页面仍可从[历史目录](./history.md)进入，Python 主线之后的 Rust 迁移尚未完成；后续规划见[全书目录](./toc.md)。
+当前阅读主线从[00 最小 Agent](./chapters/minimal-agent.md)开始，依次阅读[01 用 Python 完成第一次模型调用](./chapters/python-model-call.md)、[02 让 AI 读取代码与日志](./chapters/python-file-read.md)、[03 做一个终端代码修改助手](./chapters/python-suggestions.md)。旧版 TypeScript/Rust 页面仍可从[历史目录](./history.md)进入，Python 主线之后的 Rust 迁移尚未完成；后续规划见[全书目录](./toc.md)。
 
 <span id="先从一次完整任务开始"></span>
 

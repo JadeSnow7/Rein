@@ -58,6 +58,7 @@ class LiveModel:
         self.tools_enabled = tools_enabled
         self.provider = "live"
         self.tools = [
+            {"type": "function", "function": {"name": "bash", "description": "Run one fixed, read-only inspection command in the exercise workspace", "parameters": {"type": "object", "properties": {"command": {"type": "string", "enum": ["pwd", "ls -1", "cat compiler.log"]}}, "required": ["command"], "additionalProperties": False}}},
             {"type": "function", "function": {"name": "read_file", "description": "Read hello.cpp or compiler.log", "parameters": {"type": "object", "properties": {"path": {"type": "string", "enum": ["hello.cpp", "compiler.log"]}}, "required": ["path"], "additionalProperties": False}}},
             {"type": "function", "function": {"name": "read_environment", "description": "Read bounded compiler environment", "parameters": {"type": "object", "properties": {}, "additionalProperties": False}}},
         ]
@@ -119,13 +120,16 @@ class OfflineModel(ScriptedModel):
         tool_messages = [m for m in messages if m.get("role") == "tool"]
         if tool_messages:
             if len(tool_messages) == 1:
-                return {"tool_call": {"id": "read_log_offline", "name": "read_file", "arguments": {"path": "compiler.log"}}}
+                return {"tool_call": {"id": "read_source_offline", "name": "read_file", "arguments": {"path": "hello.cpp"}}}
             if len(tool_messages) == 2:
+                return {"tool_call": {"id": "read_log_offline", "name": "read_file", "arguments": {"path": "compiler.log"}}}
+            if len(tool_messages) == 3:
                 return {"tool_call": {"id": "read_env_offline", "name": "read_environment", "arguments": {}}}
             try:
-                source = json.loads(tool_messages[0]["content"])["text"]
-                log = json.loads(tool_messages[1]["content"])["text"]
-                environment = json.loads(tool_messages[2]["content"])
+                file_results = [json.loads(message["content"]) for message in tool_messages if "text" in json.loads(message["content"])]
+                environment = next(payload for payload in (json.loads(message["content"]) for message in tool_messages) if "compiler_version" in payload)
+                source = next(payload["text"] for payload in file_results if payload.get("path") == "hello.cpp")
+                log = next(payload["text"] for payload in file_results if payload.get("path") == "compiler.log")
                 if not log or "compiler_version" not in environment:
                     raise HelloError("context_incomplete", "offline repair needs source, compiler log and environment")
                 if not re.search(r'std::cout\s*<<\s*"Hello, world!\\n"(?=\s*(?:return\s+0\s*;\s*)?})', source, re.MULTILINE):
@@ -136,7 +140,7 @@ class OfflineModel(ScriptedModel):
             return {"candidate": {"code": code, "reason": "补上缺失的分号"}}
         user = next((m.get("content", "") for m in reversed(messages) if m.get("role") == "user"), "")
         if "Inspect hello.cpp" in user:
-            return {"tool_call": {"id": "read_source_offline", "name": "read_file", "arguments": {"path": "hello.cpp"}}}
+            return {"tool_call": {"id": "inspect_workspace_offline", "name": "bash", "arguments": {"command": "ls -1"}}}
         if user.lstrip().startswith("{"):
             try:
                 payload = json.loads(user)

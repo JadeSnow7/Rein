@@ -8,7 +8,7 @@ Rein 从同一个 C++ Hello World 的生成与修复任务出发，用 Python �
 
 ## 从第一部分开始 {#start}
 
-从[00 最小 Agent](./chapters/minimal-agent.md)进入，依次阅读[01 用 Python 完成第一次模型调用](./chapters/python-model-call.md)、[02 根据报错修正 Hello World](./chapters/python-file-read.md)、[03 做一个终端代码修改助手](./chapters/python-suggestions.md)。
+从[00 最小 Agent](./chapters/minimal-agent.md)进入，依次阅读[01 用 Python 完成第一次模型调用](./chapters/python-model-call.md)、[02 让 AI 读取代码与日志](./chapters/python-file-read.md)、[03 做一个终端代码修改助手](./chapters/python-suggestions.md)。
 
 当前主线使用 Python；后续 Rust 迁移尚未完成。旧版 TypeScript/Rust 内容与原五部分目录历史语义保留，可从[历史目录](./history.md)独立访问。遇到终端、Git、HTTP、配置、类型或异步知识缺口时，再按需查阅[阅读 0](./readings/00.md)及 [TS](./readings/00-ts.md) / [Rust](./readings/00-rust.md) 材料。
 
