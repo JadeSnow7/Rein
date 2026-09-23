@@ -202,6 +202,34 @@ class HelloWorldBehaviorTests(unittest.TestCase):
         self.assertFalse(core.accept_choice("unexpected"))
         self.assertTrue(core.accept_choice("y"))
 
+    def test_b03_bash_allows_fixed_read_only_inspection_and_rejects_shell_text(self):
+        core, _ = load_modules()
+        directory = make_workspace(BROKEN_CPP, "error: expected ';'\n")
+        self.addCleanup(directory.cleanup)
+        root = Path(directory.name)
+        before = (root / "hello.cpp").read_bytes(), (root / "compiler.log").read_bytes()
+        self.assertEqual(core.run_bash(root, "ls -1")["returncode"], 0)
+        self.assertIn("hello.cpp", core.run_bash(root, "ls -1")["stdout"])
+        self.assertIn("expected", core.run_bash(root, "cat compiler.log")["stdout"])
+        self.assertIn(str(root), core.run_bash(root, "pwd")["stdout"])
+        for command in ("echo nope", "cat hello.cpp; touch hello.cpp", "pwd > compiler.log", "rm hello.cpp", "ls .."):
+            with self.subTest(command=command), self.assertRaises(core.HelloError) as caught:
+                core.run_bash(root, command)
+            self.assertEqual(caught.exception.code, "bash_command_invalid")
+        self.assertEqual((root / "hello.cpp").read_bytes(), before[0])
+        self.assertEqual((root / "compiler.log").read_bytes(), before[1])
+
+    def test_b03_offline_tool_example_inspects_workspace_before_source_and_log(self):
+        core, model = load_modules()
+        directory = make_workspace(BROKEN_CPP, "error: expected ';'\n")
+        self.addCleanup(directory.cleanup)
+        result = core.diagnose(Path(directory.name), read_mode="tool", model=model.OfflineModel())
+        self.assertEqual(result.candidate_code, FIXED_CPP)
+        self.assertEqual(result.tools_used, ("bash", "read_file", "read_file", "read_environment"))
+        tool_messages = [message for message in result.messages if message.get("role") == "tool"]
+        self.assertEqual(json.loads(tool_messages[0]["content"])["command"], "ls -1")
+        self.assertEqual(json.loads(tool_messages[1]["content"])["text"], BROKEN_CPP)
+
     def test_b04_render_review_contains_full_files_diff_and_is_readable_without_color(self):
         core, _ = load_modules()
         rendered = core.render_review(BROKEN_CPP, FIXED_CPP, color="never")

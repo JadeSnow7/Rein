@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 const currentChapters = [
   { text: '00 我们要实现一个怎样的 Agent', link: '/chapters/minimal-agent.html' },
   { text: '01 用 Python 完成第一次模型调用', link: '/chapters/python-model-call.html' },
-  { text: '02 根据报错修正 Hello World', link: '/chapters/python-file-read.html' },
+  { text: '02 让 AI 读取代码与日志', link: '/chapters/python-file-read.html' },
   { text: '03 做一个终端代码修改助手', link: '/chapters/python-suggestions.html' }
 ]
 

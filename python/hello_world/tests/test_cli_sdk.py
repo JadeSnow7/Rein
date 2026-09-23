@@ -197,7 +197,7 @@ class HelloCliAndSdkTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, "path_invalid")
         self.assertFalse(outside_log.exists())
 
-    def test_real_openai_sdk_mock_transport_performs_three_tool_reads_then_candidate(self):
+    def test_real_openai_sdk_mock_transport_performs_bash_and_three_tool_reads_then_candidate(self):
         if httpx is None or OpenAI is None:
             self.skipTest("openai 2.26.0 and httpx are required for SDK integration")
         from hello_world import core, model
@@ -207,11 +207,16 @@ class HelloCliAndSdkTests(unittest.TestCase):
         requests: list[dict] = []
         responses = [
             {"choices": [{"index": 0, "message": {"role": "assistant", "content": None, "tool_calls": [
+                {"id": "list_1", "type": "function", "function": {"name": "bash", "arguments": '{"command":"ls -1"}'}},
+            ]}}], "id": "mock-1", "object": "chat.completion", "created": 0, "model": "mock"},
+            {"choices": [{"index": 0, "message": {"role": "assistant", "content": None, "tool_calls": [
                 {"id": "src_1", "type": "function", "function": {"name": "read_file", "arguments": '{"path":"hello.cpp"}'}},
+            ]}}], "id": "mock-2", "object": "chat.completion", "created": 0, "model": "mock"},
+            {"choices": [{"index": 0, "message": {"role": "assistant", "content": None, "tool_calls": [
                 {"id": "log_1", "type": "function", "function": {"name": "read_file", "arguments": '{"path":"compiler.log"}'}},
                 {"id": "env_1", "type": "function", "function": {"name": "read_environment", "arguments": "{}"}},
-            ]}}], "id": "mock-1", "object": "chat.completion", "created": 0, "model": "mock"},
-            {"choices": [{"index": 0, "message": {"role": "assistant", "content": json.dumps({"code": FIXED, "reason": "补上分号"}, ensure_ascii=False)}}], "id": "mock-2", "object": "chat.completion", "created": 0, "model": "mock"},
+            ]}}], "id": "mock-3", "object": "chat.completion", "created": 0, "model": "mock"},
+            {"choices": [{"index": 0, "message": {"role": "assistant", "content": json.dumps({"code": FIXED, "reason": "补上分号"}, ensure_ascii=False)}}], "id": "mock-4", "object": "chat.completion", "created": 0, "model": "mock"},
         ]
 
         def handler(request: httpx.Request) -> httpx.Response:
@@ -225,18 +230,23 @@ class HelloCliAndSdkTests(unittest.TestCase):
             diagnosis = core.diagnose(Path(directory.name), read_mode="tool", model=adapter)
 
         self.assertEqual(diagnosis.candidate_code, FIXED)
-        self.assertEqual(len(requests), 2)
+        self.assertEqual(len(requests), 4)
         first_tools = {item["function"]["name"] for item in requests[0]["tools"]}
-        self.assertEqual(first_tools, {"read_file", "read_environment"})
+        self.assertEqual(first_tools, {"bash", "read_file", "read_environment"})
         second_messages = requests[1]["messages"]
         self.assertEqual(
             [item["tool_call_id"] for item in second_messages if item.get("role") == "tool"],
-            ["src_1", "log_1", "env_1"],
+            ["list_1"],
         )
-        tool_contents = [item["content"] for item in second_messages if item.get("role") == "tool"]
-        self.assertEqual(json.loads(tool_contents[0])["text"], BROKEN)
-        self.assertIn("expected", json.loads(tool_contents[1])["text"])
-        self.assertIn("python", json.loads(tool_contents[2]) )
+        fourth_messages = requests[3]["messages"]
+        self.assertEqual(
+            [item["tool_call_id"] for item in fourth_messages if item.get("role") == "tool"],
+            ["list_1", "src_1", "log_1", "env_1"],
+        )
+        tool_contents = [item["content"] for item in fourth_messages if item.get("role") == "tool"]
+        self.assertEqual(json.loads(tool_contents[1])["text"], BROKEN)
+        self.assertIn("expected", json.loads(tool_contents[2])["text"])
+        self.assertIn("python", json.loads(tool_contents[3]))
 
     def test_real_sdk_http_and_empty_response_failures_are_classified_without_secret(self):
         if httpx is None or OpenAI is None:

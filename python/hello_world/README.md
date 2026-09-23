@@ -8,6 +8,9 @@
 - `cli.py`：默认使用明确标注的离线替身，支持 `hello`、`generate`、`diagnose`、`edit` 和 `check`。
 - `fixtures/hello.cpp` 与 `fixtures/broken.cpp`：正确和缺少分号的练习样本。
 
+第二章的 `diagnose --read-mode tool` 会让离线替身先用受限的 `bash` 工具执行
+`ls -1`，再调用 `read_file` 读取 `hello.cpp` 和 `compiler.log`，最后读取有限的编译环境并给出候选。`bash` 不是通用终端：程序只接受 `pwd`、`ls -1` 和 `cat compiler.log` 三个固定命令，固定在练习工作区执行，限制输出和执行时间，也不会把模型提供的字符串交给 shell 解释。`bash`、`read_file` 和 `read_environment` 都只负责收集诊断现场；本章不提供模型写文件的工具。
+
 真实模式只从 `REIN_BASE_URL`、`REIN_API_KEY` 和 `REIN_MODEL` 读取配置；没有完整配置时不会创建网络客户端。离线模式只修复本目录约定的缺少分号样本，不代表通用自动修复能力。
 
 从仓库根目录安装依赖：
