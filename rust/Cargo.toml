@@ -2,15 +2,22 @@
 name = "rein-ch01-helloworld"
 version = "0.1.0"
 edition = "2021"
+license = "Apache-2.0"
 publish = false
 default-run = "rein-ch01-helloworld"
+
+[[example]]
+name = "ch05_loop"
 
 [dependencies]
 async-openai = "0.29"
 backoff = "0.4"
 url = "2"
 dotenvy = "0.15"
-tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time", "process", "io-util", "fs"] }
+ring = "0.17"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12.28", default-features = false, features = ["json", "rustls-tls-native-roots"] }
 
 [dev-dependencies]
-serde_json = "1"

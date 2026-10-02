@@ -1,0 +1,1 @@
+{"tasks":[{"id":"demo-01","question":"传输方式是什么？","rules":["只根据实际读取的资料回答","每个事实必须给出来源"],"budget":2400,"unknown":false,"expectedFacts":[{"field":"传输方式","value":"JSON Lines","source":"doc-demo"}]}]}

@@ -1,0 +1,4 @@
+[
+  {"tool_call":{"id":"call_c01","name":"read_file","arguments":{"path":"README.md"}}},
+  {"path":"README.md","original":"npm run start","suggested":"npm run dev","reason":"维护者给出的当前开发命令"}
+]

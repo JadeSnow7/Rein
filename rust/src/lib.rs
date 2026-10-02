@@ -8,6 +8,8 @@ use async_openai::{
 };
 use std::{env, time::Duration};
 
+pub mod rein;
+
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
