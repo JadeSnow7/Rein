@@ -1,0 +1,101 @@
+{
+  "checked_at": "2026-09-20T20:05:45.335360+00:00",
+  "scope": "Document revision checks only; no runtime/UI/real-agent/release tests",
+  "head": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+  "baseline": "/private/tmp/rein-product-line-plan-20260921",
+  "documents": [
+    {
+      "path": "REIN-IMPLEMENTATION-PLAN.md",
+      "sha256": "69782570b85d129abd8b11feddf62c03c9624755e7d463be93dd51cbddf1dd4f"
+    },
+    {
+      "path": "REIN-INTEGRATION-SPEC.md",
+      "sha256": "e5e0515ed1a79d35f86fd5b997d0fad4eef06e3cf34ff7ff42bc5a944156e8c0"
+    },
+    {
+      "path": "REIN-DESIGN.md",
+      "sha256": "e446bfab5796a3d7288516758297fd784156c0b78051e0eab6fea76593336d67"
+    },
+    {
+      "path": "REIN-MODULES.md",
+      "sha256": "c2c592d67853857ef726bbbdf400c5432c4e4a20e881c88ae7eb639b73d4c0e1"
+    },
+    {
+      "path": "REIN-FILE-TREE.md",
+      "sha256": "5ffe4947df248bb7bb64ce9214b29a87e89cad1b99a3453307c9414d21399f17"
+    },
+    {
+      "path": "DECISIONS.md",
+      "sha256": "f1833e32a78754aef92db9064edb1e0a7ab23f4eaeb9431b3325ae37d56d3ea4"
+    },
+    {
+      "path": "README.md",
+      "sha256": "81b4b50dabb7159680a459544b429da7cab8e5be704b04b378950aaf7ac3154d"
+    }
+  ],
+  "markdown": {
+    "parsed": 7,
+    "links": 220,
+    "local_links": 218,
+    "anchors": 140
+  },
+  "integration_requirements": [
+    "INT-S01",
+    "INT-S02",
+    "INT-S03",
+    "INT-S04",
+    "INT-S05",
+    "INT-S06",
+    "INT-S07",
+    "INT-S08"
+  ],
+  "integration_baselines": [
+    "INT-B01",
+    "INT-B02",
+    "INT-B03",
+    "INT-B04",
+    "INT-B05",
+    "INT-B06",
+    "INT-B07",
+    "INT-B08",
+    "INT-B09",
+    "INT-B10",
+    "INT-B11",
+    "INT-B12"
+  ],
+  "original_rein_contract_rows_preserved": 38,
+  "prior_decisions_preserved": true,
+  "source_scope": [
+    "rust/src",
+    "rust/tests",
+    "ts/src",
+    "ts/tests",
+    "contracts",
+    "scripts",
+    ".github",
+    "book",
+    "fixtures"
+  ],
+  "source_files_unchanged": 89,
+  "changed_sources": [],
+  "errors": [],
+  "status": "passed",
+  "runtime_acceptance": "not_run",
+  "whitespace_checks": 7,
+  "checker_corrections": [
+    {
+      "path": "/private/tmp/rein-product-line-plan-20260921/initial-check-rendered-links.json",
+      "reason": "Checker inspected href values after VitePress rendering rewrote them to HTML routes; corrected to check source tokens before rendering. No document links changed for this correction."
+    },
+    {
+      "path": "/private/tmp/rein-product-line-plan-20260921/second-check-diff-exit-code.json",
+      "reason": "git diff --no-index returns 1 for ordinary differences. Rechecked all seven paths: only 0/1 with no whitespace diagnostics accepted."
+    }
+  ],
+  "review": {
+    "method": "independent read-only document review plus primary diff review",
+    "independent_issue": "Missing positive native preview and authorization scenarios",
+    "resolution": "INT-S06 and INT-B11 now require candidate-bound HTTP preview and normal authorization response followed by continued execution.",
+    "production_checks": "not_run"
+  }
+}

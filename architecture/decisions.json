@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "decisions": [
+    {
+      "id": "DEC-CORE-BOUNDARY",
+      "title": "Keep the core product boundary independent of runtime adapters",
+      "status": "accepted",
+      "rationale": "The core workspace owns domain contracts while runtime adapters own process and I/O concerns.",
+      "scope": "core/ and runtime/",
+      "alternatives": [
+        "Place process orchestration in core",
+        "Share runtime state through teaching implementations"
+      ],
+      "prerequisites": [
+        {
+          "path": "core/src/lib.rs",
+          "sha256": "7cf7f028d587e6c00a8e296a0b5940674bb1e0900fd6b815f7824f24874a67f0"
+        },
+        {
+          "path": "runtime/src/lib.rs",
+          "sha256": "e08475924c8fa51a6d60c77343b3418ed53b50501a6317725545ad99350d1d7d"
+        },
+        {
+          "path": "Cargo.toml",
+          "sha256": "c6d8d4f7d85747db3ea2b955c56deae2bb2392261468f6f1e123f88ff87164dc"
+        },
+        {
+          "path": "core/Cargo.toml",
+          "sha256": "32a959b6a958456bccc1179573d959b9c986ac7b8ffe295b70b578476c53c5f9"
+        }
+      ],
+      "reviewWhen": [
+        "core imports runtime-specific process or filesystem APIs",
+        "the workspace introduces a second production runtime boundary"
+      ],
+      "sources": [
+        "D9",
+        "D12",
+        "D13"
+      ]
+    }
+  ]
+}
