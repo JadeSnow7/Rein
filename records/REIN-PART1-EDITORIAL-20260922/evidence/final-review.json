@@ -1,0 +1,42 @@
+{
+  "reviewer": "primary-thread",
+  "observed_at": "2026-09-22T07:00:57.590504+00:00",
+  "result": "passed",
+  "scope": "六篇新版稿件的文字、现有源码一致性、示例离线验证与报告；不包含真实服务、教学快照、读者跟做或整库验收",
+  "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:dfbd29ff5fe4d7b029aedaf0b9359e734b2415d6feff0daea5adabd676e61bd0:spec:c457c2f47eb79bcb773e6021780ba5e881fe3be484ed0f9a717d9c84e7b4eec9",
+  "spec_version": "PART1-TEXT-1",
+  "spec_sha256": "c457c2f47eb79bcb773e6021780ba5e881fe3be484ed0f9a717d9c84e7b4eec9",
+  "final_files": {
+    "docs/chapters/task-map.md": "04b3c83cc241a8e5e87be034066445e26dd9955aa1b3a6b63838b106ce90f1d8",
+    "docs/chapters/model-hello.md": "69458f16d034c8b0986c1781be06c92065608c05bc985c14b7ff6f737a4dcb56",
+    "docs/chapters/model-hello-rust.md": "d1f7adac20e4fa3e06db28b173a9e72d9463c9b29a9a0b5ad456e0ebaec7f02d",
+    "docs/chapters/task-spec.md": "1f7fe66bb54f92fd97e51bca7f4e661cec82fd4b411a55c36f1e79df8aa2346d",
+    "docs/chapters/tool-roundtrip.md": "9c7ff03895b5cac77337219aa77b6156dfb633005bd18aa25f98596b6ff21534",
+    "docs/milestones/evidence-qa.md": "06ef0d516ce9a516289795a29afb5ad643664bb04ee661e73c600804a7585f64",
+    "records/REIN-PART1-EDITORIAL-20260922/checks/verify-tool-roundtrip.mjs": "74af7e9b10b6eabdee370cbf821d0d0df73a36633843c1c6fd664a9ccbeb17e7",
+    "reports/2026-09-22-part1-publication-review.md": "6924824420df80607b71480e852891b237cb87961d506952aa067c88dd248708"
+  },
+  "protected_paths_unchanged": {
+    "docs/chapters/00.md": "ab98c1a64f2f3a89b074d3a30ead6c60bfc18175653f48a1c351fdad0ac266cf",
+    "docs/chapters/01.md": "25fb4d1cdae907ee00fd8899205ec4b7311fcacd355d514b6f0215bd6655c715",
+    "docs/chapters/01-rust.md": "8e740377d470d9a611fc57c00a2f7e8ac62144a6563be5d49180b15bb9efa2ff",
+    "docs/chapters/02.md": "9c7a62fd1f1336e9159f38e2e55185ffb4e3e78b08575cd57c7d83fbd6656da0",
+    "docs/chapters/03.md": "01a367c45feea1d139b620d48f528e50409eb4c75124f307ae3417d2794ed9da",
+    "book/chapters.json": "dd720c727acfb1a685f14e572fab0d6177537473b828df1c2f86b8143422e357",
+    "docs/toc.md": "67177ecd55e812df7bd9b07dd84a9d3c9fdc6f70c668f26e217d14dac57a8019"
+  },
+  "review_sources": [
+    {
+      "path": "records/REIN-PART1-EDITORIAL-20260922/evidence/independent-baseline-review.md",
+      "sha256": "4611d7dccdcf84f7d29d38f2bead7a736f65c9edf5f68a6f2a4fcc22bf1e5528",
+      "use": "仅末节00、02、阶段汇总的最终文字复审；初审执行与拟稿参数实验保持历史属性"
+    },
+    {
+      "path": "records/REIN-PART1-EDITORIAL-20260922/evidence/independent-final-review.md",
+      "sha256": "38b1b42dec00df913718ea320656f210f2ca60743071cdc7bb85aa4fb2317cc1",
+      "use": "01双语与03终稿的独立复审，及Rust正文负例实际输出"
+    }
+  ],
+  "conclusion": "已识别的文字和示例阻断已修订。主线程复核 coder 交付及最终代码提取检查；独立审读输入 hash 与终稿对应。正式发布仍待报告列出的三项教学与运行材料。",
+  "browser_observation": "此前实际查看本地最终01、03页面的标题、正文、代码与关键链接；本轮无全设备视觉验收。"
+}

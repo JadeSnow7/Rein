@@ -1,0 +1,11 @@
+{
+  "head": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+  "files": {
+    "docs/chapters/task-map.md": "c33c45f704b14d7302f32f341e76ef9d7f3bd45c506baeef16ad4cc36ad8030e",
+    "docs/chapters/model-hello.md": "cee8a88bf811a34c37399bd175b43d7c4a6457cb2cfa54350fbf900c723ffa63",
+    "docs/chapters/model-hello-rust.md": "c08d58e3981a2f39cac787a1315bfb98ec6d8da0fbe895ee092f175226b27a7d",
+    "docs/chapters/task-spec.md": "5a978a010e0229bcee5f4d3bfce969516a66810ecb6cd9f9e242e2829227cc51",
+    "docs/chapters/tool-roundtrip.md": "9fab183d3766e160673d7051b98fbf654f1bf3b10f07a52eb5ce4bf18c4160df",
+    "docs/milestones/evidence-qa.md": "de45fb1e9054fb95e1c8f02c584032ec577114da7ee2b389e66b412e4db11c0d"
+  }
+}

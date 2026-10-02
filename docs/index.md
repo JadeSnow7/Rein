@@ -10,7 +10,7 @@ hero:
   actions:
     - theme: brand
       text: 开始阅读
-      link: /about.html
+      link: /chapters/minimal-agent.html
     - theme: alt
       text: 查看全书目录
       link: /toc.html
@@ -30,7 +30,7 @@ features:
 
 ## 现在可以读什么
 
-从[00 我们要实现一个怎样的 Agent](./chapters/minimal-agent.md)开始，再用 Python 生成 C++ Hello World，通过受限工具读取源码和真实报错，在终端审查并接受修改，最后编译验证。第一部分 00–03 已有正文和离线示例；你可以不配置模型服务先跟做。接着读[04 Agent 的核心能力](./chapters/agent-capabilities.md)：从这一章起，由你写设计、让代码助手实现，把第一部分的行为迁移到 Rust。05–29 的目标和状态见[六部分目录](./toc.md)。
+从[00 我们要实现一个怎样的 Agent](./chapters/minimal-agent.md)开始，再用 Python 生成 C++ Hello World，通过受限工具读取源码和真实报错，在终端审查并接受修改，最后编译验证。第一部分 00–03 已有正文和离线示例；你可以不配置模型服务先跟做。文字发布、程序检查、真实模型表现和读者教学验收分别判断。接着读[04 Agent 的核心能力](./chapters/agent-capabilities.md)：从这一章起，由你写设计、让代码助手实现，把第一部分的行为迁移到 Rust。05–29 的目标和状态见[六部分目录](./toc.md)。
 
 <span id="先从一次完整任务开始"></span>
 
@@ -40,7 +40,7 @@ Rein 最终要完成的事情很朴素：理解一个工作区任务，读取相
 
 ## 写给谁
 
-如果你准备应聘 Agent 应用、AI 应用工程或开发者工具相关岗位，这本书会把“会调用模型”推进到“能解释一个可靠系统为什么这样工作”。你将拥有一份可以运行、演示、评测并在面试中展开讨论的项目。
+如果你准备应聘 Agent 应用、AI 应用工程或开发者工具相关岗位，这本书会把“会调用模型”推进到“能解释一个可靠系统为什么这样工作”。随着章节推进，你可以积累能够运行、演示、评测并在面试中展开讨论的项目材料。
 
 <div class="home-links"><a href="/Rein/about.html">阅读指南 →</a><a href="/Rein/toc.html">完整目录 →</a><a href="/Rein/access.html">开放说明 →</a><a href="https://github.com/JadeSnow7/Rein">GitHub →</a></div>
 

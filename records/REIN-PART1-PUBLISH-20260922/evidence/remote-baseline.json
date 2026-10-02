@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-09-22T07:11:52.085560+00:00",
+  "repository": "JadeSnow7/Rein",
+  "main": "4446f09343191e8919fc3733c4001aed79000f16",
+  "last_successful_pages_run": "https://github.com/JadeSnow7/Rein/actions/runs/34758456281",
+  "pages_url": "https://jadesnow7.github.io/Rein/",
+  "pages_build_type": "workflow",
+  "browser_observed_home_entry": "第 01 章公共导读 -> /Rein/chapters/01.html",
+  "browser_observed_old_status": "第 01 章 Rust 实现待补齐，其余章节仍为规划。"
+}

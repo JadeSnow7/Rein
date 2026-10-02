@@ -6,6 +6,9 @@ docs/.vitepress/cache/
 ts/dist/
 rust/target/
 /target/
+python/**/.venv/
+python/**/__pycache__/
+python/**/*.pyc
 .DS_Store
 __pycache__/
 *.pyc

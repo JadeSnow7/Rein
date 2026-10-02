@@ -1,0 +1,13 @@
+{
+  "head": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+  "files": {
+    "docs/chapters/task-map.md": "04b3c83cc241a8e5e87be034066445e26dd9955aa1b3a6b63838b106ce90f1d8",
+    "docs/chapters/model-hello.md": "69458f16d034c8b0986c1781be06c92065608c05bc985c14b7ff6f737a4dcb56",
+    "docs/chapters/model-hello-rust.md": "d1f7adac20e4fa3e06db28b173a9e72d9463c9b29a9a0b5ad456e0ebaec7f02d",
+    "docs/chapters/task-spec.md": "1f7fe66bb54f92fd97e51bca7f4e661cec82fd4b411a55c36f1e79df8aa2346d",
+    "docs/chapters/tool-roundtrip.md": "9c7ff03895b5cac77337219aa77b6156dfb633005bd18aa25f98596b6ff21534",
+    "docs/milestones/evidence-qa.md": "06ef0d516ce9a516289795a29afb5ad643664bb04ee661e73c600804a7585f64",
+    "records/REIN-PART1-EDITORIAL-20260922/checks/verify-tool-roundtrip.mjs": "74af7e9b10b6eabdee370cbf821d0d0df73a36633843c1c6fd664a9ccbeb17e7",
+    "reports/2026-09-22-part1-publication-review.md": "6924824420df80607b71480e852891b237cb87961d506952aa067c88dd248708"
+  }
+}

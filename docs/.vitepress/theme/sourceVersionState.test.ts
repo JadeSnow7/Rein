@@ -9,6 +9,11 @@ test('resolves the TypeScript and Rust language routes', () => {
   assert.equal(sourceTopicForPath('/chapters/01-rust.html'), 'chapter-01')
   assert.equal(sourcePathFor('chapter-01', 'rust'), '/chapters/01-rust.html')
   assert.equal(sourcePathFor('chapter-01', 'ts'), '/chapters/01.html')
+
+  assert.equal(sourceTopicForPath('/chapters/model-hello.html'), 'chapter-model-hello')
+  assert.equal(sourceTopicForPath('/chapters/model-hello-rust.html'), 'chapter-model-hello')
+  assert.equal(sourcePathFor('chapter-model-hello', 'rust'), '/chapters/model-hello-rust.html')
+  assert.equal(sourcePathFor('chapter-model-hello', 'ts'), '/chapters/model-hello.html')
 })
 
 test('keeps only recognized common anchors and maps language-specific aliases', () => {
@@ -40,15 +45,22 @@ test('does not invent language pairs for core and legacy chapter routes', () => 
   assert.equal(sourceTopicForPath('/chapters/07.html'), undefined)
 })
 
-test('supports the v2 model-call slug while retaining the legacy chapter route', () => {
-  assert.equal(sourceTopicForPath('/chapters/model-hello.html'), 'chapter-model-call')
-  assert.equal(sourcePathFor('chapter-model-call', 'rust'), '/chapters/model-hello-rust.html')
+test('supports the published model hello pair while retaining the legacy chapter route', () => {
+  assert.equal(sourceTopicForPath('/chapters/model-hello.html'), 'chapter-model-hello')
+  assert.equal(sourcePathFor('chapter-model-hello', 'rust'), '/chapters/model-hello-rust.html')
   assert.equal(sourceTopicForPath('/chapters/01.html'), 'chapter-01')
 })
 
 test('sidebar is registry-driven and keeps a historical entry', () => {
   const config = readFileSync(resolve(import.meta.dirname, '../config.mts'), 'utf8')
   assert.match(config, /book\.parts\.map/)
-  assert.match(config, /chapter\.slug/)
-  assert.match(config, /旧版 00–16 章节入口/)
+  assert.match(config, /chapter\.route/)
+  assert.match(config, /旧版五部分目录与页面/)
+})
+
+test('keeps the published hello pair on shared anchors', () => {
+  const chapter = sourceEditions['chapter-model-hello']
+  assert.equal(resolveAnchorHash('request-response', chapter), '#request-response')
+  assert.equal(resolveAnchorHash('api-key', chapter, 'live-call'), '#live-call')
+  assert.equal(resolveAnchorHash('setup', chapter), '')
 })

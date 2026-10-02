@@ -9,8 +9,16 @@ const checked = []
 const cache = new Map()
 const expectedSlugs = ['task-map', 'model-hello', 'task-spec', 'tool-roundtrip', 'provider-adapter', 'rust-migration', 'agent-loop', 'loop-budget', 'cancellation', 'tool-host', 'context-state', 'context-retrieval', 'context-compression', 'task-verification', 'trust-permissions', 'patch-candidate', 'approved-patch', 'bounded-repair', 'task-planning', 'durable-recovery', 'extension-sdk', 'mcp-tools', 'execution-hooks', 'bounded-delegation', 'project-evaluation']
 const milestoneSlugs = ['evidence-qa', 'controlled-harness', 'grounded-answer', 'single-agent-maintainer', 'project-defense']
+const book = JSON.parse(await readFile(resolve(root, 'book/chapters.json'), 'utf8'))
+const chapterRoutes = book.chapters.map(({ route }) => route)
+const milestoneRoutes = book.milestones.map(({ path }) => path)
 
 const exists = async (path) => { try { await stat(path); return true } catch { return false } }
+if (!await exists(dist)) {
+  console.error(`missing build output: ${dist}`)
+  process.exitCode = 1
+  process.exit()
+}
 async function htmlFiles(dir) {
   const output = []
   if (!await exists(dir)) return output
@@ -71,8 +79,10 @@ for (const file of files) {
   for (const href of links(html)) await check(href, file)
 }
 
+for (const route of chapterRoutes) await check(`${base.replace(/\/$/, '')}${route}`, resolve(dist, 'index.html'))
 for (const slug of expectedSlugs) await check(`${base}chapters/${slug}.html`, resolve(dist, 'index.html'))
 for (let order = 0; order <= 16; order += 1) await check(`${base}chapters/${String(order).padStart(2, '0')}.html`, resolve(dist, 'history.html'))
+for (const route of milestoneRoutes) await check(`${base.replace(/\/$/, '')}${route}`, resolve(dist, 'toc.html'))
 for (const slug of milestoneSlugs) await check(`${base}milestones/${slug}.html`, resolve(dist, 'toc.html'))
 for (const href of ['/readings/00.html', '/readings/00-ts.html', '/readings/00-rust.html', '/chapters/01.html', '/chapters/01-rust.html', '/chapters/model-hello.html', '/chapters/model-hello-rust.html']) await check(`${base.replace(/\/$/, '')}${href}`, resolve(dist, 'index.html'))
 

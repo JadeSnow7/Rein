@@ -1,9 +1,6 @@
 # 06 核心 Agent Loop：让工具结果推动下一轮
 
-**状态：新版初稿，未完成逐章衔接验收｜永久免费 · Apache-2.0**
-
-本页正在迁移为新版主题入口。下面保留可检查的已有教学内容；其中数字命令与代码入口仍指历史主题，不能把运行当前工程等同于完成新版前驱快照验收。
-
+**状态：旧五篇历史正文，未作为现行 06 验收｜永久免费 · Apache-2.0**
 
 本章把循环控制迁入 Rust core：Rust 负责状态、回合和工具结果，TS 保留为可复用的工具与 SDK 生态扩展。本章用 Rust 写同一个只读循环：搜索 `marker:`，读取搜索结果中的两个文件，再把内容交给下一轮。`rust/src/rein/mod.rs` 提供合同数据结构、只读工具与 OpenAI 兼容非流式 HTTP 接口，`rust/src/rein/loop.rs` 提供循环，`rust/examples/ch05_loop.rs` 提供离线适配器。`mod.rs` 的 replay 可接收 Anthropic 形状 JSON，经 `parse_anthropic_turn` 转成 `ModelTurn`，再由 `ModelAdapter` 包装接入 loop；这是离线格式适配，没有 Anthropic 真实网络入口。本章主演示仍是消费工具消息的动态离线 adapter。适配器实现 `ModelAdapter`，再传给 `run_agent_loop_with_adapter`；这些是本章附带的最小前置，不表示前四章已经完整交付。
 
@@ -136,3 +133,5 @@ cargo run --manifest-path rust/Cargo.toml --example ch05_loop -- workspace "$REI
 ```
 
 “推动下一轮”要求闭环；“串行”明确基础调度；“实际文件变化”排除脚本写死答案。**试用状态：未试用。** 使用前请阅读[《提示词示例使用说明》](../prompt-examples.md)。
+
+现行六部分的 06 仍规划于 [`/roadmap/part-02.html#ch06`](../roadmap/part-02.html#ch06)；本页保留旧五篇历史正文，不能替代现行逐章验收。

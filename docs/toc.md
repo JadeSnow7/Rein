@@ -66,6 +66,65 @@
 
 章节状态、开放属性和导航由仓库中的 `book/chapters.json` 统一维护。第一部分正文、程序检查、真实模型表现和新手独立跟做分别判断；规划页不冒充已完成章节。六部分的详细写作边界见 `book/framework-six-parts/README.md`。
 
+当前 Python 主线开放 00–03 章及配套代码；旧正文已开放阅读，但仍需分别完成程序、真实模型和教学验收。新版 04–29 只在现行目录中标出规划或当前状态，不复制旧版的第二套目录。
+
 旧五篇 25 章清单、数字 URL、TypeScript/Rust 对照与旧阶段汇总从[历史与补充入口](./history.md)访问。旧页面的编号仍代表原主题，不在这里重复生成第二套现行目录。
 
 [阅读材料](./readings/00.md)、[深入讨论附录](./appendices/a1.md)、[开放说明](./access.md)与[提示词示例说明](./prompt-examples.md)按需阅读。
+
+## 旧目录链接
+
+下面保留旧目录的锚点，链接按当时的主题解释，不套用新版同号章节。
+
+<span id="ch00"></span>
+- [旧版：00 绪论，一次完整的任务（待撰写·永久免费）](./history.md#ch00)
+<span id="chread0"></span>
+- [旧版：阅读 0 基础知识补充（公共 / TS / Rust 已提供·永久免费）](./history.md#chread0)
+<span id="ch01"></span>
+- [旧版：01 HelloWorld——从模型调用开始（公共 / TS / Rust 已提供·永久免费）](./history.md#ch01)
+<span id="ch02"></span>
+- [旧版：02 写一份合格的提示词（待撰写·永久免费）](./history.md#ch02)
+<span id="chread1"></span>
+- [旧版：阅读材料 1　Vibe Coding 方法论（待撰写·永久免费）](./history.md#chread1)
+<span id="ch03"></span>
+- [旧版：03 工具调用，Harness 的骨架（待撰写·永久免费）](./history.md#ch03)
+<span id="chsum1"></span>
+- [旧版：小结，Rein 第一次获得环境信息（待撰写·永久免费）](./history.md#chsum1)
+<span id="ch04"></span>
+- [旧版：04 统一协议，隔离模型服务商差异（待撰写·限时免费）](./history.md#ch04)
+<span id="ch05"></span>
+- [旧版：05 核心 Agent Loop（待撰写·限时免费）](./history.md#ch05)
+<span id="ch06"></span>
+- [旧版：06 循环控制（待撰写·限时免费）](./history.md#ch06)
+<span id="chread2"></span>
+- [旧版：阅读材料 2　版本管理，为自己的编码助手保存可靠基线（待撰写·永久免费）](./history.md#chread2)
+<span id="chread3"></span>
+- [旧版：阅读材料 3　Pi，极简 Harness 设计思路（待撰写·永久免费）](./history.md#chread3)
+<span id="chsum2"></span>
+- [旧版：阶段性汇总 1　极简 Harness 的完成（待撰写·限时免费）](./history.md#chsum2)
+<span id="ch07"></span>
+- [旧版：07 上下文管理（待撰写·限时免费）](./history.md#ch07)
+<span id="ch08"></span>
+- [旧版：08 上下文管理方法，四种做法的横向对比（待撰写·可独立阅读·限时免费）](./history.md#ch08)
+<span id="ch09"></span>
+- [旧版：09 验收条件与验证器（待撰写·可独立阅读·限时免费）](./history.md#ch09)
+<span id="ch10"></span>
+- [旧版：10 失败反馈与循环工程（待撰写·限时免费）](./history.md#ch10)
+<span id="ch11"></span>
+- [旧版：11 防御性编程，AI 的矛与盾（待撰写·永久免费·可独立阅读）](./history.md#ch11)
+<span id="ch12"></span>
+- [旧版：12 权限管理，把修改变成可审查的差异（待撰写·可独立阅读·限时免费）](./history.md#ch12)
+<span id="chsum3"></span>
+- [旧版：阶段性汇总 2　一个能够审查修改的编码助手（待撰写·限时免费）](./history.md#chsum3)
+<span id="ch13"></span>
+- [旧版：13 计划与任务审查（待撰写·限时免费）](./history.md#ch13)
+<span id="ch14"></span>
+- [旧版：14 多智能体协作（待撰写·可独立阅读·限时免费）](./history.md#ch14)
+<span id="ch15"></span>
+- [旧版：15 外部扩展（待撰写·限时免费）](./history.md#ch15)
+<span id="ch16"></span>
+- [旧版：16 垂直领域设计方法论（待撰写·限时免费）](./history.md#ch16)
+<span id="chsum4"></span>
+- [旧版：阶段性汇总 3　完成可以展示与答辩的项目（待撰写·限时免费）](./history.md#chsum4)
+<span id="附录-rust-track"></span>
+- [旧版补充入口](./history.md#附录-rust-track)

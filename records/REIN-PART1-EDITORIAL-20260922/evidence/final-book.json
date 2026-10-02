@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "npm",
+    "run",
+    "book:check"
+  ],
+  "cwd": "/Users/huaodong/workspace/Agent-Learning",
+  "started_at": "2026-09-22T06:51:28.212015Z",
+  "ended_at": "2026-09-22T06:51:29.327165Z",
+  "exit_code": 0,
+  "timed_out": false,
+  "wrapper_exit_code": null,
+  "stdout": "\n> rein-book@0.1.0 book:check\n> node scripts/book-check.mjs && node scripts/book-toc.mjs --check\n\n{\n  \"chapters\": 25,\n  \"parts\": 5,\n  \"milestones\": 5,\n  \"frozen_archive\": true,\n  \"warnings\": [],\n  \"failures\": []\n}\n{\"marker\":true,\"synced\":true}\n",
+  "stderr": "",
+  "stdout_base64": "Cj4gcmVpbi1ib29rQDAuMS4wIGJvb2s6Y2hlY2sKPiBub2RlIHNjcmlwdHMvYm9vay1jaGVjay5tanMgJiYgbm9kZSBzY3JpcHRzL2Jvb2stdG9jLm1qcyAtLWNoZWNrCgp7CiAgImNoYXB0ZXJzIjogMjUsCiAgInBhcnRzIjogNSwKICAibWlsZXN0b25lcyI6IDUsCiAgImZyb3plbl9hcmNoaXZlIjogdHJ1ZSwKICAid2FybmluZ3MiOiBbXSwKICAiZmFpbHVyZXMiOiBbXQp9CnsibWFya2VyIjp0cnVlLCJzeW5jZWQiOnRydWV9Cg==",
+  "stderr_base64": "",
+  "stdout_present": true,
+  "stderr_present": false,
+  "stdout_required": false,
+  "inputs": {},
+  "repo": "/Users/huaodong/workspace/Agent-Learning",
+  "cwd_relative": ".",
+  "revision_before": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_after": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:15754ca793d28e1770d1f8de9961f646cecbd8a6ddd1a03bcabd1b5ba280d78e:spec:67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version": "PART1-TEXT-1",
+  "spec_sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_before": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_after": {
+    "version": "PART1-TEXT-1",
+    "sha256": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c"
+  },
+  "spec_version_before": "PART1-TEXT-1",
+  "spec_sha256_before": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "spec_version_after": "PART1-TEXT-1",
+  "spec_sha256_after": "67ca4761c55fdf122c868c6aed73b4ae0a69462a9cb5e9994999d59eec861f9c",
+  "revision_changed_paths": [],
+  "input_changed_paths": [],
+  "result": "passed"
+}

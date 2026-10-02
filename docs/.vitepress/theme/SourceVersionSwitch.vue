@@ -113,7 +113,8 @@ watch(() => route.path, syncLanguageFromRoute)
         :class="{ active: isGenericContent ? selectedLanguage === option : explicitLanguage === option, unavailable: option === 'rust' && !rustAvailable }"
         :aria-pressed="isGenericContent ? selectedLanguage === option : explicitLanguage === option"
         @click="selectLanguage(option)"
-      >{{ languageLabels[option] }}</button>
+      >{{ option === 'rust' && !rustAvailable ? 'Rust 待补齐' : languageLabels[option] }}</button>
     </div>
+    <span class="source-version-switch__status" role="status" aria-live="polite">{{ statusText }}</span>
   </div>
 </template>

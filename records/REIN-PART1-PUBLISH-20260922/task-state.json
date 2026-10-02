@@ -1,0 +1,396 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "PART1-PUBLISH-1",
+    "authority": "records/REIN-PART1-PUBLISH-20260922/publication-spec.md",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "保持六篇终稿原字节；不升级教学验收状态；保留旧数字稿与原工作区脏改动",
+      "不调用真实模型、不移动既有标签、不强制推送"
+    ],
+    "exceptions": [
+      "仅发布第一部分文字；完整教学验收后续另行完成"
+    ],
+    "conditions": [
+      {
+        "id": "SC-001",
+        "metric_ids": [
+          "MET-001",
+          "MET-002"
+        ],
+        "deliverables": [
+          "docs/chapters/task-map.md",
+          "docs/chapters/model-hello.md",
+          "docs/chapters/model-hello-rust.md",
+          "docs/chapters/task-spec.md",
+          "docs/chapters/tool-roundtrip.md",
+          "docs/milestones/evidence-qa.md",
+          "docs/prompt-examples.md",
+          "docs/.vitepress/config.mts",
+          "docs/.vitepress/theme/sourceVersionState.ts",
+          "docs/.vitepress/theme/sourceVersionState.test.ts",
+          "docs/.vitepress/theme/SourceVersionSwitch.vue",
+          "docs/index.md",
+          "docs/toc.md",
+          "docs/about.md",
+          "docs/access.md",
+          "docs/history.md",
+          "docs/chapters/provider-adapter.md",
+          "docs/chapters/rust-migration.md",
+          "docs/chapters/agent-loop.md",
+          "LICENSE",
+          "book/chapters.json",
+          "reports/2026-09-22-part1-publication-review.md",
+          "reports/ch01-author-style.md",
+          "scripts/book-links.mjs",
+          "docs/.vitepress/theme/index.ts",
+          "docs/.vitepress/theme/custom.css"
+        ]
+      }
+    ],
+    "contracts": [
+      "records/REIN-PART1-PUBLISH-20260922/publication-spec.md",
+      "book/chapters.json"
+    ],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-PART1-PUBLISH-20260922",
+    "title": "第一部分文字提交与发布",
+    "mode": "new",
+    "status": "in_progress",
+    "source_ids": [
+      "SRC-001"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "Rein读者",
+    "scenario": "发布已审第一部分",
+    "problem": "已审新稿与必要hello源码尚未在线发布，当前工作区含未审后续实现",
+    "expected_outcome": "在隔离副本提交已审正文及必要导航，CI通过并确认GitHub Pages上线",
+    "scope": "六篇正文、必要站点接线和发布记录；不发布后续实现",
+    "acceptable_result": "本地验证、远程CI和Pages有实际证据；未教学验收事实保留"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:20260922-publish-part1",
+      "summary": "先提交发布",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "在隔离副本提交已审正文及必要导航，CI通过并确认GitHub Pages上线",
+      "scope": [
+        "docs/chapters/task-map.md",
+        "docs/chapters/model-hello.md",
+        "docs/chapters/model-hello-rust.md",
+        "docs/chapters/task-spec.md",
+        "docs/chapters/tool-roundtrip.md",
+        "docs/milestones/evidence-qa.md",
+        "docs/prompt-examples.md",
+        "docs/.vitepress/config.mts",
+        "docs/.vitepress/theme/sourceVersionState.ts",
+        "docs/.vitepress/theme/sourceVersionState.test.ts",
+        "docs/.vitepress/theme/SourceVersionSwitch.vue",
+        "docs/index.md",
+        "docs/toc.md",
+        "docs/about.md",
+        "docs/access.md",
+        "docs/history.md",
+        "docs/chapters/provider-adapter.md",
+        "docs/chapters/rust-migration.md",
+        "docs/chapters/agent-loop.md",
+        "LICENSE",
+        "book/chapters.json",
+        "reports/2026-09-22-part1-publication-review.md",
+        "reports/ch01-author-style.md",
+        "records/REIN-PART1-EDITORIAL-20260922",
+        "scripts/book-links.mjs",
+        "docs/.vitepress/theme/index.ts",
+        "docs/.vitepress/theme/custom.css"
+      ],
+      "non_goals": [
+        "真实模型验证",
+        "全书教学验收",
+        "未审产品实现"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "沿用既有main分支GitHub Pages流程"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-001",
+        "MET-002"
+      ],
+      "implementation_task_ids": [
+        "IT-001"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "发布范围与入口复核",
+      "baseline": "六篇原稿hash已绑定，远端main为4446f09，隔离副本以必要hello源码1dfa82b为起点",
+      "target": "六篇hash一致，导航可达，待发布页明确，旧稿保留，未审实现未带入",
+      "method": "主线程审阅diff、hash和实际浏览器导航",
+      "environment_data": "隔离worktree与最终站点构建",
+      "evidence_ids": [
+        "EVD-001"
+      ],
+      "status": "passed",
+      "verification": "manual"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "精确发布副本离线检查",
+      "baseline": "npm ci --offline已成功，父提交内提供第一章所需源码",
+      "target": "正文工具抽取检查、TS测试与类型检查、Rust fmt/check/test、导航测试、构建与链接通过",
+      "method": "record_execution保存同一发布副本完整执行回执",
+      "environment_data": "macOS Node26与Rust1.98，需本地回环，不调用真实模型",
+      "evidence_ids": [
+        "EVD-002"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "选择已审终稿并补齐最小发布接线",
+      "file_scope": [
+        "docs/chapters/task-map.md",
+        "docs/chapters/model-hello.md",
+        "docs/chapters/model-hello-rust.md",
+        "docs/chapters/task-spec.md",
+        "docs/chapters/tool-roundtrip.md",
+        "docs/milestones/evidence-qa.md",
+        "docs/prompt-examples.md",
+        "docs/.vitepress/config.mts",
+        "docs/.vitepress/theme/sourceVersionState.ts",
+        "docs/.vitepress/theme/sourceVersionState.test.ts",
+        "docs/.vitepress/theme/SourceVersionSwitch.vue",
+        "docs/index.md",
+        "docs/toc.md",
+        "docs/about.md",
+        "docs/access.md",
+        "docs/history.md",
+        "docs/chapters/provider-adapter.md",
+        "docs/chapters/rust-migration.md",
+        "docs/chapters/agent-loop.md",
+        "LICENSE",
+        "book/chapters.json",
+        "reports/2026-09-22-part1-publication-review.md",
+        "reports/ch01-author-style.md",
+        "records/REIN-PART1-EDITORIAL-20260922",
+        "scripts/book-links.mjs",
+        "docs/.vitepress/theme/index.ts",
+        "docs/.vitepress/theme/custom.css"
+      ],
+      "interface_constraints": [
+        "保持六篇终稿原字节；不升级教学验收状态；保留旧数字稿与原工作区脏改动",
+        "不调用真实模型、不移动既有标签、不强制推送"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001",
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "owner": "coder-wiring / primary-release-review",
+      "status": "verified"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EVD-001",
+      "path": "records/REIN-PART1-PUBLISH-20260922/evidence/release-review.json",
+      "kind": "review",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:20:41.898775+00:00",
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:6b07b6fd62ae7e65bd60fae832f42ab8fbbf3143eae4ab725d052f6cfb679307:spec:2fe1914868cc065d88eda17f05bc34554963a20437f625282a3112454a2a4692",
+      "spec_version": "PART1-PUBLISH-1",
+      "spec_sha256": "2fe1914868cc065d88eda17f05bc34554963a20437f625282a3112454a2a4692",
+      "sha256": "15ce510c6c13dcc6de478bfe5c9e5113cc58e6b0a5097db0150036140af148d2"
+    },
+    {
+      "id": "EVD-002",
+      "path": "records/REIN-PART1-PUBLISH-20260922/evidence/release-checks-v2.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:19:31.288896Z",
+      "sha256": "cd7f7233acc3098ab59cbd6d0856b9f6a26a2ba7bfb3e79041c3ca59678ced4a"
+    }
+  ],
+  "changes": [
+    {
+      "id": "CHG-001",
+      "implementation_task_ids": [
+        "IT-001"
+      ],
+      "paths": [
+        "docs/chapters/task-map.md",
+        "docs/chapters/model-hello.md",
+        "docs/chapters/model-hello-rust.md",
+        "docs/chapters/task-spec.md",
+        "docs/chapters/tool-roundtrip.md",
+        "docs/milestones/evidence-qa.md",
+        "docs/prompt-examples.md",
+        "docs/.vitepress/config.mts",
+        "docs/.vitepress/theme/sourceVersionState.ts",
+        "docs/.vitepress/theme/sourceVersionState.test.ts",
+        "docs/.vitepress/theme/SourceVersionSwitch.vue",
+        "docs/index.md",
+        "docs/toc.md",
+        "docs/about.md",
+        "docs/access.md",
+        "docs/history.md",
+        "docs/chapters/provider-adapter.md",
+        "docs/chapters/rust-migration.md",
+        "docs/chapters/agent-loop.md",
+        "LICENSE",
+        "book/chapters.json",
+        "reports/2026-09-22-part1-publication-review.md",
+        "reports/ch01-author-style.md",
+        "records/REIN-PART1-EDITORIAL-20260922",
+        "scripts/book-links.mjs",
+        "docs/.vitepress/theme/index.ts",
+        "docs/.vitepress/theme/custom.css",
+        "records/REIN-PART1-PUBLISH-20260922"
+      ],
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:6b07b6fd62ae7e65bd60fae832f42ab8fbbf3143eae4ab725d052f6cfb679307:spec:2fe1914868cc065d88eda17f05bc34554963a20437f625282a3112454a2a4692",
+      "status": "reviewed"
+    }
+  ],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002"
+    ],
+    "evidence_ids": [
+      "EVD-001",
+      "EVD-002"
+    ],
+    "status": "passed",
+    "scope": "本地发布候选副本；外部CI与部署状态按delivery/actions另行核验"
+  },
+  "baseline": {
+    "git_ref": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+    "worktree_status": "clean",
+    "ownership": "独立worktree；全部新增改动属于本次发布副本。原工作区保持不变。",
+    "foreign_paths": [],
+    "prepared_at": "2026-09-22T07:07:36.666092+00:00"
+  },
+  "binding": {
+    "receipt_paths": [
+      "records/REIN-PART1-PUBLISH-20260922/evidence/release-checks.json",
+      "records/REIN-PART1-PUBLISH-20260922/evidence/release-checks-v2.json"
+    ]
+  },
+  "authorization": {
+    "commit": {
+      "status": "authorized",
+      "source_id": "SRC-001"
+    },
+    "push": {
+      "status": "authorized",
+      "source_id": "SRC-001"
+    },
+    "merge": {
+      "status": "authorized",
+      "source_id": "SRC-001"
+    },
+    "deploy": {
+      "status": "authorized",
+      "source_id": "SRC-001"
+    }
+  },
+  "delivery": {
+    "local_validation": "passed",
+    "remote_ci": "not_started",
+    "remote_ci_revision": null
+  },
+  "actions": [
+    {
+      "id": "ACT-001",
+      "kind": "git_commit",
+      "status": "in_progress",
+      "authorization_action": "commit",
+      "idempotency_key": "part1-20260922-commit-v1",
+      "target": "codex/publish-part1-20260922",
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:6b07b6fd62ae7e65bd60fae832f42ab8fbbf3143eae4ab725d052f6cfb679307:spec:2fe1914868cc065d88eda17f05bc34554963a20437f625282a3112454a2a4692",
+      "receipt": null,
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-22T07:20:41.903384Z",
+        "action": "commit",
+        "target": "codex/publish-part1-20260922",
+        "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:6b07b6fd62ae7e65bd60fae832f42ab8fbbf3143eae4ab725d052f6cfb679307:spec:2fe1914868cc065d88eda17f05bc34554963a20437f625282a3112454a2a4692",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001"
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:20260922-publish-part1",
+          "summary": "先提交发布",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": null,
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:20260922-publish-part1\",\"summary\":\"先提交发布\"}",
+        "content_sha256": "9c3689789ef1a787126f764aa65458d302261aaaf7d8cc9c524e592246751730"
+      }
+    }
+  ],
+  "decisions": [],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "CI或线上检查失败",
+    "steps": [
+      "保留原始结果",
+      "只修正发布副本相关文件并重验",
+      "不强推、不改变原工作区；必要回滚另保留明确证据"
+    ],
+    "owner": "primary-thread"
+  }
+}

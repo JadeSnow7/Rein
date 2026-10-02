@@ -61,7 +61,7 @@ python3 python/hello_world/cli.py generate
 python3 -m unittest discover -s python/hello_world/tests -v
 ```
 
-完整编译、诊断、接受/放弃流程见三章正文，先创建临时练习目录，不直接编辑仓库样本。Python 环境和可选 SDK 安装见 [第 01 章](docs/chapters/python-model-call.md)。下列 TS/Rust 命令用于已有工程和历史材料，不能代替新第一部分的验证。
+完整编译、诊断、接受/放弃流程见三章正文，先创建临时练习目录，不直接编辑仓库样本。Python 环境和可选 SDK 安装见 [第 01 章](docs/chapters/python-model-call.md)。下列 TS/Rust 命令用于已有工程和历史材料，不能代替新第一部分的验证。Python 示例和测试使用固定本地样本；真实模型记录、类型检查、程序测试和读者跟做分别判断。
 
 `ts/` 是根仓库的 npm workspace，与文档共用一次安装：
 
@@ -106,7 +106,7 @@ npm run build
 npm run preview
 ```
 
-GitHub Pages 由 `.github/workflows/deploy.yml` 自动发布。推送到 `main` 或手动运行工作流都会构建 `docs/.vitepress/dist` 并部署。仓库设置中需要将 Pages 来源设为 **GitHub Actions**。代码测试由 `.github/workflows/test.yml` 在 `ts/`、`rust/`、`contracts/`、`fixtures/` 等相关路径变更时运行。
+GitHub Pages 由 `.github/workflows/deploy.yml` 自动发布。推送到 `main` 或手动运行工作流都会构建 `docs/.vitepress/dist` 并部署。仓库设置中需要将 Pages 来源设为 **GitHub Actions**。代码测试由 `.github/workflows/test.yml` 在 `python/`、`ts/`、`rust/`、`contracts/`、`fixtures/` 等相关路径变更时运行。
 
 网站：https://jadesnow7.github.io/Rein/
 
