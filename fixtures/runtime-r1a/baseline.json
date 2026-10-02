@@ -1,0 +1,64 @@
+{
+  "spec": "R1A-SLICE-1",
+  "version": "2026-09-21",
+  "license": "Apache-2.0",
+  "fixture_root": "fixtures/runtime-r1a",
+  "cases": [
+    {
+      "id": "B01",
+      "name": "model tool model verifier happy path",
+      "inputs": ["alpha.txt", "beta.txt"],
+      "expected": {
+        "answers": ["alpha\n", "beta\n"],
+        "minimum_effects": ["CallModel", "ExecuteTool", "CallModel", "Verify"],
+        "acceptance": "passed"
+      }
+    },
+    {
+      "id": "B02",
+      "name": "duplicate observation and effect replay",
+      "expected": {"revision_advance": 0, "event_advance": 0, "tool_dispatch_advance": 0}
+    },
+    {
+      "id": "B03",
+      "name": "zero or exhausted tool budget",
+      "expected": {"execute_tool_count": 0, "workspace_bytes_changed": 0, "acceptance": "not_passed"}
+    },
+    {
+      "id": "B04",
+      "name": "cancel before late verifier result",
+      "expected": {"later_dispatches": 0, "terminal_state": "cancelled", "late_verifier_changes_acceptance": false}
+    },
+    {
+      "id": "B05",
+      "name": "artifact transaction and stale revision rejection",
+      "expected": {"dangling_state": false, "uncommitted_dispatches": 0, "stale_revision": "rejected"}
+    },
+    {
+      "id": "B06",
+      "name": "pending recovery and claimed crash quarantine",
+      "expected": {"pending_resumes": true, "claimed_outcome": "outcome_unknown", "duplicate_dispatches": 0, "show_exposes_reason": true}
+    },
+    {
+      "id": "B07",
+      "name": "verifier failed and undetermined gates",
+      "expected": {"failed_acceptance": "not_passed", "undetermined_acceptance": "not_passed", "model_completion_bypasses_gate": false}
+    },
+    {
+      "id": "B08",
+      "name": "read file path and content safety",
+      "inputs": ["../escape.txt", "/etc/hosts", "symlink-outside.txt", "invalid-utf8.bin", "oversized.txt"],
+      "expected": {"all_rejected": true, "outside_bytes_read": 0, "fixture_root_writes": 0}
+    },
+    {
+      "id": "B09",
+      "name": "schema generation and drift check",
+      "expected": {"check_clean": true, "drift_check_exit": 1, "restored_check_clean": true}
+    },
+    {
+      "id": "B10",
+      "name": "competing drivers claim one effect",
+      "expected": {"successful_claims": 1, "dispatch_count": 1, "revision_overwrite": false}
+    }
+  ]
+}

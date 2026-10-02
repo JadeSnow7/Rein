@@ -1,0 +1,209 @@
+{
+  "version": "document-maintenance-v1",
+  "cases": [
+    {
+      "id": "command-1",
+      "category": "outdated_command",
+      "goal": "根据项目清单核对并修订启动命令。",
+      "document": "README.md",
+      "sources": [
+        "package.json"
+      ],
+      "files": {
+        "README.md": "启动文档服务：`npm run start`。\n",
+        "package.json": "{\"scripts\": {\"dev\": \"node -e \\\"process.exit(0)\\\"\"}}\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "启动文档服务：`npm run dev`。\n"
+      }
+    },
+    {
+      "id": "command-2",
+      "category": "outdated_command",
+      "goal": "根据项目清单核对并修订启动命令。",
+      "document": "README.md",
+      "sources": [
+        "package.json"
+      ],
+      "files": {
+        "README.md": "启动文档服务：`npm run serve`。\n",
+        "package.json": "{\"scripts\": {\"preview\": \"node -e \\\"process.exit(0)\\\"\"}}\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "启动文档服务：`npm run preview`。\n"
+      }
+    },
+    {
+      "id": "command-3",
+      "category": "outdated_command",
+      "goal": "根据项目清单核对并修订启动命令。",
+      "document": "README.md",
+      "sources": [
+        "package.json"
+      ],
+      "files": {
+        "README.md": "启动文档服务：`npm run check`。\n",
+        "package.json": "{\"scripts\": {\"verify\": \"node -e \\\"process.exit(0)\\\"\"}}\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "启动文档服务：`npm run verify`。\n"
+      }
+    },
+    {
+      "id": "parameter-1",
+      "category": "changed_parameter",
+      "goal": "依据当前帮助文本核对参数，保留其他文字。",
+      "document": "README.md",
+      "sources": [
+        "help.txt"
+      ],
+      "files": {
+        "README.md": "执行工具时使用 `--port value`。\n",
+        "help.txt": "工具版本 2\n参数替换：--port -> --listen\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "执行工具时使用 `--listen value`。\n"
+      }
+    },
+    {
+      "id": "parameter-2",
+      "category": "changed_parameter",
+      "goal": "依据当前帮助文本核对参数，保留其他文字。",
+      "document": "README.md",
+      "sources": [
+        "help.txt"
+      ],
+      "files": {
+        "README.md": "执行工具时使用 `--out value`。\n",
+        "help.txt": "工具版本 2\n参数替换：--out -> --output\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "执行工具时使用 `--output value`。\n"
+      }
+    },
+    {
+      "id": "parameter-3",
+      "category": "changed_parameter",
+      "goal": "依据当前帮助文本核对参数，保留其他文字。",
+      "document": "README.md",
+      "sources": [
+        "help.txt"
+      ],
+      "files": {
+        "README.md": "执行工具时使用 `--config value`。\n",
+        "help.txt": "工具版本 2\n参数替换：--config -> --settings\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "执行工具时使用 `--settings value`。\n"
+      }
+    },
+    {
+      "id": "link-1",
+      "category": "broken_relative_link",
+      "goal": "将失效的使用说明链接指向项目中同标题的真实文档。",
+      "document": "README.md",
+      "sources": [
+        "guide.md"
+      ],
+      "files": {
+        "README.md": "详见[使用说明](missing.md)。\n",
+        "guide.md": "# 使用说明\n\n按默认配置运行。\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "详见[使用说明](guide.md)。\n"
+      }
+    },
+    {
+      "id": "link-2",
+      "category": "broken_relative_link",
+      "goal": "将失效的使用说明链接指向项目中同标题的真实文档。",
+      "document": "docs/index.md",
+      "sources": [
+        "docs/usage.md"
+      ],
+      "files": {
+        "docs/index.md": "详见[使用说明](missing.md)。\n",
+        "docs/usage.md": "# 使用说明\n\n按默认配置运行。\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "详见[使用说明](usage.md)。\n"
+      }
+    },
+    {
+      "id": "link-3",
+      "category": "broken_relative_link",
+      "goal": "将失效的使用说明链接指向项目中同标题的真实文档。",
+      "document": "manual/start.md",
+      "sources": [
+        "reference.md"
+      ],
+      "files": {
+        "manual/start.md": "详见[使用说明](missing.md)。\n",
+        "reference.md": "# 使用说明\n\n按默认配置运行。\n"
+      },
+      "expected": {
+        "decision": "change",
+        "content": "详见[使用说明](../reference.md)。\n"
+      }
+    },
+    {
+      "id": "unchanged-1",
+      "category": "no_change",
+      "goal": "检查启动命令，无须修改时保持文件不变。",
+      "document": "README.md",
+      "sources": [
+        "package.json"
+      ],
+      "files": {
+        "README.md": "版本1：运行 `npm run dev`。\n",
+        "package.json": "{\"scripts\": {\"dev\": \"node -e \\\"process.exit(0)\\\"\"}}\n"
+      },
+      "expected": {
+        "decision": "no_change",
+        "content": "版本1：运行 `npm run dev`。\n"
+      }
+    },
+    {
+      "id": "unchanged-2",
+      "category": "no_change",
+      "goal": "检查启动命令，无须修改时保持文件不变。",
+      "document": "README.md",
+      "sources": [
+        "package.json"
+      ],
+      "files": {
+        "README.md": "版本2：运行 `npm run dev`。\n",
+        "package.json": "{\"scripts\": {\"dev\": \"node -e \\\"process.exit(0)\\\"\"}}\n"
+      },
+      "expected": {
+        "decision": "no_change",
+        "content": "版本2：运行 `npm run dev`。\n"
+      }
+    },
+    {
+      "id": "unchanged-3",
+      "category": "no_change",
+      "goal": "检查启动命令，无须修改时保持文件不变。",
+      "document": "README.md",
+      "sources": [
+        "package.json"
+      ],
+      "files": {
+        "README.md": "版本3：运行 `npm run dev`。\n",
+        "package.json": "{\"scripts\": {\"dev\": \"node -e \\\"process.exit(0)\\\"\"}}\n"
+      },
+      "expected": {
+        "decision": "no_change",
+        "content": "版本3：运行 `npm run dev`。\n"
+      }
+    }
+  ]
+}
