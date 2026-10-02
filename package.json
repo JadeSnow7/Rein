@@ -2,7 +2,8 @@
   "name": "rein-book",
   "version": "0.1.0",
   "private": true,
-  "description": "《Rein：从零手写一个 Agent Harness》书籍网站与配套实现",
+  "license": "Apache-2.0",
+  "description": "《Rein：从零构建 Agent》书籍网站与配套实现",
   "workspaces": [
     "ts"
   ],
@@ -11,7 +12,18 @@
     "build": "vitepress build docs",
     "preview": "vitepress preview docs",
     "test": "npm run test --workspace ts",
-    "typecheck": "npm run typecheck --workspace ts"
+    "typecheck": "npm run typecheck --workspace ts",
+    "ch05:compare-all": "node scripts/ch05-compare.mjs",
+    "ch06:compare-all": "node scripts/ch06-compare.mjs",
+    "ch07:context": "npm run ch07:context --workspace ts",
+    "ch07:compare-all": "node scripts/ch07-compare.mjs",
+    "ch08:compare": "node scripts/ch08-compare.mjs",
+    "ch08:verify": "node scripts/ch08-verify.mjs",
+    "book:check": "node scripts/book-check.mjs && node scripts/book-toc.mjs --check",
+    "book:generate": "node scripts/book-toc.mjs --write",
+    "hybrid:verify": "npm run typecheck --workspace ts && npm test --workspace ts && cargo fmt --manifest-path rust/Cargo.toml -- --check && cargo check --locked --manifest-path rust/Cargo.toml && cargo test --locked --manifest-path rust/Cargo.toml && cargo run --quiet --locked --manifest-path rust/Cargo.toml --example hybrid_stdio -- normal",
+    "hybrid:demo": "cargo run --quiet --manifest-path rust/Cargo.toml --example hybrid_stdio -- normal",
+    "hybrid:scenario": "cargo run --quiet --manifest-path rust/Cargo.toml --example hybrid_stdio --"
   },
   "devDependencies": {
     "vitepress": "1.6.4"
