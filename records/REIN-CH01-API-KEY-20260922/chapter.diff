@@ -1,0 +1,118 @@
+--- /tmp/rein-ch01-api-key-before.md	2026-09-22 18:01:35
++++ docs/chapters/python-model-call.md	2026-09-22 18:04:58
+@@ -44,6 +44,28 @@
+ 
+ 这里没有访问远端模型。离线适配器返回预先准备的回答，让我们能反复观察程序如何处理它。它也没有读取目标 README，因此这句话只能算一条未核对的意见。
+ 
++这次命令的完整输出如下：
++
++```json
++{
++  "record": {
++    "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
++    "request_count": 1,
++    "status": "opinion",
++    "error": null,
++    "messages": null
++  },
++  "result": {
++    "status": "opinion",
++    "text": "请检查 README 的 start 命令",
++    "provider": "offline",
++    "raw_digest": "1b810f3c75ec68e88cfa26152b44b54660b6f2b74c5bb6605d08d2f0f8d818fa"
++  }
++}
++```
++
++`opinion` 只表示适配器取得了一条可用意见；`provider` 是 `offline`，所以这次运行没有读取 README，也没有访问远端模型。
++
+ 我们可以自己准备另一条响应，看看同一段程序会怎样处理。先在临时目录创建回放文件，再交给入口；这些命令只创建练习响应，不修改目标文档：
+ 
+ ```bash
+@@ -56,19 +78,47 @@
+ 
+ `--response` 指定本地回放，不会开启真实服务。改变响应文本后，输出里的 `raw_digest` 也应该改变；它标记本轮响应数据，不是目标文件的摘要。程序依旧只处理一次请求。
+ 
+-## 3、看清真实请求的最短路径
++## 3、获取 API key 并配置真实请求
+ 
++如果使用 OpenAI，先登录 [API keys 页面](https://platform.openai.com/api-keys)，选择要计费和调用的项目，创建一枚 API key，并在创建后立即保存。官方的首次调用说明见 [OpenAI quickstart](https://developers.openai.com/api/docs/quickstart)。账户、项目和模型是否可用取决于你的平台设置；本教程不保证免费额度或账户一定能调用某个模型。
++
++如果使用兼容服务，请从该服务自己的控制台取得三件套：API key、兼容接口的 base URL、账户可用的模型标识。三者必须属于同一服务，不能把一个服务的 key 与另一个服务的 URL 或模型混用。OpenAI 的 base URL 示例是 `https://api.openai.com/v1`。
++
+ 真实服务需要三个配置：`REIN_BASE_URL` 指定兼容接口地址，`REIN_API_KEY` 用于认证，`REIN_MODEL` 指定账户可以调用的模型。它们由当前终端的环境变量传给程序，不是发送给模型的任务内容。把下面的占位内容换成自己的配置；密钥不要写入正文、回放文件或 Git。
+ 
++在 bash 或 zsh 中运行：
++
+ ```bash
+-export REIN_BASE_URL='你的服务提供的兼容接口基础地址'
+-export REIN_MODEL='你的账户可用的模型标识'
++# OpenAI 示例；兼容服务请替换成该服务提供的三件套。
++export REIN_BASE_URL='https://api.openai.com/v1'
++export REIN_MODEL='你的账户可用的 Chat Completions 模型标识'
++printf 'API key（输入不回显）：'
+ read -r -s REIN_API_KEY
++printf '\n'
+ export REIN_API_KEY
+ ```
+ 
+ 执行 `read` 后输入密钥并按回车，终端不显示输入内容。代码不会自动读取 `.env`；新开终端后，需要重新提供配置。第一部分的真实模式要求有效的 HTTP(S) 基础地址，账户或端点是否可用仍由实际服务决定。
+ 
++当前终端的环境变量只对这个终端及其子进程有效。下面的检查只显示是否已配置和 URL、模型文本，不会打印密钥值：
++
++```bash
++python3 - <<'PY'
++import os
++
++key = os.getenv("REIN_API_KEY", "")
++base_url = os.getenv("REIN_BASE_URL", "")
++model = os.getenv("REIN_MODEL", "")
++print({
++    "api_key_configured": bool(key),
++    "base_url": base_url or None,
++    "model": model or None,
++})
++PY
++```
++
++若三个字段都已填写，`api_key_configured` 应为 `True`。缺少任意一项时，真实入口会报告 `model_error`，其中的 `detail` 为 `config_missing`。本教程使用 `REIN_API_KEY`，它不会自动映射 SDK 默认读取的 `OPENAI_API_KEY`；这里显式把它传给 `AsyncOpenAI`，因此无需额外设置后者。
++
+ 下面是一次 SDK 调用的最短结构。`async def` 定义可以等待 I/O 的函数；`await` 等待请求完成；`asyncio.run` 启动这段异步程序。你可以把它另存为练习文件，用虚拟环境的 Python 执行；执行会向你配置的服务发送一次真实请求。
+ 
+ ```python
+@@ -107,6 +157,26 @@
+ 
+ 本轮自动检查使用离线响应和 SDK 的本地模拟，不包含真实服务调用。因此这里给出真实运行方法，但不预先承诺你的服务或模型一定通过。
+ 
++在未配置三个变量的环境中，实际输出是：
++
++```json
++{
++  "record": {
++    "task_id": "维护者给出的当前开发命令是 npm run dev；请检查 README",
++    "request_count": 0,
++    "status": "error",
++    "error": "model_error",
++    "messages": null
++  },
++  "result": {
++    "status": "model_error",
++    "detail": "config_missing"
++  }
++}
++```
++
++这是配置检查结果，没有发出网络请求。真实请求成功时，输出中的 `provider` 是当前适配器使用的标签 `openai`，不等于对兼容服务身份的判断；服务端或网络异常统一记录为 `model_error`，命令行不会把某个 HTTP 状态码当成单独的教程状态。遇到这类错误时，先按服务文档检查 base URL 的基础路径（不要填完整的 `/chat/completions`）、key 是否属于该服务项目、模型标识是否是账户可用的 Chat Completions 模型，再检查网络连通性。
++
+ ## 4、把请求收进适配器
+ 
+ 离线版本与真实版本的区别集中在取得响应的地方。入口仍然负责创建任务、开始计时、调用一次适配器并记录结果。后续加入工具时，我们就不需要把配置和网络细节散落到每个步骤里。
+@@ -136,6 +206,8 @@
+ | `empty_final` | 回答是空文本 | 模型是否提供可用最终文本 |
+ | `timeout` | 运行超过截止时间 | 服务等待与任务预算 |
+ 
++配置缺失时，查看 `result.detail` 是否为 `config_missing`；这是本地检查缺少 `REIN_BASE_URL`、`REIN_API_KEY` 或 `REIN_MODEL` 的明确提示。服务调用阶段的异常保持为 `model_error`，不要根据这条状态推断具体的 HTTP 401 或 429；程序的统一输出不会单独显示这些状态码。
++
+ 沿用刚才创建的临时目录，准备空文本和损坏的 JSON：
+ 
+ ```bash

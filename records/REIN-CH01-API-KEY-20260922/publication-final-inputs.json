@@ -1,0 +1,122 @@
+[
+  {
+    "path": "docs/chapters/minimal-agent.md",
+    "sha256": "d3317e0efd4212da809790cbca63c5f858181773e4aa6a8a0866557951651780"
+  },
+  {
+    "path": "docs/chapters/python-file-read.md",
+    "sha256": "f81d9dcdf121f5b95dca964d9b17af7de342a5c5fea8e21abf5c351e3fe3415c"
+  },
+  {
+    "path": "docs/chapters/python-model-call.md",
+    "sha256": "5bc285a201db4952bb6c4426592fbfe3b25550577da70b41746fa18b381645ac"
+  },
+  {
+    "path": "docs/chapters/python-suggestions.md",
+    "sha256": "cb508d754e9988fccc5e0a104b9b6e450a64d0c00eebcdb597d957c142f3ba99"
+  },
+  {
+    "path": "python/part1/.gitignore",
+    "sha256": "d69c04e3cf117f2566b362472b6e24a0fb66ea4d35098667df146b05564a9913"
+  },
+  {
+    "path": "python/part1/API-CONTRACT.md",
+    "sha256": "ec12afb60411e5eb5b23616e33ce9065b69d7ca518afd3dd9e5e5ace4fd5292f"
+  },
+  {
+    "path": "python/part1/S1-manifest.json",
+    "sha256": "3ff3a5d566523371335ad850327036212e4d816155c1b1c756e43c5bff91fbae"
+  },
+  {
+    "path": "python/part1/fixtures/correct/README.md",
+    "sha256": "45a0ef7a2cf0db2672f426f497c5f9bfa8accd0d6b36bf3f2b71899953ffedd0"
+  },
+  {
+    "path": "python/part1/fixtures/duplicate/README.md",
+    "sha256": "97cdced6953c5a1366f5bce294663e323159965c2483019375c6ac99799504f8"
+  },
+  {
+    "path": "python/part1/fixtures/outdated/README.md",
+    "sha256": "093af0287553a7e3d3f17bc88d5a6055bf6a38e400b20dd13100247ed812cec6"
+  },
+  {
+    "path": "python/part1/fixtures/responses/c01.json",
+    "sha256": "9fd9e358d2d2b0448179aa122010be62a78dd07ddd9ccb75d3798abc772d203e"
+  },
+  {
+    "path": "python/part1/fixtures/responses/empty.json",
+    "sha256": "4a5986ef64bd46c6ca92383551c3c128dd9173d9183051c6cd2847c93bcc98b7"
+  },
+  {
+    "path": "python/part1/fixtures/responses/hello.json",
+    "sha256": "18205728fb806dae8b5eab39b27b01c0d678640c02f4247c277df3e98d541d9c"
+  },
+  {
+    "path": "python/part1/fixtures/responses/suggest.json",
+    "sha256": "7d6a3463b078e1328b0e06f221a1f2a956d6c2082e90c57665a1892a950cca2e"
+  },
+  {
+    "path": "python/part1/fixtures/responses/timeout.json",
+    "sha256": "f7b3c5f857e79311b860bbf19a32f789a1f1f9f62d448f3d1e2294b3b0b5fa0a"
+  },
+  {
+    "path": "python/part1/fixtures/responses/tool-call.json",
+    "sha256": "3f12e738fa7c966cee98b576071a648560ea4d09808062d443b8e8eb6b991c04"
+  },
+  {
+    "path": "python/part1/rein.py",
+    "sha256": "b6e5d98e940f2736536ca3ae90b537e36ad40f992844c9abd34923893a26db67"
+  },
+  {
+    "path": "python/part1/rein_core.py",
+    "sha256": "6ac5ee64ad6a097a12e5d4d285ab27212bee748988aebb90b511cb74a9ec76b7"
+  },
+  {
+    "path": "python/part1/requirements.txt",
+    "sha256": "1b9accce10d5c89b9e3f5e7cd786721a8aaae233114577890976e6d696690905"
+  },
+  {
+    "path": "python/part1/tests/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "python/part1/tests/test_part1_contract.py",
+    "sha256": "f729af9dede893340d26d264e393699c9e5c15c994e2e81dc90ea66fa0423fb5"
+  },
+  {
+    "path": "python/part1/tests/test_sdk_mock.py",
+    "sha256": "4410efda1ecb1a2dfad0003c152ff709bf665473fbe3d88e5cca25e09c88aa77"
+  },
+  {
+    "path": ".github/workflows/test.yml",
+    "sha256": "17ed6309333ef6be7a837a18f91865b829e0660cf76bb5ef92d6757a7eacc354"
+  },
+  {
+    "path": ".gitignore",
+    "sha256": "ed88a1fb8288e6956eb1afad85a6464f80dbda18779058979ba8dfb28a6b298f"
+  },
+  {
+    "path": "README.md",
+    "sha256": "6d5553e08ec518dd17ac9808b0cc53267df524178ca248ecab33f6dfdd6a7a0d"
+  },
+  {
+    "path": "docs/.vitepress/config.mts",
+    "sha256": "c09e9aacf5be78d2aefbcc62fce7de6a86ace6b03795446d29d470e3be8bcb13"
+  },
+  {
+    "path": "docs/about.md",
+    "sha256": "efd15cf76b26599cec7ef24389b7b5f8128e15cdd592c91020f69a41c12f69e4"
+  },
+  {
+    "path": "docs/history.md",
+    "sha256": "0443c68cc7180e762ad6cc597a95296b25378a9fcc1c2402555aadd9cec8c729"
+  },
+  {
+    "path": "docs/index.md",
+    "sha256": "d4ce34c21e8e0452070264967e18b8da69554bd8c424fbf5c0f749ad96fdf441"
+  },
+  {
+    "path": "docs/toc.md",
+    "sha256": "dd1d40b360e0a0236c37bd8f28ffb14b2357f99ad1f262d25e053215873f365d"
+  }
+]

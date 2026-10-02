@@ -1,0 +1,19 @@
+{
+  "spec": "R1A-SLICE-1",
+  "round": "v3",
+  "implementation_started_after": "runtime-baseline-v2-preimplementation.log",
+  "preimplementation_failure_logs": [
+    "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-baseline-v2-preimplementation.log",
+    "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v2-preimplementation.log"
+  ],
+  "sha256": {
+    "fixtures/runtime-r1a/baseline.json": "4f2f71c1b1d6fb381f4f9a682c34a1c27bb86d5cb1717b981de3e9c5bf470d71",
+    "fixtures/runtime-r1a/alpha.txt": "b6a98d9ce9a2d9149288fa3df42d377c3e42737afdcdaf714e33c0a100b51060",
+    "fixtures/runtime-r1a/beta.txt": "f2c82decdd7181cf98945929a62598db7e6b477e11f6e0eb0ae97020eff151ad",
+    "fixtures/runtime-r1a/invalid-utf8.bin": "c160b223f7f2b8d1edc464845f9a0d1f12a7fac3abbe3f68a65ef8956fb986bf",
+    "fixtures/runtime-r1a/oversized.txt": "07ff91a9f7edcf7f3aea16f51f19724fccaf10c23285ad0dab001770a0013f61",
+    "runtime/tests/r1a_acceptance.rs": "9d3a7031bc0395dcf1ce5bf0327055c3709e992d645b90c02ae9061de23ea23f",
+    "scripts/runtime/r1a-baseline.mjs": "ecbac4c7815145c5f48c07b2fcd52f748f75fb0d93af3a7389ae37746f2ad5fe",
+    "core/src/lib.rs": "8f1df64d52a1d44dad8b1a14847d8543a7e22b5025fc696ab642cfdd2c5a445a"
+  }
+}
