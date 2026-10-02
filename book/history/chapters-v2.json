@@ -1,0 +1,917 @@
+{
+  "schema_version": "1.0",
+  "book": "Rein",
+  "version": "v2",
+  "parts": [
+    {
+      "id": "part-1",
+      "title": "让模型完成一个小任务",
+      "range": [
+        0,
+        3
+      ]
+    },
+    {
+      "id": "part-2",
+      "title": "建立可控的混合运行时",
+      "range": [
+        4,
+        9
+      ]
+    },
+    {
+      "id": "part-3",
+      "title": "让回答有依据、可检查",
+      "range": [
+        10,
+        13
+      ]
+    },
+    {
+      "id": "part-4",
+      "title": "让修改可审查、可验证",
+      "range": [
+        14,
+        17
+      ]
+    },
+    {
+      "id": "part-5",
+      "title": "可选能力分支与结项",
+      "range": [
+        18,
+        24
+      ]
+    }
+  ],
+  "milestones": [
+    {
+      "id": "milestone-1",
+      "after_slug": "tool-roundtrip",
+      "title": "真实资料问答原型",
+      "path": "/milestones/evidence-qa.html",
+      "access": "永久免费 · Apache-2.0",
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "status": "planned",
+      "checks": []
+    },
+    {
+      "id": "milestone-2",
+      "after_slug": "tool-host",
+      "title": "可控混合 Harness",
+      "path": "/milestones/controlled-harness.html",
+      "access": "永久免费 · Apache-2.0",
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "status": "planned",
+      "checks": []
+    },
+    {
+      "id": "milestone-3",
+      "after_slug": "task-verification",
+      "title": "有依据、可检查的回答",
+      "path": "/milestones/grounded-answer.html",
+      "access": "永久免费 · Apache-2.0",
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "status": "planned",
+      "checks": []
+    },
+    {
+      "id": "milestone-4",
+      "after_slug": "bounded-repair",
+      "title": "单 Agent 修改助手",
+      "path": "/milestones/single-agent-maintainer.html",
+      "access": "永久免费 · Apache-2.0",
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "status": "planned",
+      "checks": []
+    },
+    {
+      "id": "milestone-5",
+      "after_slug": "project-evaluation",
+      "title": "可展示与答辩的项目",
+      "path": "/milestones/project-defense.html",
+      "access": "永久免费 · Apache-2.0",
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "status": "planned",
+      "checks": []
+    }
+  ],
+  "chapters": [
+    {
+      "order": 0,
+      "slug": "task-map",
+      "title": "从一次文档维护任务认识 Rein",
+      "part": "part-1",
+      "previous_slug": null,
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/00.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "task-map",
+        "roles",
+        "workspace-scenario"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原00；原16场景选择",
+      "prompt_trial": "omitted",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": null,
+      "branch_prerequisites": []
+    },
+    {
+      "order": 1,
+      "slug": "model-hello",
+      "title": "HelloWorld：从模型调用开始",
+      "part": "part-1",
+      "previous_slug": "task-map",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/01.md",
+        "docs/chapters/01-rust.md",
+        "docs/chapters/01-ts.md",
+        "docs/chapters/01-ts-advanced.md"
+      ],
+      "required_capabilities": [
+        "model-call",
+        "configuration",
+        "non-streaming",
+        "failure"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原01",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "initial-project",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 2,
+      "slug": "task-spec",
+      "title": "把任务说清楚：提示词与成功标准",
+      "part": "part-1",
+      "previous_slug": "model-hello",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/02.md",
+        "docs/chapters/09.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "task-boundary",
+        "success-criteria",
+        "fixed-task-set",
+        "acceptance-questions"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原02；原09、16基础内容",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "model-hello",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 3,
+      "slug": "tool-roundtrip",
+      "title": "工具调用：让模型读取真实文件",
+      "part": "part-1",
+      "previous_slug": "task-spec",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/03.md"
+      ],
+      "required_capabilities": [
+        "tool-declaration",
+        "argument-validation",
+        "read-file",
+        "result-return"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原03",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "task-spec",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 4,
+      "slug": "provider-adapter",
+      "title": "模型接口：隔离服务商差异",
+      "part": "part-2",
+      "previous_slug": "tool-roundtrip",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/04.md"
+      ],
+      "required_capabilities": [
+        "provider-adapter",
+        "message-normalization",
+        "executor-reuse"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原04",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "tool-roundtrip",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 5,
+      "slug": "rust-migration",
+      "title": "从 TypeScript 原型走向 Rust core",
+      "part": "part-2",
+      "previous_slug": "provider-adapter",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/04.md",
+        "docs/chapters/05.md",
+        "docs/chapters/05-rust.md"
+      ],
+      "required_capabilities": [
+        "rust-types",
+        "ownership",
+        "messages",
+        "calls-and-results"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "新增过渡；原04、05",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "provider-adapter",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 6,
+      "slug": "agent-loop",
+      "title": "核心 Agent Loop：让工具结果推动下一轮",
+      "part": "part-2",
+      "previous_slug": "rust-migration",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/05.md",
+        "docs/chapters/05-rust.md"
+      ],
+      "required_capabilities": [
+        "agent-loop",
+        "async-interface",
+        "serial-tool-calls",
+        "call-id-pairing"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原05",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "rust-migration",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 7,
+      "slug": "loop-budget",
+      "title": "循环预算与重复动作",
+      "part": "part-2",
+      "previous_slug": "agent-loop",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/06.md",
+        "docs/chapters/06-rust.md"
+      ],
+      "required_capabilities": [
+        "turn-budget",
+        "tool-budget",
+        "duplicate-action",
+        "skipped-events"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原06",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "agent-loop",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 8,
+      "slug": "cancellation",
+      "title": "取消、截止时间与资源生命周期",
+      "part": "part-2",
+      "previous_slug": "loop-budget",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/06.md",
+        "docs/chapters/06-rust.md"
+      ],
+      "required_capabilities": [
+        "cancellation",
+        "deadline",
+        "future-lifecycle",
+        "resource-release"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原06；A.3主线内容",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "loop-budget",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 9,
+      "slug": "tool-host",
+      "title": "工具宿主与声明式扩展点",
+      "part": "part-2",
+      "previous_slug": "cancellation",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/06-plugin.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "rein-extension-0.2",
+        "read-file",
+        "search-files",
+        "capability-declaration"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原06 Plugin；M1迁移",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "implemented",
+      "acceptance_status": "not_run",
+      "execution_records": [
+        "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v2.json"
+      ],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "cancellation",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 10,
+      "slug": "context-state",
+      "title": "上下文结构：历史、状态与发送预算",
+      "part": "part-3",
+      "previous_slug": "tool-host",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/07.md",
+        "docs/chapters/07-rust.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "history",
+        "state",
+        "send-budget",
+        "message-pairing"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原07",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "tool-host",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 11,
+      "slug": "context-retrieval",
+      "title": "获取外部资料：按需读取与检索",
+      "part": "part-3",
+      "previous_slug": "context-state",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/08.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "retrieval",
+        "source-record",
+        "miss-handling"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原08按需读取、检索",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "context-state",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 12,
+      "slug": "context-compression",
+      "title": "将资料压缩接入循环",
+      "part": "part-3",
+      "previous_slug": "context-retrieval",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/08.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "extractive-compression",
+        "provenance",
+        "budget-gain",
+        "information-loss"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原08摘要、窗口及比较材料",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "unverified",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "context-retrieval",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 13,
+      "slug": "task-verification",
+      "title": "验收条件、验证器与证据",
+      "part": "part-3",
+      "previous_slug": "context-compression",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/09.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "acceptance-rules",
+        "controlled-command",
+        "evidence-binding",
+        "false-positive-analysis"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原09；受控验证命令",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "implemented",
+      "acceptance_status": "not_run",
+      "execution_records": [
+        "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v2.json"
+      ],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "context-compression",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 14,
+      "slug": "trust-permissions",
+      "title": "信任边界与工具权限",
+      "part": "part-4",
+      "previous_slug": "task-verification",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/11.md",
+        "docs/chapters/12.md"
+      ],
+      "required_capabilities": [
+        "trust-boundary",
+        "prompt-injection",
+        "secret-handling",
+        "per-call-authorization"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原11；原12基础权限",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "implemented",
+      "acceptance_status": "not_run",
+      "execution_records": [
+        "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v2.json"
+      ],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "task-verification",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 15,
+      "slug": "patch-candidate",
+      "title": "从修改意图到可审查补丁",
+      "part": "part-4",
+      "previous_slug": "trust-permissions",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/12.md"
+      ],
+      "required_capabilities": [
+        "candidate-patch",
+        "diff",
+        "applicability-check"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "补齐原12隐含前置",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "implemented",
+      "acceptance_status": "not_run",
+      "execution_records": [
+        "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v2.json"
+      ],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "trust-permissions",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 16,
+      "slug": "approved-patch",
+      "title": "批准、应用与修改后验证",
+      "part": "part-4",
+      "previous_slug": "patch-candidate",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/12.md"
+      ],
+      "required_capabilities": [
+        "approval",
+        "baseline-check",
+        "patch-apply",
+        "post-change-verification"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原12",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "implemented",
+      "acceptance_status": "not_run",
+      "execution_records": [
+        "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v2.json",
+        "records/REIN-BOOK-V2-20260917/evidence/lesson-16-demo-v1.json"
+      ],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "patch-candidate",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 17,
+      "slug": "bounded-repair",
+      "title": "失败反馈与有限修复",
+      "part": "part-4",
+      "previous_slug": "approved-patch",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/10.md"
+      ],
+      "required_capabilities": [
+        "failure-feedback",
+        "bounded-retry",
+        "stop-condition",
+        "human-handoff"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "draft",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原10",
+      "prompt_trial": "not-tried",
+      "content_status": "draft",
+      "implementation_status": "implemented",
+      "acceptance_status": "not_run",
+      "execution_records": [
+        "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v2.json"
+      ],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "approved-patch",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 18,
+      "slug": "task-planning",
+      "title": "计划与任务审查",
+      "part": "part-5",
+      "previous_slug": "bounded-repair",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/13.md"
+      ],
+      "required_capabilities": [
+        "task-plan",
+        "dependencies",
+        "review-gates"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "planned",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原13计划部分",
+      "prompt_trial": "not-tried",
+      "content_status": "planned",
+      "implementation_status": "not_started",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "bounded-repair",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 19,
+      "slug": "durable-recovery",
+      "title": "持久化执行与崩溃恢复",
+      "part": "part-5",
+      "previous_slug": "task-planning",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/13.md"
+      ],
+      "required_capabilities": [
+        "persistent-events",
+        "recovery",
+        "unknown-side-effect"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "planned",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原13恢复部分；A.4",
+      "prompt_trial": "not-tried",
+      "content_status": "planned",
+      "implementation_status": "not_started",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "task-planning",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 20,
+      "slug": "extension-sdk",
+      "title": "扩展协议与 TypeScript SDK",
+      "part": "part-5",
+      "previous_slug": "durable-recovery",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/15.md",
+        "docs/chapters/06-plugin.md",
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "sdk",
+        "versioning",
+        "compatibility",
+        "deprecation"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "planned",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原15；Plugin深入内容",
+      "prompt_trial": "not-tried",
+      "content_status": "planned",
+      "implementation_status": "not_started",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "durable-recovery",
+      "branch_prerequisites": []
+    },
+    {
+      "order": 21,
+      "slug": "mcp-tools",
+      "title": "接入 MCP：复用外部工具能力",
+      "part": "part-5",
+      "previous_slug": "extension-sdk",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/15.md"
+      ],
+      "required_capabilities": [
+        "mcp-stdio",
+        "tool-mapping",
+        "cancellation",
+        "error-handling"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "planned",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原15 MCP",
+      "prompt_trial": "not-tried",
+      "content_status": "planned",
+      "implementation_status": "not_started",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "extension-sdk",
+      "branch_prerequisites": [
+        "tool-host",
+        "task-verification",
+        "trust-permissions",
+        "extension-sdk"
+      ]
+    },
+    {
+      "order": 22,
+      "slug": "execution-hooks",
+      "title": "Hooks：在执行节点加入受控扩展",
+      "part": "part-5",
+      "previous_slug": "mcp-tools",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/15.md"
+      ],
+      "required_capabilities": [
+        "fixed-hook-points",
+        "failure-policy",
+        "permission-boundary"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "planned",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原15 Hooks",
+      "prompt_trial": "not-tried",
+      "content_status": "planned",
+      "implementation_status": "not_started",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "mcp-tools",
+      "branch_prerequisites": [
+        "tool-host",
+        "task-verification",
+        "trust-permissions",
+        "extension-sdk"
+      ]
+    },
+    {
+      "order": 23,
+      "slug": "bounded-delegation",
+      "title": "受限委派与多智能体协作",
+      "part": "part-5",
+      "previous_slug": "execution-hooks",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/14.md"
+      ],
+      "required_capabilities": [
+        "serial-delegation",
+        "subtask-contract",
+        "evidence-merge",
+        "conflict-discussion"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "planned",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原14；A.5",
+      "prompt_trial": "not-tried",
+      "content_status": "planned",
+      "implementation_status": "not_started",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "baseline_from_slug": "execution-hooks",
+      "branch_prerequisites": [
+        "bounded-repair",
+        "task-planning",
+        "trust-permissions",
+        "loop-budget"
+      ]
+    },
+    {
+      "order": 24,
+      "slug": "project-evaluation",
+      "title": "文档维护助手：评测与复盘",
+      "part": "part-5",
+      "previous_slug": "bounded-delegation",
+      "baseline_snapshot": null,
+      "output_snapshot": null,
+      "old_source_paths": [
+        "docs/chapters/16.md"
+      ],
+      "required_capabilities": [
+        "evaluation",
+        "four-case-families",
+        "failure-analysis",
+        "tradeoffs"
+      ],
+      "planned": true,
+      "actual": false,
+      "status": "planned",
+      "access": "永久免费 · Apache-2.0",
+      "source": "原16评测部分；基础输入来自 bounded-repair",
+      "prompt_trial": "not-tried",
+      "baseline_from_slug": "bounded-repair",
+      "content_status": "planned",
+      "implementation_status": "not_started",
+      "acceptance_status": "not_run",
+      "execution_records": [],
+      "access_source": "user-confirmed:2026-09-21-apache-2.0",
+      "branch_prerequisites": []
+    }
+  ]
+}

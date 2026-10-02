@@ -1,6 +1,6 @@
 ---
 prev:
-  text: 01 从模型调用开始 · 公共导读
+  text: 01 HelloWorld · TypeScript 正文
   link: /chapters/01.html
 next:
   text: 02 写一份合格的提示词 · 待撰写
@@ -9,7 +9,7 @@ next:
 
 # TypeScript 进阶，手写客户端、录制与回放
 
-本页保存 SDK 改写前的手写 HTTP 教程，作为历史实现的延伸阅读。当前第一章请从 [HelloWorld 主线](./01-ts.md)进入；本页提到的 Rust 待补齐等状态属于旧版背景，当前 Rust SDK 版见[对应正文](./01-rust.md)。
+本页保存 SDK 改写前的手写 HTTP 教程，作为历史实现的延伸阅读。当前第一章请从 [HelloWorld TypeScript 正文（修订中）](./01.md)进入；本页提到的 Rust 待补齐等状态属于旧版背景，当前 Rust SDK 版见[对应正文](./01-rust.md)。
 
 终端里打印出一句回答，这件事到底经过了多少步？
 
@@ -17,7 +17,7 @@ next:
 
 我们先跑一份已有样本，把这条调用路径看清楚，再按需发出真实请求。手里没有可用密钥，也能完成大部分练习。
 
-本篇按 `ts/` 中的现有代码展开。想先看本章共同解决的问题，读[公共导读](./01.md)；Rust 的正式调用实现还未提供，公共导读列出其后续需要满足的共同要求。
+本篇按 `ts/` 中的现有代码展开。想先看本章 TypeScript 主线，读[第 01 章 TypeScript 正文（修订中）](./01.md)；Rust 的正式调用实现见[对应正文](./01-rust.md)。
 
 ## 本章要完成什么 {#from-reading-0}
 
@@ -515,3 +515,8 @@ Rust 路线的读者可以用同一张表梳理请求、解析与失败边界；
 <p><code>ch01</code> 保存本章初版代码与两份录制样本，仍保留旧版 429 提示，也不包含阅读 0 的双语言材料。跟随本页时使用包含阅读 0 与修订版调用代码的工作版本。<code>git checkout ch01</code> 会切换整个仓库到历史快照，含义与注意事项见<a href="../readings/00.html#git">阅读 0 的 Git 说明</a>。</p>
 <p>主要文件为 <code>ts/src/config.ts</code>、<code>ts/src/transport.ts</code>、<code>ts/src/chat.ts</code>、<code>ts/src/errors.ts</code>、<code>ts/src/main.ts</code>、<code>ts/scripts/record.ts</code> 与 <code>ts/tests/</code>。</p>
 </div>
+
+
+::: info 新版主题去向
+本页保留原章节主题、内容和锚点。新版相关内容见[01 HelloWorld：从模型调用开始](./model-hello.md)。新旧章号不是同一套编号；历史命令和快照保持原义。
+:::

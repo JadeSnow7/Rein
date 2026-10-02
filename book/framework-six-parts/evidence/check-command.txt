@@ -1,0 +1,55 @@
+python3 - <<'PY'
+from pathlib import Path
+import re,json,hashlib,subprocess,datetime
+root=Path.cwd(); d=root/'book/framework-six-parts'; output=d/'evidence/checks.json'
+if not output.exists(): output.write_text('{}\n')
+base=json.loads((d/'evidence/baseline.json').read_text())
+titles=['我们要实现一个怎样的 Agent','用 Python 完成第一次模型调用','让模型读取真实文件','在终端展示修改位置与建议','从 Python 原型迁移到 Rust','统一模型消息与工具协议','写出核心 Agent Loop','让循环适时停止','取消任务与观察运行过程','管理上下文与运行状态','按需获取与压缩资料','区分指令、资料与不可信输入','控制工具权限与执行范围','把修改建议变成候选补丁','审查、批准与应用修改','验证结果与有限修复','计划模式：先组织任务，再执行','Skill：加载可复用的工作方法','扩展接口与执行 Hooks','接入 MCP 工具','多智能体与受限委派','设计 IDE 与 Harness 的连接方式','把编辑器上下文交给 Agent','完成一次真实开发任务','评测、打包与项目复盘','让 Agent 理解项目的架构','让 Agent 做出有依据的设计','让 Agent 记住设计理由','让 Agent 持续修改而不破坏系统','如何判断 Agent 真的进步了']
+fields=['进入条件','问题与失败现象','核心概念','小节安排','贯穿示例','实现增量','验收设计','产物与练习','交接','复用与证据']; ranges=[(0,3),(4,8),(9,15),(16,20),(21,24),(25,29)]
+errors=[]; chapters=[]; field_count=0; subsection_count=0; links=0; diffs=[]
+expected=['README.md','migration-map.md','review.md']+[f'part-{i:02}.md' for i in range(1,7)]
+actual=sorted(p.name for p in d.glob('*.md'))
+if actual!=sorted(expected):errors.append({'files':actual})
+for i,(start,end) in enumerate(ranges,1):
+ p=d/f'part-{i:02}.md'; t=p.read_text(); ms=list(re.finditer(r'^## (\d{2}) (.+)$',t,re.M))
+ if [int(m[1]) for m in ms]!=list(range(start,end+1)):errors.append({'chapter_range':p.name})
+ for n,m in enumerate(ms):
+  num=int(m[1]);chapters.append(num)
+  if m[2]!=titles[num]:errors.append({'title':m[0]})
+  body=t[m.end():ms[n+1].start() if n+1<len(ms) else len(t)]
+  fs=list(re.finditer(r'^### (.+)$',body,re.M));field_count+=len(fs)
+  if [f[1] for f in fs]!=fields:errors.append({'fields':num})
+  for j,f in enumerate(fs):
+   section=body[f.end():fs[j+1].start() if j+1<len(fs) else len(body)].strip()
+   if not section:errors.append({'empty_field':[num,f[1]]})
+   if f[1]=='小节安排':
+    count=len(re.findall(r'^\d+\. ',section,re.M));subsection_count+=count
+    if count<4:errors.append({'too_few_subsections':num})
+  for required in ['正常','失败','回归','产物','练习','完成标准','计划']:
+   if required not in body:errors.append({'missing_marker':[num,required]})
+for name in expected:
+ p=d/name;t=p.read_text()
+ for target in re.findall(r'\]\(([^)]+)\)',t):
+  if '://' in target: continue
+  links+=1
+  path,_,anchor=target.partition('#'); dest=(p.parent/path).resolve() if path else p
+  if not dest.exists():errors.append({'missing_link':[name,target]})
+  if anchor:errors.append({'anchor_requires_manual_check':[name,target]})
+ r=subprocess.run(['git','diff','--no-index','--check','--','/dev/null',str(p.relative_to(root))],capture_output=True,text=True)
+ diffs.append({'path':name,'command':'git diff --no-index --check -- /dev/null '+str(p.relative_to(root)),'exit_code':r.returncode,'stdout':r.stdout,'stderr':r.stderr})
+ if r.returncode not in (0,1) or r.stdout or r.stderr:errors.append({'diff_check':name})
+old=json.loads((root/'book/chapters.json').read_text())['chapters'];mapping=(d/'migration-map.md').read_text()
+missing_slugs=[c['slug'] for c in old if c['slug']+'.md' not in mapping]
+if missing_slugs:errors.append({'unmapped_slugs':missing_slugs})
+changed=[p for p,h in base['protected_files'].items() if not (root/p).is_file() or hashlib.sha256((root/p).read_bytes()).hexdigest()!=h]
+if changed:errors.append({'protected_changes':changed})
+paths=set(subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z']).decode().split('\0'))-{''}
+new=sorted(paths-set(base['protected_files']));outside=[p for p in new if not p.startswith('book/framework-six-parts/')]
+if outside:errors.append({'outside_new_paths':outside})
+head=subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()
+if head!=base['head']:errors.append({'head_changed':head})
+report={'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'framework documents only; semantic review in review.md; no product or teaching execution acceptance','head':head,'result':'passed' if not errors else 'failed','markdown_files':len(actual),'chapters':chapters,'chapter_fields':field_count,'teaching_subsections':subsection_count,'local_links_checked':links,'old_slugs_mapped':len(old)-len(missing_slugs),'protected_file_count':len(base['protected_files']),'protected_changes':changed,'new_paths':new,'outside_new_paths':outside,'errors':errors,'diff_checks':diffs,'diff_exit_note':'For --no-index, exit 1 with empty diagnostics means expected new-file difference, not whitespace failure.','document_sha256':{name:hashlib.sha256((d/name).read_bytes()).hexdigest() for name in expected},'source_path_exceptions':{'ts/ch03.ts':'explicitly identified as reader-created and absent','rust/src/rein/adapter.rs':'explicit planned path, not claimed as existing'}}
+output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k not in ['diff_checks','document_sha256','new_paths']},ensure_ascii=False,indent=2))
+raise SystemExit(0 if not errors else 1)
+PY

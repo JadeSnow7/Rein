@@ -8,7 +8,7 @@ const { variant = 'floating' } = defineProps<{ variant?: 'floating' }>()
 const selectedLanguage = inject<Ref<Language>>(sourceVersionStateKey, ref<Language>('ts'))
 
 const preferenceKey = 'rein:source-language'
-const languageLabels: Record<Language, string> = { ts: 'TS', rust: 'Rust' }
+const languageLabels: Record<Language, string> = { ts: 'TypeScript', rust: 'Rust' }
 const route = useRoute()
 const router = useRouter()
 const { site } = useData()
@@ -103,7 +103,7 @@ watch(() => route.path, syncLanguageFromRoute)
 </script>
 
 <template>
-  <div class="source-version-switch" :class="`source-version-switch--${variant}`" :aria-label="statusText">
+  <div v-if="pair?.ts && pair?.rust" class="source-version-switch" :class="`source-version-switch--${variant}`" :aria-label="statusText">
     <div class="source-version-switch__buttons" role="group" aria-label="切换源码语言">
       <button
         v-for="option in (['ts', 'rust'] as Language[])"
@@ -113,8 +113,7 @@ watch(() => route.path, syncLanguageFromRoute)
         :class="{ active: isGenericContent ? selectedLanguage === option : explicitLanguage === option, unavailable: option === 'rust' && !rustAvailable }"
         :aria-pressed="isGenericContent ? selectedLanguage === option : explicitLanguage === option"
         @click="selectLanguage(option)"
-      >{{ option === 'rust' && !rustAvailable ? 'Rust 待补齐' : languageLabels[option] }}</button>
+      >{{ languageLabels[option] }}</button>
     </div>
-    <span class="source-version-switch__status" role="status" aria-live="polite">{{ statusText }}</span>
   </div>
 </template>
