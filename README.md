@@ -1,6 +1,27 @@
 # Rein
 
-《Rein：从零手写一个 Agent Harness》是一本面向 Agent 学习者与求职者的工程实践书。
+Rein 的产品职责是 **单 Agent Harness / runtime 与 CLI**：模型适配、上下文构造、工具执行循环、执行权限与预算、取消、会话恢复、事件及原始产物。书稿与教学实现继续保留在本仓库。
+
+**当前 main 交付的是教学实现，还没有统一的产品 runtime API。** 《Rein：从零手写一个 Agent Harness》及配套示例仍是当前阅读入口；下面的产品边界和接口候选不表示能力已经实现。
+
+## 产品职责与实现状态
+
+| 项目 | 拥有的职责 | 交接方式 |
+| --- | --- | --- |
+| Rein | 一个 Agent / 一次执行尝试的模型、上下文、工具循环、权限执行、局部预算、取消、恢复、事件和产物 | 接收有界执行请求，返回运行状态与原始回执 |
+| [Veriflow](https://github.com/JadeSnow7/Veriflow) | 验收契约、任务依赖、跨 Agent 调度、验证计划、失败诊断与修复安排、证据组织及整体验收 | 通过版本化 RuntimePort 驱动 Rein；不直接写 Rein 会话存储 |
+| [Web Studio](https://github.com/JadeSnow7/Web-Studio) | Web 工作空间、浏览器与终端环境、CDP、页面操作、截图、日志、运行时状态观测、调试及人工审阅界面 | 向执行器提供环境能力与原始观测；不替 Veriflow 判定任务通过 |
+
+Rein 保留执行一个固定检查并返回回执的能力，也可独立运行自己的单 Agent 示例；项目验收条件、跨任务门槛及修复策略由 Veriflow 管理。目标项目自己的业务契约仍是验收依据。跨 Agent 的资源选择、依赖就绪、全局预算、重试与整合不进入 Rein core。
+
+| 可核验位置 | 实际范围 |
+| --- | --- |
+| main：`python/hello_world/` | `hello / generate / diagnose / edit / check`，有界读取、局部工具循环、单文件确认写入与固定 C++ 检查 |
+| main：`python/part1/API-CONTRACT.md`、`ts/src/`、`rust/src/` | 历史只读建议器合同、模型调用与教学接口；不能当作跨项目运行 API |
+| 未合并的 [PR #3](https://github.com/JadeSnow7/Rein/pull/3)，审查提交 `44e3454` | R1a 纯步进状态机、SQLite/outbox、artifact、固定 verifier 和 `demo / show / resume / cancel / schema`；尚未进入 main，不能据此宣称通用模型或调度已交付 |
+| 本轮 [RuntimePort 0.1 候选](contracts/runtime-port-v0.1.md) | 文档契约；没有新增命令、服务、SDK 或跨 Agent 执行器 |
+
+本轮决定、与 PR #3 旧分工的冲突及后续实现切片见 [职责边界同步](DECISIONS.md#职责边界同步2026-10-04)。合并在途 PR 时必须沿用这个更新后的分工，不能恢复“Rein 负责 Coordinator / DAG、Veriflow 仅为方法论”的旧定位。
 
 ## 仓库目录
 
@@ -16,7 +37,7 @@
 | `rust/` | Rust 实现与测试 | 第 01 章 SDK 调用与测试、阅读 0 独立练习已落地 |
 | `python/hello_world/` | 当前三章 Hello World 生成、修复与验证 | 包含 CLI、样本和离线 / SDK 模拟测试 |
 | `python/part1/` | 前一版 README 只读建议器 | 保留实现和历史样本 |
-| `contracts/` | 两条路线重叠能力的共享合同 | 第 04 章定义 |
+| `contracts/` | 教学共享合同与跨项目运行接口候选 | 教学合同仍按原路线推导；新增 RuntimePort 文档候选，尚无实现 |
 | `fixtures/` | 共享验收输入与预期结果 | 已有两份模型响应录制；工具验收用例待第 03 章 |
 
 影响长期结构的决定记录在 [DECISIONS.md](DECISIONS.md)；迁移记录入口为 [MIGRATIONS.md](MIGRATIONS.md)。
