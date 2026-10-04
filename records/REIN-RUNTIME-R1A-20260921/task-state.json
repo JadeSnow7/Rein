@@ -1,0 +1,552 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "R1A-SLICE-1",
+    "authority": "records/REIN-RUNTIME-R1A-20260921/implementation-spec.md",
+    "source_ids": [
+      "SRC-001",
+      "SRC-002"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "preserve preexisting dirty changes",
+      "core pure, committed effects only",
+      "unknown is not passed and never auto-replayed",
+      "Apache-2.0 for own current work, preserve third-party licenses"
+    ],
+    "exceptions": [
+      "First R1a increment only; whole R1a/P0 and cross-project product integration are not accepted by this record"
+    ],
+    "conditions": [
+      {
+        "id": "SC-RUNTIME",
+        "metric_ids": [
+          "MET-001",
+          "MET-002"
+        ],
+        "deliverables": [
+          "core/src/lib.rs",
+          "runtime/src/lib.rs",
+          "runtime/src/main.rs",
+          "runtime/README.md"
+        ]
+      },
+      {
+        "id": "SC-CONTRACTS",
+        "metric_ids": [
+          "MET-003"
+        ],
+        "deliverables": [
+          "Cargo.toml",
+          "Cargo.lock",
+          "scripts/runtime/check-contracts.mjs"
+        ]
+      },
+      {
+        "id": "SC-LICENSE",
+        "metric_ids": [
+          "MET-004"
+        ],
+        "deliverables": [
+          "LICENSE",
+          "package.json",
+          "ts/package.json",
+          "rust/Cargo.toml",
+          "book/chapters.json",
+          "docs/access.md",
+          "README.md"
+        ]
+      }
+    ],
+    "contracts": [
+      "records/REIN-RUNTIME-R1A-20260921/implementation-spec.md"
+    ],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-RUNTIME-R1A-20260921",
+    "title": "R1a 原生持久闭环首批实现与 Apache-2.0 统一",
+    "mode": "new",
+    "status": "implemented",
+    "source_ids": [
+      "SRC-001",
+      "SRC-002"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "Rein 开发者与后续 Web Studio 消费者",
+    "scenario": "从已修订的产品线计划开始实现原生基础设施",
+    "problem": "当前仅有教学内存 loop，缺持久产品 runtime；许可未统一",
+    "expected_outcome": "首批原生只读闭环可实际运行、可恢复、按证据验收；三个项目当前自有成果 Apache-2.0 一致",
+    "scope": "新产品 Rust runtime 首批纵切和 Rein 当前许可；Web Studio/Veriflow 本轮只核对许可，不改产品源码",
+    "acceptable_result": "冻结 B01-B12 的本轮条件满足；未完成后续阶段明确保留"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:product-line-and-implementation-20260921",
+      "summary": "Rein 基础设施、Web Studio 验证场景、Veriflow 方法论；按修订计划使用子代理开始实现",
+      "adoption": "accepted"
+    },
+    {
+      "id": "SRC-002",
+      "kind": "user_requirement",
+      "reference": "conversation:apache-2-20260921",
+      "summary": "统一采用 Apache-2 协议开源",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "可恢复的原生只读首批纵切",
+      "scope": [
+        "pure core",
+        "SQLite runtime",
+        "generated contracts",
+        "legacy regression"
+      ],
+      "non_goals": [
+        "commit/push/release",
+        "whole P0 acceptance"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "先离线单任务验证，后续按 R1a/R1b/R1c 扩展"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-001",
+        "MET-002",
+        "MET-003"
+      ],
+      "implementation_task_ids": [
+        "IT-001"
+      ]
+    },
+    {
+      "id": "MT-002",
+      "source_ids": [
+        "SRC-002"
+      ],
+      "goal": "统一当前自有成果的 Apache-2.0 声明",
+      "scope": [
+        "license",
+        "metadata",
+        "current book access labels"
+      ],
+      "non_goals": [
+        "commit/push/release",
+        "whole P0 acceptance"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "先离线单任务验证，后续按 R1a/R1b/R1c 扩展"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-004"
+      ],
+      "implementation_task_ids": [
+        "IT-002"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "原生只读模型工具反馈及持久状态",
+      "baseline": "产品 crates 尚不存在；固定 B01 新增测试先失败",
+      "target": "B01 正常闭环使用真实工具数据并持久化；B02 去重",
+      "method": "Rust 集成测试与实际 CLI demo/show",
+      "environment_data": "macOS 当前工作区；合同 R1A-SLICE-1；临时独立 fixture/SQLite，无真实付费模型调用",
+      "evidence_ids": [
+        "EVD-001"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "失败、取消、恢复和隔离边界",
+      "baseline": "现有 loop 内存状态；新基准先缺失失败",
+      "target": "B03-B08/B10 反例按冻结预期拒绝或 unknown，无错误验收和重复派发",
+      "method": "SQLite 故障注入、多连接及临时文件测试",
+      "environment_data": "macOS 当前工作区；合同 R1A-SLICE-1；临时独立 fixture/SQLite，无真实付费模型调用",
+      "evidence_ids": [
+        "EVD-001"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-003",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "生成合同和旧教学兼容",
+      "baseline": "保留旧源码和原始回归日志；全量监听受沙箱限制",
+      "target": "B09 生成一致且漂移失败；B11 旧基准通过",
+      "method": "schema check、故意漂移检查及原有 Rust/TS/compare/hybrid 命令",
+      "environment_data": "macOS 当前工作区；合同 R1A-SLICE-1；临时独立 fixture/SQLite，无真实付费模型调用",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-004",
+      "main_task_id": "MT-002",
+      "kind": "mandatory_gate",
+      "name": "Apache-2.0 许可统一",
+      "baseline": "Rein 缺根许可；Web Studio 和 Veriflow 已是 Apache-2.0",
+      "target": "B12 当前索引、元数据、许可一致，旧正文交付状态不变",
+      "method": "license 文件/元数据及初始索引对比、book:check 和 build",
+      "environment_data": "macOS 当前工作区；合同 R1A-SLICE-1；临时独立 fixture/SQLite，无真实付费模型调用",
+      "evidence_ids": [
+        "EVD-003"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "按 implementation-spec 实现首批运行时并验证",
+      "file_scope": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "core",
+        "runtime",
+        "agentmux",
+        "contracts/runtime",
+        "scripts/runtime",
+        ".gitignore",
+        ".github/workflows/test.yml",
+        "fixtures/runtime-r1a"
+      ],
+      "interface_constraints": [
+        "core 无 I/O",
+        "preserve legacy sources",
+        "only committed intents may dispatch"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001",
+        "MET-002",
+        "MET-003"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "owner": "coder-store_atomicity: core/runtime/modules/control tests; coder-cli_completion: CLI/contracts/CI; prior coders: artifact/tools/generator/license; main-thread: independent review and bound evidence",
+      "status": "verified"
+    },
+    {
+      "id": "IT-002",
+      "main_task_id": "MT-002",
+      "source_ids": [
+        "SRC-002"
+      ],
+      "scope": "根许可、包元数据和当前文档开放提示",
+      "file_scope": [
+        "LICENSE",
+        "package.json",
+        "package-lock.json",
+        "ts/package.json",
+        "rust/Cargo.toml",
+        "rust/examples/reading-00/Cargo.toml",
+        "book/chapters.json",
+        "docs",
+        "README.md",
+        "DECISIONS.md"
+      ],
+      "interface_constraints": [
+        "preserve historical records and chapter delivery status",
+        "do not relicense third-party material"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-004"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-003"
+      ],
+      "owner": "coder-license; root owns README/DECISIONS",
+      "status": "verified"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EVD-001",
+      "path": "records/REIN-RUNTIME-R1A-20260921/evidence/final-runtime.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001",
+        "MET-002",
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-20T21:56:58.658157Z",
+      "sha256": "e6de2695d6f22e2655d46a4ad6a9e47e60eb9d7d91a82e3bbf96a9e54835789e"
+    },
+    {
+      "id": "EVD-002",
+      "path": "records/REIN-RUNTIME-R1A-20260921/evidence/final-regression.json",
+      "kind": "execution",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-20T21:58:12.195395Z",
+      "sha256": "1f1dabf542db2cf97e955471ab6fd5fc083fef0888c25534c45f167452be94f9"
+    },
+    {
+      "id": "EVD-003",
+      "path": "records/REIN-RUNTIME-R1A-20260921/evidence/final-license.json",
+      "kind": "execution",
+      "supports": [
+        "MET-004"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-20T21:56:54.770337Z",
+      "sha256": "50034352cb9a9d1722cb24ab745a83df14b044b35a14a53818cd516aad83f5da"
+    }
+  ],
+  "changes": [
+    {
+      "id": "CHG-001",
+      "implementation_task_ids": [
+        "IT-001"
+      ],
+      "paths": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "core",
+        "runtime",
+        "contracts/runtime",
+        "fixtures/runtime-r1a",
+        "scripts/runtime",
+        ".github/workflows/test.yml",
+        ".gitignore"
+      ],
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:921725a7d9c3d96ab1645075f924d8287127dee718de4bfd0097c54663ec0826:spec:b3f9f8787ac73e8e01abee1f79e0e56e2523dcb34cc8144f0805a511e27ebb28",
+      "status": "reviewed"
+    },
+    {
+      "id": "CHG-002",
+      "implementation_task_ids": [
+        "IT-002"
+      ],
+      "paths": [
+        "LICENSE",
+        "book/chapters.json",
+        "docs/about.md",
+        "docs/access.md",
+        "docs/appendices/a1.md",
+        "docs/appendices/a3.md",
+        "docs/appendices/a4.md",
+        "docs/appendices/a5.md",
+        "docs/chapters/04.md",
+        "docs/chapters/06-plugin.md",
+        "docs/chapters/09.md",
+        "docs/chapters/10.md",
+        "docs/chapters/12.md",
+        "docs/chapters/13.md",
+        "docs/chapters/14.md",
+        "docs/chapters/15.md",
+        "docs/chapters/16.md",
+        "docs/chapters/agent-loop.md",
+        "docs/chapters/approved-patch.md",
+        "docs/chapters/bounded-delegation.md",
+        "docs/chapters/bounded-repair.md",
+        "docs/chapters/cancellation.md",
+        "docs/chapters/context-compression.md",
+        "docs/chapters/context-retrieval.md",
+        "docs/chapters/context-state.md",
+        "docs/chapters/durable-recovery.md",
+        "docs/chapters/execution-hooks.md",
+        "docs/chapters/extension-sdk.md",
+        "docs/chapters/loop-budget.md",
+        "docs/chapters/mcp-tools.md",
+        "docs/chapters/patch-candidate.md",
+        "docs/chapters/project-evaluation.md",
+        "docs/chapters/provider-adapter.md",
+        "docs/chapters/task-planning.md",
+        "docs/chapters/task-verification.md",
+        "docs/chapters/tool-host.md",
+        "docs/index.md",
+        "docs/milestones/03.md",
+        "docs/milestones/04.md",
+        "docs/milestones/controlled-harness.md",
+        "docs/milestones/grounded-answer.md",
+        "docs/milestones/project-defense.md",
+        "docs/milestones/single-agent-maintainer.md",
+        "docs/toc.md",
+        "package-lock.json",
+        "package.json",
+        "rust/Cargo.toml",
+        "rust/examples/reading-00/Cargo.toml",
+        "ts/package.json"
+      ],
+      "evidence_ids": [
+        "EVD-003"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:921725a7d9c3d96ab1645075f924d8287127dee718de4bfd0097c54663ec0826:spec:b3f9f8787ac73e8e01abee1f79e0e56e2523dcb34cc8144f0805a511e27ebb28",
+      "status": "reviewed"
+    },
+    {
+      "id": "CHG-003",
+      "implementation_task_ids": [
+        "IT-001",
+        "IT-002"
+      ],
+      "paths": [
+        "README.md",
+        "DECISIONS.md",
+        "REIN-IMPLEMENTATION-PLAN.md"
+      ],
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002",
+        "EVD-003"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:921725a7d9c3d96ab1645075f924d8287127dee718de4bfd0097c54663ec0826:spec:b3f9f8787ac73e8e01abee1f79e0e56e2523dcb34cc8144f0805a511e27ebb28",
+      "status": "reviewed"
+    },
+    {
+      "id": "CHG-004",
+      "implementation_task_ids": [
+        "IT-001",
+        "IT-002"
+      ],
+      "paths": [
+        "records/REIN-RUNTIME-R1A-20260921"
+      ],
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002",
+        "EVD-003"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:921725a7d9c3d96ab1645075f924d8287127dee718de4bfd0097c54663ec0826:spec:b3f9f8787ac73e8e01abee1f79e0e56e2523dcb34cc8144f0805a511e27ebb28",
+      "status": "reviewed"
+    }
+  ],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002",
+      "MET-003",
+      "MET-004"
+    ],
+    "evidence_ids": [
+      "EVD-001",
+      "EVD-002",
+      "EVD-003"
+    ],
+    "status": "undetermined"
+  },
+  "baseline": {
+    "git_ref": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+    "worktree_status": "dirty_dependency_confirmed",
+    "ownership": "原工作区已快照至 baseline/source-inputs.tar.gz 并保存逐文件哈希；保留既有工作，按本合同所有权追加实现，不覆写旧源码。",
+    "foreign_paths": [
+      "chapter-snapshots",
+      "reports",
+      "records/REIN-BOOK-V2-20260917"
+    ],
+    "prepared_at": "2026-09-20T20:47:51.295591+00:00",
+    "external_inputs": [
+      {
+        "path": "/Users/huaodong/workspace/Web Studio/LICENSE",
+        "kind": "fixture",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "identity": "Web Studio existing root license",
+        "reproduction": "Read existing project root LICENSE; compare with captured baseline/license-inventory.json SHA-256"
+      },
+      {
+        "path": "/Users/huaodong/Documents/evidence-driven-development/LICENSE",
+        "kind": "fixture",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "identity": "Veriflow existing root license",
+        "reproduction": "Read existing project root LICENSE; compare with captured baseline/license-inventory.json SHA-256"
+      }
+    ]
+  },
+  "binding": {
+    "receipt_paths": [
+      "records/REIN-RUNTIME-R1A-20260921/evidence/final-runtime.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/final-regression.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/final-license.json"
+    ]
+  },
+  "authorization": {
+    "commit": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "push": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "merge": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "deploy": {
+      "status": "not_authorized",
+      "source_id": null
+    }
+  },
+  "delivery": {
+    "local_validation": "passed",
+    "remote_ci": "not_started",
+    "remote_ci_revision": null
+  },
+  "actions": [],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "source_ids": [
+        "SRC-002"
+      ],
+      "status": "accepted",
+      "decision": "Apache-2.0 applies to current own source/docs; archived source prefix remains with current licensing note; third-party licenses retained."
+    }
+  ],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "实现或许可审查失败",
+    "steps": [
+      "保留失败原始证据",
+      "仅修复本任务拥有的路径并复跑冻结基准，不 reset 他人工作"
+    ],
+    "owner": "main-thread"
+  }
+}

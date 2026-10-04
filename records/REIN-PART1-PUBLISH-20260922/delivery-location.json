@@ -1,0 +1,6 @@
+{
+  "authoritative_release_worktree": "/private/tmp/rein-publish-part1-20260922",
+  "branch": "codex/publish-part1-20260922",
+  "state_file": "/private/tmp/rein-publish-part1-20260922/records/REIN-PART1-PUBLISH-20260922/task-state.json",
+  "note": "原工作区只保存发布摘要和外部回执；完整发布Spec、diff和状态位于隔离工作副本，勿以此原工作区重新绑定其验证。"
+}

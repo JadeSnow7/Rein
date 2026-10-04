@@ -1,10 +1,10 @@
 # TypeScript track
 
-TypeScript 是本书两种实现路线之一。`src/` 随正文逐章演进。第 01 章 SDK 教程使用 `ch01-helloworld` 快照；旧 `ch01` 保留手写 HTTP 版本。新版标签只在本地交付时，远程新克隆仓库尚不可获取，具体见[第一章](../docs/chapters/01-ts.md#first-run)。策略与理由见仓库根 [DECISIONS.md](../DECISIONS.md)。
+TypeScript 在本书中承担入门、Node 宿主、SDK 和领域插件。`src/` 随正文逐章演进。第 01 章 SDK 教程使用 `ch01-helloworld` 快照；旧 `ch01` 保留手写 HTTP 版本。新版标签只在本地交付时，远程新克隆仓库尚不可获取，具体见[第一章](../docs/chapters/01.md#first-run)。策略与理由见仓库根 [DECISIONS.md](../DECISIONS.md)。
 
-- `src/`：主线实现，逐章累积
+- `src/`：入门调用、Node 宿主与历史 TS loop 对照
 - `tests/`：与合同、fixture 对应的验收用例
-- `examples/`：阅读 0 独立练习已落地；后续标注"可独立阅读"章节的自包含最小示例待建设
+- `examples/`：阅读 0、05–07 离线入口与其他章节示例
 
 ## 运行
 

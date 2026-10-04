@@ -1,0 +1,205 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Observation",
+  "type": "object",
+  "required": [
+    "attempt_id",
+    "kind",
+    "observation_id",
+    "revision",
+    "run_id",
+    "session_id"
+  ],
+  "properties": {
+    "attempt_id": {
+      "type": "string"
+    },
+    "effect_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "kind": {
+      "$ref": "#/definitions/ObservationKind"
+    },
+    "observation_id": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0.0
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "ArtifactRef": {
+      "type": "object",
+      "required": [
+        "hash",
+        "len"
+      ],
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "len": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "ObservationKind": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "Start",
+            "Cancel",
+            "OutcomeUnknown"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "ModelTurn"
+          ],
+          "properties": {
+            "ModelTurn": {
+              "type": "object",
+              "properties": {
+                "final_ref": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ArtifactRef"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "tool_call": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ToolCall"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "ToolResult"
+          ],
+          "properties": {
+            "ToolResult": {
+              "type": "object",
+              "required": [
+                "call_id",
+                "result_ref"
+              ],
+              "properties": {
+                "call_id": {
+                  "type": "string"
+                },
+                "result_ref": {
+                  "$ref": "#/definitions/ArtifactRef"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "ToolFailed"
+          ],
+          "properties": {
+            "ToolFailed": {
+              "type": "object",
+              "required": [
+                "call_id",
+                "error_ref"
+              ],
+              "properties": {
+                "call_id": {
+                  "type": "string"
+                },
+                "error_ref": {
+                  "$ref": "#/definitions/ArtifactRef"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "VerifierResult"
+          ],
+          "properties": {
+            "VerifierResult": {
+              "type": "object",
+              "required": [
+                "output_ref",
+                "status"
+              ],
+              "properties": {
+                "output_ref": {
+                  "$ref": "#/definitions/ArtifactRef"
+                },
+                "status": {
+                  "$ref": "#/definitions/VerificationStatus"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ToolCall": {
+      "type": "object",
+      "required": [
+        "args_ref",
+        "call_id",
+        "name"
+      ],
+      "properties": {
+        "args_ref": {
+          "$ref": "#/definitions/ArtifactRef"
+        },
+        "call_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "VerificationStatus": {
+      "type": "string",
+      "enum": [
+        "Passed",
+        "Failed",
+        "Undetermined"
+      ]
+    }
+  }
+}

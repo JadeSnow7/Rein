@@ -24,8 +24,8 @@ BASH_TIMEOUT = 2
 BASH_COMMANDS = {
     "pwd": ("/bin/pwd",),
     "ls -1": ("/bin/ls", "-1"),
-    "cat compiler.log": ("/bin/cat", "compiler.log"),
 }
+TIMEOUT_ERROR_NAMES = {"APITimeoutError", "Timeout", "ReadTimeout"}
 
 
 class HelloError(Exception):
@@ -115,10 +115,21 @@ def environment_snapshot() -> dict[str, str]:
             version = (result.stdout or result.stderr).splitlines()[0] if result.returncode == 0 else "unavailable"
         except (OSError, subprocess.TimeoutExpired):
             version = "unavailable"
-    return {"os": platform.platform(), "python": platform.python_version(), "compiler": compiler, "compiler_version": version}
+    return {
+        "os": platform.platform(),
+        "python": platform.python_version(),
+        "compiler": compiler,
+        "compiler_version": version,
+    }
 
 
-def run_bash(workspace: Path, command: str, *, max_bytes: int = MAX_BASH_OUTPUT, timeout: float = BASH_TIMEOUT) -> dict[str, Any]:
+def run_bash(
+    workspace: Path,
+    command: str,
+    *,
+    max_bytes: int = MAX_BASH_OUTPUT,
+    timeout: float = BASH_TIMEOUT,
+) -> dict[str, Any]:
     """Run one fixed, read-only inspection command in the exercise workspace.
 
     The command is selected from ``BASH_COMMANDS`` and is never interpreted by
@@ -126,14 +137,10 @@ def run_bash(workspace: Path, command: str, *, max_bytes: int = MAX_BASH_OUTPUT,
     every command that could modify the workspace.
     """
     if not isinstance(command, str) or command not in BASH_COMMANDS:
-        raise HelloError("bash_command_invalid", "allowed commands are pwd, ls -1 and cat compiler.log")
+        raise HelloError("bash_command_invalid", "allowed commands are pwd and ls -1")
     root = Path(workspace)
     if root.is_symlink() or not root.is_dir():
         raise HelloError("path_invalid", "workspace must be a regular directory")
-    if command == "cat compiler.log":
-        log = root / "compiler.log"
-        if log.is_symlink() or not log.is_file():
-            raise HelloError("path_invalid", "compiler.log must be a regular file in workspace")
     try:
         completed = subprocess.run(
             list(BASH_COMMANDS[command]),
@@ -169,6 +176,14 @@ def _config(environ: dict[str, str]) -> dict[str, str]:
     return {name: environ[name] for name in names}
 
 
+def make_sdk_client(config: dict[str, str]) -> Any:
+    """Create the Chat Completions client: 30 s timeout, no automatic retry."""
+    from openai import OpenAI
+
+    sdk = OpenAI(api_key=config["REIN_API_KEY"], base_url=config["REIN_BASE_URL"], timeout=30, max_retries=0)
+    return sdk.chat.completions
+
+
 def _extract_response(response: Any) -> str:
     if hasattr(response, "model_dump"):
         response = response.model_dump()
@@ -186,8 +201,40 @@ def _extract_response(response: Any) -> str:
     return content
 
 
+def classify_sdk_error(exc: Exception) -> HelloError:
+    """Map SDK and transport failures to short categories without response bodies or keys."""
+    if isinstance(exc, TimeoutError) or type(exc).__name__ in TIMEOUT_ERROR_NAMES:
+        return HelloError("timeout", "model request timed out")
+    status = getattr(exc, "status_code", None)
+    if status is None:
+        return HelloError("model_error", type(exc).__name__)
+    status = int(status)
+    body = getattr(exc, "body", None)
+    error = body.get("error", body) if isinstance(body, dict) else {}
+    if not isinstance(error, dict):
+        error = {}
+    if status in {401, 403}:
+        code = "auth_error"
+    elif error.get("code") == "insufficient_quota":
+        code = "quota_exhausted"
+    elif "rate_limit_exceeded" in {error.get("code"), error.get("type")}:
+        code = "rate_limit"
+    elif status >= 500:
+        code = "server_error"
+    else:
+        code = "http_error"
+    return HelloError(code, f"HTTP {status}")
+
+
 # region live_request
-def hello(prompt: str, *, mode: str = "offline", environ: dict[str, str] | None = None, client: Any = None, client_factory: Any = None) -> HelloResult:
+def hello(
+    prompt: str,
+    *,
+    mode: str = "offline",
+    environ: dict[str, str] | None = None,
+    client: Any = None,
+    client_factory: Any = None,
+) -> HelloResult:
     if mode == "offline":
         return HelloResult("你好，我是一个可以帮助你阅读、修正和验证代码的模型。")
     if mode != "live":
@@ -198,30 +245,14 @@ def hello(prompt: str, *, mode: str = "offline", environ: dict[str, str] | None 
             if client_factory is not None:
                 client = client_factory(config)
             else:
-                from openai import OpenAI
-                sdk = OpenAI(api_key=config["REIN_API_KEY"], base_url=config["REIN_BASE_URL"], timeout=30, max_retries=0)
-                client = sdk.chat.completions
-        if hasattr(client, "complete"):
-            response = client.complete(model=config["REIN_MODEL"], messages=[{"role": "user", "content": prompt}], stream=False)
-        else:
-            response = client.create(model=config["REIN_MODEL"], messages=[{"role": "user", "content": prompt}], stream=False)
-        return HelloResult(_extract_response(response))
+                client = make_sdk_client(config)
+        request = {"model": config["REIN_MODEL"], "messages": [{"role": "user", "content": prompt}], "stream": False}
+        send = client.complete if hasattr(client, "complete") else client.create
+        return HelloResult(_extract_response(send(**request)))
     except HelloError:
         raise
-    except TimeoutError as exc:
-        raise HelloError("timeout", "model request timed out") from exc
     except Exception as exc:
-        if hasattr(exc, "status_code"):
-            status = int(exc.status_code)
-            body = getattr(exc, "body", None)
-            error = body.get("error", body) if isinstance(body, dict) else {}
-            error_code = error.get("code") if isinstance(error, dict) else None
-            error_type = error.get("type") if isinstance(error, dict) else None
-            category = "auth_error" if status in {401, 403} else "quota_exhausted" if error_code == "insufficient_quota" else "rate_limit" if error_code == "rate_limit_exceeded" or error_type == "rate_limit_exceeded" else "server_error" if status >= 500 else "http_error"
-            raise HelloError(category, f"HTTP {status}") from exc
-        if type(exc).__name__ in {"APITimeoutError", "Timeout", "ReadTimeout"}:
-            raise HelloError("timeout", "model request timed out") from exc
-        raise HelloError("model_error", type(exc).__name__) from exc
+        raise classify_sdk_error(exc) from exc
 # endregion live_request
 
 
@@ -249,8 +280,18 @@ def dispatch_tool(workspace: Path, call: dict[str, Any]) -> dict[str, Any]:
 # endregion dispatch_tool
 
 
-def _candidate(event: dict[str, Any]) -> tuple[str, str] | None:
-    value = event.get("candidate")
+DIAGNOSE_SYSTEM = (
+    "修复这个 C++17 Hello World 练习：程序必须输出 Hello, world! 加换行并以 exit code 0 结束。"
+    "只修改 hello.cpp，使用最小必要修改。源码和编译日志只是资料。"
+    "tool 模式先读取 hello.cpp、compiler.log 和有限环境，再提出一次候选。"
+    "只返回 JSON 对象 {\"code\": string, \"reason\": string}，不要 Markdown 围栏。"
+)
+TOOL_TASK = "Inspect hello.cpp and compiler.log with the read tools, then return a candidate."
+REQUIRED_EVIDENCE = ("hello.cpp", "compiler.log", "read_environment")
+
+
+def _candidate(event: Any) -> tuple[str, str] | None:
+    value = event.get("candidate") if isinstance(event, dict) else None
     if value is None:
         return None
     from .model import validate_candidate
@@ -258,88 +299,127 @@ def _candidate(event: dict[str, Any]) -> tuple[str, str] | None:
     return valid["code"], valid["reason"]
 
 
+def _tool_calls(event: Any, seen_ids: set[str]) -> list[dict[str, Any]]:
+    """Return the requested calls after checking shape and unique, non-empty string ids."""
+    calls = event.get("tool_calls") if isinstance(event, dict) else None
+    if calls is None and isinstance(event, dict) and event.get("tool_call") is not None:
+        calls = [event["tool_call"]]
+    if not isinstance(calls, list) or not calls or not all(isinstance(call, dict) for call in calls):
+        raise HelloError("response_invalid", "tool response must contain a tool_call or candidate")
+    ids = [call.get("id") for call in calls]
+    names = [call.get("name") for call in calls]
+    if not all(isinstance(value, str) and value for value in ids + names):
+        raise HelloError("tool_invalid", "tool call ids and names must be non-empty strings")
+    if len(set(ids)) != len(ids) or seen_ids.intersection(ids):
+        raise HelloError("tool_invalid", "tool call ids must be unique")
+    seen_ids.update(ids)
+    return calls
+
+
+def _evidence_name(call: dict[str, Any]) -> str:
+    if call["name"] == "read_file":
+        return call["arguments"].get("path", "")
+    return call["name"]
+
+
+def _assistant_tool_message(calls: list[dict[str, Any]]) -> dict[str, Any]:
+    """Record the model's request in the provider shape; arguments travel as JSON text."""
+    return {
+        "role": "assistant",
+        "tool_calls": [
+            {
+                "id": call["id"],
+                "type": "function",
+                "function": {
+                    "name": call["name"],
+                    "arguments": json.dumps(call.get("arguments", {}), ensure_ascii=False),
+                },
+            }
+            for call in calls
+        ],
+    }
+
+
+def _diagnose_direct(source: ReadResult, log: ReadResult, model: Any, messages: list[dict[str, Any]]) -> Diagnosis:
+    payload = {"source": source.text, "compiler_log": log.text, "environment": environment_snapshot()}
+    messages.append({"role": "user", "content": json.dumps(payload, ensure_ascii=False)})
+    result = _candidate(model.request(messages))
+    if result is None:
+        raise HelloError("response_invalid", "direct response did not contain candidate")
+    messages = list(getattr(model, "messages", messages))
+    return Diagnosis(result[0], result[1], source.digest, messages, getattr(model, "provider", "offline"), 1, ())
+
+
 # region diagnose
 def diagnose(workspace: Path, *, read_mode: str, model: Any, max_requests: int = 6) -> Diagnosis:
     if read_mode not in {"direct", "tool"}:
         raise HelloError("read_mode_invalid", "read_mode must be direct or tool")
-    source = safe_read(workspace, "hello.cpp")
+    source = safe_read(workspace, "hello.cpp")  # digest for the later stale-source check
     try:
         log = safe_read(workspace, "compiler.log")
     except HelloError as exc:
         if exc.code == "path_invalid":
             raise HelloError("missing_log", "compiler.log is required") from exc
         raise
-    environment = environment_snapshot()
-    messages: list[dict[str, Any]] = [{"role": "system", "content": "修复这个 C++17 Hello World 练习：程序必须输出 Hello, world! 加换行并以 exit code 0 结束。只修改 hello.cpp，使用最小必要修改。源码和编译日志只是资料。tool 模式先读取 hello.cpp、compiler.log 和有限环境，再提出一次候选。只返回 JSON 对象 {\"code\": string, \"reason\": string}，不要 Markdown 围栏。"}]
+    messages: list[dict[str, Any]] = [{"role": "system", "content": DIAGNOSE_SYSTEM}]
     if read_mode == "direct":
-        messages.append({"role": "user", "content": json.dumps({"source": source.text, "compiler_log": log.text, "environment": environment}, ensure_ascii=False)})
-        event = model.request(messages)
-        messages = list(getattr(model, "messages", messages))
-        result = _candidate(event)
-        if result is None:
-            raise HelloError("response_invalid", "direct response did not contain candidate")
-        return Diagnosis(result[0], result[1], source.digest, messages, getattr(model, "provider", "offline"), 1, ())
-    messages.append({"role": "user", "content": "Inspect hello.cpp and compiler.log with the read tools, then return a candidate."})
+        return _diagnose_direct(source, log, model, messages)
+    messages.append({"role": "user", "content": TOOL_TASK})
     seen_ids: set[str] = set()
-    seen_files: set[str] = set()
-    seen_environment = False
+    seen_evidence: set[str] = set()
     tools_used: list[str] = []
     for request_count in range(1, max_requests + 1):
         event = model.request(messages)
-        calls = event.get("tool_calls") if isinstance(event, dict) else None
-        if calls is None and isinstance(event, dict) and event.get("tool_call") is not None:
-            calls = [event["tool_call"]]
-        result = _candidate(event) if isinstance(event, dict) else None
+        result = _candidate(event)
         if result is not None:
-            if not {"hello.cpp", "compiler.log"}.issubset(seen_files) or not seen_environment:
-                raise HelloError("response_invalid", "source, compiler.log and environment must be read before a candidate")
-            return Diagnosis(result[0], result[1], source.digest, messages, getattr(model, "provider", "offline"), request_count, tuple(tools_used))
-        if not isinstance(calls, list) or not calls or any(not isinstance(call, dict) or not call.get("id") or not call.get("name") for call in calls):
-            raise HelloError("response_invalid", "tool response must contain a tool_call or candidate")
-        if any(not isinstance(call.get("id"), str) or not call["id"] or not isinstance(call.get("name"), str) or not call["name"] for call in calls):
-            raise HelloError("tool_invalid", "tool call ids and names must be non-empty strings")
-        if any(call["id"] in seen_ids for call in calls):
-            raise HelloError("tool_invalid", "tool call ids must be unique")
-        if len({call["id"] for call in calls}) != len(calls):
-            raise HelloError("tool_invalid", "tool call ids must be unique")
-        seen_ids.update(call["id"] for call in calls)
-        messages.append({"role": "assistant", "tool_calls": [{"id": call["id"], "type": "function", "function": {"name": call["name"], "arguments": json.dumps(call.get("arguments", {}), ensure_ascii=False)}} for call in calls]})
+            missing = [name for name in REQUIRED_EVIDENCE if name not in seen_evidence]
+            if not missing:
+                provider = getattr(model, "provider", "offline")
+                code, reason = result
+                return Diagnosis(code, reason, source.digest, messages, provider, request_count, tuple(tools_used))
+            # Too early: keep the answer in history and ask for the missing evidence.
+            messages.append({"role": "assistant", "content": json.dumps(event["candidate"], ensure_ascii=False)})
+            messages.append({"role": "user", "content": "候选暂不接受。请先用工具读取：" + "、".join(missing)})
+            continue
+        calls = _tool_calls(event, seen_ids)
+        messages.append(_assistant_tool_message(calls))
         for call in calls:
-            result_payload = dispatch_tool(workspace, call)
+            payload = dispatch_tool(workspace, call)
             tools_used.append(call["name"])
-            if call["name"] == "read_file":
-                seen_files.add(call["arguments"].get("path", ""))
-            elif call["name"] == "read_environment":
-                seen_environment = True
-            messages.append({"role": "tool", "tool_call_id": call["id"], "content": json.dumps(result_payload, ensure_ascii=False)})
+            seen_evidence.add(_evidence_name(call))
+            content = json.dumps(payload, ensure_ascii=False)
+            messages.append({"role": "tool", "tool_call_id": call["id"], "content": content})
         model.messages = list(messages)
     raise HelloError("request_budget", f"maximum {max_requests} model requests reached")
 # endregion diagnose
 
 
 # region render_review
+RED, GREEN, RESET = "\x1b[31m", "\x1b[32m", "\x1b[0m"
+
+
+def _numbered(text: str) -> list[str]:
+    return [f"{index:>4} | {line}" for index, line in enumerate(text.splitlines(), 1)]
+
+
 def render_review(original: str, candidate: str, *, color: str = "auto") -> str:
     if color not in {"auto", "always", "never"}:
         raise HelloError("color_invalid", "color must be auto, always or never")
-    lines = ["=== original file ==="]
-    lines += [f"{index:>4} | {line}" for index, line in enumerate(original.splitlines(), 1)]
-    lines.append("=== candidate file ===")
-    lines += [f"{index:>4} | {line}" for index, line in enumerate(candidate.splitlines(), 1)]
-    lines.append("=== diff ===")
-    diff = list(difflib.unified_diff(original.splitlines(True), candidate.splitlines(True), fromfile="hello.cpp", tofile="hello.cpp (candidate)"))
-    rendered = "\n".join(lines)
-    use_color = color == "always" or (color == "auto" and getattr(getattr(sys, "stdout", None), "isatty", lambda: False)())
-    if use_color:
-        colored = []
-        for line in diff:
-            prefix = line[:1]
-            shade = "\x1b[31m" if prefix == "-" else "\x1b[32m" if prefix == "+" else ""
-            colored.append(f"{shade}{line}\x1b[0m" if shade else line)
-        diff_text = "".join(colored)
-    else:
-        diff_text = "".join(diff)
-    rendered += "\n" + diff_text
-    return rendered
+    lines = ["=== original file ===", *_numbered(original)]
+    lines += ["=== candidate file ===", *_numbered(candidate), "=== diff ==="]
+    diff = difflib.unified_diff(
+        original.splitlines(True),
+        candidate.splitlines(True),
+        fromfile="hello.cpp",
+        tofile="hello.cpp (candidate)",
+    )
+    is_terminal = getattr(sys.stdout, "isatty", lambda: False)()
+    use_color = color == "always" or (color == "auto" and is_terminal)
+    shown = []
+    for line in diff:
+        shade = {"-": RED, "+": GREEN}.get(line[:1], "") if use_color else ""
+        shown.append(f"{shade}{line}{RESET}" if shade else line)  # "-" and "+" stay visible
+    return "\n".join(lines) + "\n" + "".join(shown)
 # endregion render_review
 
 
@@ -349,15 +429,16 @@ def accept_choice(value: str) -> bool:
 
 # region apply_candidate
 def apply_candidate(workspace: Path, candidate: str, *, expected_digest: str, accept: bool) -> ApplyResult:
+    if not accept:
+        return ApplyResult("rejected")  # rejecting never touches the workspace
     source = safe_read(workspace, "hello.cpp")
     if source.digest != expected_digest:
         raise HelloError("source_changed", "hello.cpp changed while waiting for approval")
-    if not accept:
-        return ApplyResult("rejected")
-    backup = Path(workspace) / f"hello.cpp.bak-{time.time_ns()}"
+    root = Path(workspace)
+    backup = root / f"hello.cpp.bak-{time.time_ns()}"
     try:
-        backup.write_bytes((Path(workspace) / "hello.cpp").read_bytes())
-        (Path(workspace) / "hello.cpp").write_text(candidate, encoding="utf-8")
+        backup.write_bytes(source.text.encode("utf-8"))  # the bytes that were just checked
+        (root / "hello.cpp").write_text(candidate, encoding="utf-8")
     except OSError as exc:
         raise HelloError("write_failed", str(exc)) from exc
     return ApplyResult("accepted", str(backup))
@@ -365,6 +446,14 @@ def apply_candidate(workspace: Path, candidate: str, *, expected_digest: str, ac
 
 
 # region check_cpp
+COMPILE_TIMEOUT = 10
+EXPECTED_OUTPUT = "Hello, world!\n"
+
+
+def _log_section(title: str, returncode: Any, stdout: str, stderr: str) -> str:
+    return f"{title} exit={returncode}\nstdout:\n{stdout}stderr:\n{stderr}"
+
+
 def check_cpp(workspace: Path, *, run_timeout: float = 2.0) -> CheckResult:
     root = Path(workspace)
     safe_read(root, "hello.cpp")
@@ -372,40 +461,46 @@ def check_cpp(workspace: Path, *, run_timeout: float = 2.0) -> CheckResult:
     if log_path.is_symlink() or (log_path.exists() and not log_path.is_file()):
         raise HelloError("path_invalid", "compiler.log must be a regular file")
     with tempfile.TemporaryDirectory(prefix="hello-world-") as temp:
-        binary = str(Path(temp) / "hello")
+        binary = str(Path(temp) / "hello")  # a fresh binary; old outputs are never run
         command = ["c++", "-std=c++17", "hello.cpp", "-o", binary]
         try:
-            compiled = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=10)
+            compiled = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=COMPILE_TIMEOUT)
         except subprocess.TimeoutExpired as exc:
             raise HelloError("compile_timeout", "C++ compilation timed out") from exc
         except FileNotFoundError as exc:
             raise HelloError("compiler_missing", "c++ was not found") from exc
-        compiler_log = f"compile exit={compiled.returncode}\nstdout:\n{compiled.stdout or ''}stderr:\n{compiled.stderr or ''}"
-        log_path.write_text(compiler_log, encoding="utf-8")
+        compile_log = _log_section("compile", compiled.returncode, compiled.stdout or "", compiled.stderr or "")
+        log_path.write_text(compile_log, encoding="utf-8")
         if compiled.returncode != 0:
-            return CheckResult(command, compiled.returncode, None, "", compiler_log, False)
-        timed_out = False
+            return CheckResult(command, compiled.returncode, None, "", compile_log, False)
         try:
             run = subprocess.run([binary], cwd=root, capture_output=True, text=True, timeout=run_timeout)
-            stdout, stderr, returncode = run.stdout, run.stderr, run.returncode
-            (root / "compiler.log").write_text(compiler_log + f"run exit={returncode}\nstdout:\n{stdout}stderr:\n{stderr}", encoding="utf-8")
+            stdout, stderr, returncode, timed_out = run.stdout, run.stderr, run.returncode, False
         except subprocess.TimeoutExpired as exc:
-            timed_out = True
-            stdout = exc.stdout or b""
-            stderr = (exc.stderr or b"")
-            if isinstance(stdout, bytes):
-                stdout = stdout.decode("utf-8", "replace")
-            if isinstance(stderr, bytes):
-                stderr = stderr.decode("utf-8", "replace")
-            stderr += "execution timed out"
-            returncode = None
-            (root / "compiler.log").write_text(compiler_log + "run exit=timeout\nstdout:\n" + stdout + "stderr:\n" + stderr, encoding="utf-8")
-        passed = not timed_out and returncode == 0 and stdout == "Hello, world!\n"
+            stdout = _text(exc.stdout)
+            stderr = _text(exc.stderr) + "execution timed out"
+            returncode, timed_out = None, True
+        # The run result becomes evidence for the next diagnosis as well.
+        run_log = _log_section("run", "timeout" if timed_out else returncode, stdout, stderr)
+        log_path.write_text(compile_log + run_log, encoding="utf-8")
+        passed = not timed_out and returncode == 0 and stdout == EXPECTED_OUTPUT
     return CheckResult(command, compiled.returncode, returncode, stdout, stderr, passed, timed_out)
+
+
+def _text(value: Any) -> str:
+    if isinstance(value, bytes):
+        return value.decode("utf-8", "replace")
+    return value or ""
 # endregion check_cpp
 
 
-def generate_code(prompt: str, *, mode: str = "offline", environ: dict[str, str] | None = None, client: Any = None) -> str:
+def generate_code(
+    prompt: str,
+    *,
+    mode: str = "offline",
+    environ: dict[str, str] | None = None,
+    client: Any = None,
+) -> str:
     if mode == "offline":
         return '#include <iostream>\n\nint main() {\n    std::cout << "Hello, world!\\n";\n}\n'
     result = hello(prompt + " Return only complete C++ source code.", mode="live", environ=environ, client=client)

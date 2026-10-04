@@ -1,0 +1,13 @@
+{
+  "cases": [{"workspaceFiles": {
+    "first.txt": "marker: first\nalpha",
+    "second.txt": "marker: second\nbeta"
+  },
+  "prompt": "搜索 marker:，读取命中的两个文件并总结",
+  "modelTurns": [
+    {"content": "", "toolCalls": [{"id":"search-1","name":"search_files","arguments":{"needle":"marker:"}}]},
+    {"content": "", "toolCalls": [{"id":"read-1","name":"read_file","arguments":{"path":"first.txt"}},{"id":"read-2","name":"read_file","arguments":{"path":"second.txt"}}]},
+    {"content": "marker: first\nalpha | marker: second\nbeta", "toolCalls": []}
+  ],
+  "expected": {"state":"completed","reason":"final_answer","answer":"marker: first\nalpha | marker: second\nbeta","readPaths":["first.txt","second.txt"],"errorCodes":[]}}, {"workspaceFiles":{"README.md":"恢复用 README 内容","notes.md":"marker: notes"},"prompt":"先读取 missing.md，失败后读取 README.md","modelTurns":[{"content":"","toolCalls":[{"id":"missing-1","name":"read_file","arguments":{"path":"missing.md"}}]},{"content":"","toolCalls":[{"id":"ok-1","name":"read_file","arguments":{"path":"README.md"}}]},{"content":"恢复用 README 内容","toolCalls":[]}],"expected":{"state":"completed","reason":"final_answer","answer":"恢复用 README 内容","readPaths":["missing.md","README.md"],"errorCodes":["path_invalid"]}}]
+}

@@ -1,0 +1,2133 @@
+diff --git a/docs/appendices/a2.md b/docs/appendices/a2.md
+index 33bff19..ec79c26 100644
+--- a/docs/appendices/a2.md
++++ b/docs/appendices/a2.md
+@@ -1,7 +1,118 @@
+ # A.2 用枚举与类型表达运行状态
+ 
+-**状态：待撰写｜限时免费**
++第 05、06 章的循环同时维护“程序现在是什么状态”和“最后为什么停下”。以下类型节选对应 `chapter-snapshots/rein-ch06.tar.gz` 恢复时点；最终演进树还会增加上下文等停止原因，但这两个章节入口仍兼容。TypeScript 用判别联合表示事件，Rust 用带数据的枚举表示同一组事件。两者都能在 JSON 中表达共同观察结果，但编译期类型并不会替代运行时校验。
+ 
+-计划对照第 05 章讨论类型约束与运行时校验。
++## TypeScript：以 `type` 判别事件
+ 
+-完成主线任务所必需的实现步骤，将放在对应章节的 TS / Rust 版。本附录保留进一步的设计比较，供两种语言的读者查阅；当前只有主题规划。
++`ts/src/rein/loop.ts` 将状态和停止原因定义为字符串联合，下面是事件类型的节选：
++
++```ts
++export type LoopState = 'running' | 'completed' | 'failed'
++export type StopReason = 'final_answer' | 'empty_final' | 'model_error' |
++  'max_turns' | 'tool_budget_exhausted' | 'duplicate_action' | 'cancelled' | 'timeout'
++export type LoopEvent =
++  | { readonly type: 'model_requested'; readonly turn: number; readonly messages: readonly Message[] }
++  | { readonly type: 'tool_result'; readonly turn: number; readonly toolCallId: string; readonly result: ToolResult }
++  | { readonly type: 'action_skipped'; readonly action: 'model' | 'tool'; readonly reason: StopReason }
++  | { readonly type: 'stopped'; readonly state: Exclude<LoopState, 'running'>; readonly reason: StopReason }
++```
++
++`type` 是判别字段：读取事件时先判断 `event.type`，TypeScript 才能知道本分支有哪些字段。`readonly` 约束编译期赋值，不会阻止不受类型检查的 JavaScript 修改对象，也不会验证外部 JSON。`LoopResult` 的 `answer` 和 `error` 是可选字段，因此取消或失败结果不应被代码假定有答案。
++
++合同中的 `ToolResult` 也采用布尔值加可选字段：
++
++```ts
++export interface ToolResult {
++  readonly toolCallId: string
++  readonly ok: boolean
++  readonly output?: string
++  readonly error?: { readonly code: string; readonly message: string }
++}
++```
++
++运行时的 `dispatchReadonly` 仍需检查工具名、参数类型、路径边界和文件错误；`additionalProperties: false` 只是发给模型的 schema 声明。外部模型响应先经过 JSON 解析和字段检查，不能因为接口声明了 `ModelTurn` 就跳过验证。
++
++## Rust：枚举携带状态和数据
++
++`rust/src/rein/loop.rs` 用 serde 属性把 Rust 枚举转换成共享 wire 值：
++
++```rust
++#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
++#[serde(rename_all = "snake_case")]
++pub enum StopReason {
++    FinalAnswer,
++    EmptyFinal,
++    ModelError,
++    MaxTurns,
++    ToolBudgetExhausted,
++    DuplicateAction,
++    Cancelled,
++    Timeout,
++}
++```
++
++事件枚举用 `#[serde(tag = "type", rename_all = "snake_case")]`，例如 `ToolResult` 携带 `turn`、`call`、`tool_call_id` 和 `result`，`ActionSkipped` 携带可选 `call_id` 与停止原因。Rust 的 `match` 要覆盖枚举变体，编译器能发现新增状态遗漏；`Option<String>` 明确答案和错误可能不存在。`serde(rename = "toolCallId")` 又让 Rust 字段落成与 TypeScript 相同的 JSON 键。
++
++## 同一个 JSON，不同的边界
++
++两种实现都把实际结果放入消息和事件：
++
++```json
++{"type":"tool_result","turn":2,"call":{"id":"read-1","name":"read_file","arguments":{"path":"README.md"}},"toolCallId":"read-1","result":{"toolCallId":"read-1","ok":true,"output":"marker: ch06 alpha\n"}}
++{"type":"stopped","state":"completed","reason":"final_answer"}
++```
++
++`snake_case` 的停止原因和 `camelCase` 的关联字段是 wire 合同；事件的完整字段仍以各语言实现为准。序列化成功只说明值能编码，不能证明工具路径安全、模型回答非空或动作真的执行。TypeScript 依靠运行时分支和测试，Rust 依靠类型、serde 解码和运行时检查共同完成边界。
++
++例如，`LoopEvent` 的 `readonly`、Rust 的 `Vec<Message>` 和 `Option` 都不自动阻止恶意或损坏的外部输入。真正的验证点仍在 adapter 解析、`dispatchReadonly` 的参数/路径检查和循环停止分支。把编译通过写成“已经完成任务”，会丢掉这些运行时条件。
++
++## 跟做：把状态和事件一起读
++
++```bash
++export REIN_A2_DIR="$(mktemp -d)"
++printf 'marker: ch06 alpha\n' > "$REIN_A2_DIR/README.md"
++npm run ch06:offline --workspace ts -- normal "$REIN_A2_DIR"
++cargo run --manifest-path rust/Cargo.toml --example ch06_loop -- normal "$REIN_A2_DIR"
++```
++
++对比两份 JSON：正常结果有 `state: "completed"`、`reason: "final_answer"`；把场景改为 `zero` 会得到 `failed/max_turns`，但 CLI 仍可正常退出并打印结果。阅读事件时先看 `type`，再看对应字段；不要把 `answer`、`tool_result` 或 `toolCallId` 当作每个状态都必然存在。
++
++## 穷举状态，而不是猜字段
++
++TypeScript 可以用一个小 `switch` 把联合的每个状态显式处理。下面是可独立保存的简化语言练习，不修改运行时的 `LoopState` 合同：
++
++```ts
++type DemoState = 'running' | 'completed' | 'failed'
++
++function label(state: DemoState): string {
++  switch (state) {
++    case 'running': return '进行中'
++    case 'completed': return '已完成'
++    case 'failed': return '失败'
++  }
++}
++console.log(label('completed'))
++```
++
++当 `DemoState` 增加新字面量时，穷举检查会让这个函数出现编译错误，提醒调用方补分支。Rust 对同一个问题使用 `match`：
++
++```rust
++enum DemoState {
++    Running,
++    Completed,
++    Failed,
++}
++
++fn label(state: &DemoState) -> &'static str {
++    match state {
++        DemoState::Running => "进行中",
++        DemoState::Completed => "已完成",
++        DemoState::Failed => "失败",
++    }
++}
++fn main() {
++    println!("{}", label(&DemoState::Completed));
++}
++```
++
++练习：把上面的完整 TypeScript 代码保存为临时文件 `ts/examples/a2-state.ts`，用 `npx tsc --strict --noEmit --target ES2022 --module commonjs ts/examples/a2-state.ts` 编译；把 Rust 代码保存为 `rust/examples/a2_state.rs`，用 `rustc --edition 2021 rust/examples/a2_state.rs -o /tmp/a2-state` 编译。然后在两个文件的联合/枚举中加入 `Paused`，暂时不加分支，观察严格 TypeScript 与 Rust 的编译错误；补齐分支后再次运行相同命令。这个练习只说明语言的穷举检查，不替代运行时的适配器解析、工具参数检查和路径检查。
+diff --git a/docs/chapters/07-rust.md b/docs/chapters/07-rust.md
+new file mode 100644
+index 0000000..49de8f3
+--- /dev/null
++++ b/docs/chapters/07-rust.md
+@@ -0,0 +1,197 @@
++---
++prev: { text: 06 循环控制, link: /chapters/06-rust.html }
++next: { text: 08 上下文策略, link: /chapters/08-rust.html }
++---
++
++# 07 Rust：在循环中管理上下文
++
++第 06 章解决的是“什么时候停止”。但即使循环没有触发 `max_turns`，历史也可能长到模型无法接受。把旧消息随意删掉会丢失规则、目标或最近的依据；把它们全发出去又可能超过预算。本章把四个对象分开：规则是每次发送都要带上的约束，当前目标是本次运行要完成的请求，完整历史是审计用的事实，发送上下文是本轮真正交给模型的消息副本。
++
++本文使用 `chapter-snapshots/rein-ch07.tar.gz` 对应的 Rust 实现。恢复章节时应先阅读[阅读材料 2](/readings/02.html)，将归档解到新的临时目录，再从该书根运行命令；不要依赖 Git 标签。Rust 需要支持 2021 edition 的工具链和网络已缓存或可用的 Cargo 依赖；Node 命令只使用内置 `fs`。示例是确定性的离线适配器：它从发送给它的最新完整工具结果拼接答案，不代表真实模型能力，也不会现场读取 fixture 中路径为 `a`、`b` 的文件。
++
++## 先准备共享案例
++
++<a id="context-inputs"></a>
++
++从书根复制公开案例到临时文件。这样可以改自己的输入，同时保留原始 fixture：
++
++```bash
++export REIN_CH07_CASE="$(mktemp -d)/ch07-context.json"
++cp fixtures/cases/ch07-context.json "$REIN_CH07_CASE"
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_CASE"
++```
++
++案例文件包含 `unit` 和多个 `cases`。每个 case 给出 `rules`、`goal`、完整 `history`、`budget` 和 `managed`。`history` 中的 assistant tool call 与 tool result 已经是输入事实；程序不会因为看到 `path: "a"` 就去现场打开文件。离线适配器检查它真正收到的消息，找到最新完整工具组的结果，再按声明 call 顺序用换行拼成答案。
++
++输出最外层是 `unit: "estimated-bytes-v1"` 和 `cases`。其中 `unmanaged-overflow` 仍送出全部历史，适配器发现发送量超过 300 后返回 `model_error`；`managed-window` 在相同输入和预算下裁掉最旧组，保留规则、目标和最新工具组，得到 `final_answer`。`required-overflow` 的规则和目标本身放不下，因而没有模型请求。`multi-tool-boundary` 的旧工具组整体移除，最新组中的两个结果一起保留；`invalid-orphan` 与 `invalid-missing` 在发模型前以 `invalid_context_history` 结束。`unicode-content` 用中文和 emoji 检查 UTF-8 估算。
++
++对 `managed-window`，同一输入的关键数字可以直接从 `context_prepared` 事件核对：
++
++| 项目 | 值 | 含义 |
++| --- | ---: | --- |
++| `beforeUnits` | 644 | 规则、完整历史和当前目标全部发送前的估算量 |
++| `requiredUnits` | 239 | 规则、当前目标组 `g4` 与最新工具组 `g1` 的必要内容 |
++| `afterUnits` | 239 | 移除旧组后真正发送的估算量 |
++| `removedGroups` | `g0` | 最旧的非必要组 |
++| `keptGroups` | `g1`, `g4` | 最新完整工具组和当前目标组 |
++
++`requiredUnits` 能放进预算时才允许裁剪；如果规则、目标或最新工具组本身超过预算，循环应停止而不是删除依据。
++
++## 估算单位不是 token
++
++<a id="budget-estimate"></a>
++
++`estimated-bytes-v1` 是本地可复算的教学单位。它使用字符串的 UTF-8 字节长度，但把 JSON 数字固定估作 8；它不是 JSON 在线字节数，也不是服务 token。消息估算的实际函数是：
++
++```rust
++fn estimated_message(message: &Message) -> usize {
++    8 + message.role.as_bytes().len()
++        + message.content.as_bytes().len()
++        + message.tool_call_id.as_ref().map_or(0, |id| id.as_bytes().len())
++        + message.tool_calls.iter().map(|call| {
++            8 + call.id.as_bytes().len()
++                + call.name.as_bytes().len()
++                + estimated_json(&call.arguments)
++        }).sum::<usize>()
++}
++pub fn estimated_units(messages: &[Message]) -> usize {
++    messages.iter().map(estimated_message).sum()
++}
++```
++
++`estimated_json` 对 null、布尔、数字、字符串、数组和对象递归计数，并为分隔符加固定项。上下文事件的 `beforeUnits` 与 `afterUnits` 还包括注入的 system 规则，但不包括工具 schema、HTTP 包络或服务端实际计费。读者可以用案例的 `unit`、消息文本和规则复算结果，却不能把它换算成某个模型的 token 余量。
++
++## 完整历史与发送副本
++
++<a id="atomic-history"></a>
++
++Rust 用拥有型 `Vec<Message>` 保存审计历史。`ContextConfig` 的 `history` 先复制，再追加当前 goal；每轮 `prepare_context` 从这份完整历史重新分组。一个有 tool call 的 assistant 消息和它后面全部对应的 tool result 是一个组，组 ID 按完整历史起点命名为 `g0`、`g1`……多调用组不能拆开。规则另生成 system 消息，不会被旧历史覆盖。
++
++```rust
++let context = options.context.clone();
++let history_len = context.as_ref().map(|c| c.history.len()).unwrap_or(0);
++let mut messages = context.as_ref().map(|c| c.history.clone()).unwrap_or_default();
++messages.push(Message { role: "user".into(), content: prompt.into(), tool_call_id: None, tool_calls: vec![] });
++```
++
++`prepare_context` 只返回本轮发送的 `Vec<Message>`，然后将同一独立副本放进 `ModelRequested` 并传给 adapter；`LoopResult.messages` 仍是没有裁剪的完整审计历史。Rust 的 clone 和所有权让发送副本的修改不会回写审计数组。`Option` 表示 context 配置可能不存在，`Result` 则把非法历史和预算拒绝变成必须处理的路径。
++
++配置是在调用 `run_agent_loop_with_options` 时接入的；下面是调用点的节选，不是独立可编译程序：
++
++```rust
++run_agent_loop_with_options(
++    &adapter,
++    &workspace,
++    &case.goal,
++    LoopOptions {
++        max_turns: 2,
++        context: Some(ContextConfig {
++            rules: case.rules,
++            history: case.history,
++            budget: case.budget,
++            manage: case.managed,
++        }),
++        ..LoopOptions::default()
++    },
++).await;
++```
++
++四个字段分别进入规则、审计历史、单位预算和 managed/unmanaged 选择；真正的 adapter 仍由 loop 负责调用。
++
++## managed 与 unmanaged 的对照
++
++<a id="managed-run"></a>
++
++```bash
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_CASE"
++```
++
++`managed: false` 不是关闭校验，而是只保留完整历史并记录 `context_prepared`；它不裁剪、不提前预算拒绝，所以离线 adapter 仍会因超过 300 返回 `model_error`。`managed: true` 先验证历史，计算必要组，再从最旧的非必要组开始整体删除，直到发送量不超过预算。当前目标组和最新工具组始终必要；它们本身超过预算时直接 `context_budget_exhausted`，请求数为 0。
++
++本章的真实多轮上下文回归位于 `rust/tests/loop.rs` 的 `ch07_context_tracks_latest_group_across_real_tool_rounds` 与 `ch07_context_stops_when_new_latest_group_does_not_fit`：前者覆盖两轮真实 `read` 结果形成新工具组并替换上一轮的最新必需组，后者覆盖新组成为最新依据后因预算不够而停止。`ch05_loop.rs` 和 `ch06_loop.rs` 仍证明旧入口兼容，但不替代这两个 ch07 loop 测试；本章 fixture 的 `a`、`b` 仍是 seeded 历史，不是现场文件读取。
++
++运行结果中的 `sentMessages` 记录真正进入 adapter 的消息二维数组；`events` 里的 `context_prepared` 记录 `beforeUnits`、`afterUnits`、`requiredUnits`、`keptGroups` 和 `removedGroups`。这能检验管理发生在 loop 内，而不是只测一个未被调用的裁剪函数。
++
++## 源码中的顺序和失败边界
++
++`run_agent_loop_with_options` 先验证 `ContextConfig.budget` 和历史结构；非法角色、孤立 result、缺失 result、重复 call ID 或不相邻 result 都在第一次模型请求前返回 `invalid_context_history`。随后 `prepare_context` 计算规则、全部组与必要组：
++
++```rust
++let required_units = groups.iter()
++    .filter(|group| required.contains(&group.id))
++    .flat_map(|group| messages[group.start..group.end].iter())
++    .map(estimated_message).sum::<usize>() + rules_units;
++if required_units > config.budget {
++    return Err(StopReason::ContextBudgetExhausted);
++}
++```
++
++上面是实际判断核心；真实实现会在返回错误前写入完整的 `ContextRejected` 事件，事件字段包括 `turn`、`unit`、`mode`、`budget`、`beforeUnits` 和 `requiredUnits`。通过后才删除非必要旧组，并重新按原顺序构造发送数组。`context_rejected` 与最终 `stopped` 分开记录：前者说明哪条上下文规则拒绝了请求，后者说明循环停止原因。非法配置的 errorCode 是 `invalid_context_config`，但停止原因仍是 `invalid_context_history`。
++
++Rust 的 `match`、`Option` 和 `Result` 提供编译期和控制流上的帮助，不能替代 JSON 解码、有限数字检查或历史关联检查。`serde` 的 `toolCallId` 映射只解决字段名，不证明结果属于正确的 assistant call。
++
++## 失败实验
++
++<a id="context-failure"></a>
++
++为了只观察失败类型，可以在输出中筛选三个 case：
++
++```bash
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_CASE" > /tmp/rein-ch07-rust.json
++node -e 'const x=require("/tmp/rein-ch07-rust.json"); for(const c of x.cases) if(c.result.reason!=="final_answer") console.log(c.id,c.result.reason,c.requests)'
++```
++
++预期 `unmanaged-overflow` 是 `model_error/1`，`required-overflow` 是 `context_budget_exhausted/0`，两个 invalid case 是 `invalid_context_history/0`。不要因为所有 CLI 命令退出 0 就认为这些业务 case 成功；必须读取 JSON 中的 `reason`、`requests` 和发送消息。
++
++## 练习
++
++<a id="practice-07-1"></a>
++
++### 练习 07-1：改变最新事实
++
++每项练习都从原始 fixture 复制独立输入。先做 07-1：
++
++```bash
++export REIN_CH07_P1="$(mktemp -d)/case.json"
++cp fixtures/cases/ch07-context.json "$REIN_CH07_P1"
++node -e 'const fs=require("fs"); const p=process.argv[1]; const x=JSON.parse(fs.readFileSync(p)); const c=x.cases.find(c=>c.id==="managed-window"); const m=c.history.find(m=>m.role==="tool" && m.toolCallId==="latest-a"); m.content="最新事实 A（已更正）"; fs.writeFileSync(p,JSON.stringify(x));' "$REIN_CH07_P1"
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_P1"
++```
++
++只应看到 `managed-window` 的答案变为 `最新事实 A（已更正）\n最新事实 B`；检查 `sentMessages` 中仍有完整最新工具组，且审计 `result.messages` 没有被物理裁剪。不要只改 `expected.answer`，因为 adapter 不读取 expected。
++
++<a id="practice-07-2"></a>
++
++### 练习 07-2：预算边界 239/238
++
++用两个从原始 fixture 复制的单独文件，避免 07-1 的内容改动影响必要单位：
++
++```bash
++export REIN_CH07_P2_239="$(mktemp -d)/case.json"
++export REIN_CH07_P2_238="$(mktemp -d)/case.json"
++cp fixtures/cases/ch07-context.json "$REIN_CH07_P2_239"
++cp fixtures/cases/ch07-context.json "$REIN_CH07_P2_238"
++node -e 'const fs=require("fs"); const p=process.argv[1]; const x=JSON.parse(fs.readFileSync(p)); x.cases=x.cases.filter(c=>c.id==="managed-window"); x.cases[0].budget=239; fs.writeFileSync(p,JSON.stringify(x));' "$REIN_CH07_P2_239"
++node -e 'const fs=require("fs"); const p=process.argv[1]; const x=JSON.parse(fs.readFileSync(p)); x.cases=x.cases.filter(c=>c.id==="managed-window"); x.cases[0].budget=238; fs.writeFileSync(p,JSON.stringify(x));' "$REIN_CH07_P2_238"
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_P2_239"
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_P2_238"
++```
++
++239 应为 `final_answer`、1 次请求；238 应为 `context_budget_exhausted`、0 次请求。观察事件中的 `requiredUnits` 与 `budget`，不要删除规则或最新工具组来“挤出”答案。
++
++<a id="practice-07-3"></a>
++
++### 练习 07-3：删除一个对应结果
++
++从原始 fixture 复制第三个独立文件，删除 managed case 的最后一个 tool result，保留其 assistant call：
++
++```bash
++export REIN_CH07_P3="$(mktemp -d)/case.json"
++cp fixtures/cases/ch07-context.json "$REIN_CH07_P3"
++node -e 'const fs=require("fs"); const p=process.argv[1]; const x=JSON.parse(fs.readFileSync(p)); const c=x.cases.find(c=>c.id==="managed-window"); c.history.pop(); fs.writeFileSync(p,JSON.stringify(x));' "$REIN_CH07_P3"
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_P3"
++```
++
++预期 `invalid_context_history`、请求数 0，并在 `context_rejected.errorCode` 中看到 `invalid_context_history`；最终 `LoopResult.error` 也保存这个短码。修复配对后再运行，才能回到正常管理路径；这一步检查的是历史完整性，不是工具文件是否存在。
++
++本章的 Rust 入口只覆盖当前快照的上下文管理；后续演进可能增加策略和停止原因，但不会改变本节对完整历史、发送副本和预算边界的区分。
+diff --git a/docs/chapters/07.md b/docs/chapters/07.md
+index 56eea68..e05ee8b 100644
+--- a/docs/chapters/07.md
++++ b/docs/chapters/07.md
+@@ -1,5 +1,184 @@
++---
++prev: { text: 06 循环控制, link: /chapters/06.html }
++next: { text: 08 四种上下文方法, link: /chapters/08.html }
++---
++
+ # 07 上下文管理
+ 
+-**状态：待撰写｜限时免费**
++上一章把模型回合、工具调用和取消放进了同一个循环。循环现在知道“最多再做几次”，却还不知道“这些消息能不能一起放进模型的预算”。任务运行得越久，历史越长；如果把所有历史原样重发，模型适配器可能在真正回答前就因为上下文过大而失败。更危险的是，随意删除一条消息会留下孤立的工具结果，模型看到的对话就不再是发生过的对话。
++
++本章把上下文拆成四个对象：规则告诉模型必须遵守什么，当前目标说明这一轮要解决什么，完整审计历史保存已经发生过的对话，待发上下文则是从前三者构造出的本次模型输入。它们有不同的生命周期。规则和目标始终保留；完整历史只追加、不因裁剪而丢失；待发上下文可以在预算内删除最旧的完整回合。示例是公开的确定性离线适配器：它读取实际传入的工具结果拼出答案，不访问网络，也不代表真实模型的能力或服务 token 用量。
++
++## 先让长历史失败
++
++先准备一个临时副本。命令从仓库根运行，路径使用绝对路径，这样 npm 切换到 workspace 后仍能找到文件。不要改写仓库里的冻结案例。
++
++```bash
++export REIN_CH07_DIR="$(mktemp -d)"
++cp fixtures/cases/ch07-context.json "$REIN_CH07_DIR/cases.json"
++npm ci
++npm run --silent ch07:context --workspace ts -- "$REIN_CH07_DIR/cases.json"
++```
++
++`npm ci` 只在依赖尚未安装时需要；本书使用已经存在的 `node_modules` 也可以直接运行最后一条命令。输出最外层是 `{unit, cases}`。每个案例包含 `result`、真正进入 adapter 的 `requests` 数量和 `sentMessages` 二维数组。先找 `unmanaged-overflow`：它和 `managed-window` 的 `rules`、`goal`、`history`、`budget` 完全相同，只有 `managed` 不同。这个固定历史的完整候选上下文是 644 个 `estimated-bytes-v1` 单位，规则与当前目标加最新完整工具组需要 239 个单位，预算是 300。
++
++未管理案例的 `context_prepared` 事件显示 `mode: "unmanaged"`，`beforeUnits` 和 `afterUnits` 都是 644，`removedGroups` 为空。适配器实际收到的消息超过 300，于是抛出 `adapter_budget_exceeded`，循环把它报告为 `reason: "model_error"`，请求数为 1。CLI 的退出码表示程序成功打印了 JSON；业务结果仍由 `result.state` 和 `result.reason` 判断，不能因为进程退出码为零就说任务完成。
++
++这次失败说明 `maxTurns` 不能替代上下文管理。它只限制循环次数，不会缩短已经构造好的消息。规则、目标、完整历史和待发输入也不能混成一个可随意截断的字符串，否则无法解释删掉了什么，也无法判断工具调用是否仍有对应结果。
++
++<a id="context-inputs"></a>
++
++## 四个输入对象各自做什么
++
++`ContextConfig` 有四个字段：`rules` 是字符串数组，`history` 是既有 `Message` 的完整数组，`budget` 是非负安全整数，`manage` 是可选布尔值，默认开启管理。`runAgentLoop` 的 `prompt` 仍是当前目标。初始化时，程序先深复制 `history`，再在其末尾追加当前目标；这个追加位置固定为输入历史的长度，即使后面模型生成了更多消息，也不会把某个新 user 消息误认成目标。
++
++规则不会写回审计历史。每次准备模型请求时，循环按原数组顺序把规则生成 `system` 消息，再拼接保留的历史组。因而 adapter 收到的 `messages` 含规则，而 `LoopResult.messages` 仍是没有注入规则的完整审计历史。规则消息也不参与可裁剪组；历史里的 `system`、未知 role、user 声明工具、assistant 声明的调用缺结果，都会在派发前以 `invalid_context_history` 停止。
++
++完整历史不是“上一次发送的数组”。每一轮模型返回的 assistant 消息及其真实工具结果都会追加到它。adapter 只收到这个历史的独立快照：即使适配器在数组上 `push` 或修改消息，也不会改变审计历史和已经记录的事件。TypeScript 的 `readonly` 只阻止类型检查下的直接赋值，并不等于运行时深不可变；这里用 `structuredClone` 复制嵌套对象。它不能替代输入验证，也不能复制所有 JavaScript 值，所以本章的消息只接受字符串、有限数字、布尔、数组和对象组成的 JSON 数据。
++
++## 用固定单位估算上下文
++
++<a id="budget-estimate"></a>
++
++`estimated-bytes-v1` 是教学用的可复算估算单位。它使用字符串的 UTF-8 字节数，却不是 JSON 序列化后的线上字节数，也不是服务提供商的 token。估算不包括工具 schema、HTTP 包络和服务端隐藏字段；固定值 8 只是本地模型消息结构的预算项。
++
++令 `utf8(s)` 为字符串原始 UTF-8 字节数，JSON 值的估算为：`J(null)=4`，`J(true)=4`，`J(false)=5`，`J(number)=8`；字符串为 `2+utf8(s)`；数组为 `2+各元素 J 之和+max(0,n-1)`；对象为 `2+各键(2+utf8(键)+1+J(值)) 之和+max(0,n-1)`。每条消息为：
++
++```text
++M = 8 + utf8(role) + utf8(content)
++    + (存在 toolCallId ? utf8(toolCallId) : 0)
++    + Σ(8 + utf8(id) + utf8(name) + J(arguments))
++```
++
++一组消息的 `E` 是其中每条 `M` 的和。中文和 emoji 必须先转 UTF-8 再计数；例如 `你好 🌏` 的内容是 11 个 UTF-8 字节。实现入口是 `ts/src/rein/loop.ts` 的 `estimateMessages`，它调用同文件的 `estimateJson` 和 `estimateMessage`。数字必须有限，`budget` 必须是非负安全整数；这些是输入合同，不是“估算失败后随便继续”的建议。
++
++## 只能整组裁剪
++
++<a id="atomic-history"></a>
++
++程序先验证全部历史，再把消息分组。没有调用的 user 或 assistant 是一组；声明调用的 assistant 与紧随其后的全部 tool result 是一组。稳定组 ID 使用该组在完整审计历史中的起始零基索引，例如 `g1` 表示从历史第 1 条开始的组。多调用回合允许结果按任意顺序出现，但每个调用 ID 必须恰好对应一个结果，且结果必须连续跟在声明后面。
++
++当前目标组和最新的完整工具组是必要组。必要组与规则的估算已经超过预算时，循环记录 `context_rejected`，原因是 `context_budget_exhausted`，不调用 adapter，也不通过删除目标来制造成功。否则从最旧的非必要组开始整体移除，直到实际发送消息不超过预算。一个组中的两个调用不能拆开，也不能只留下 tool result；每轮都从完整审计历史重新计算，上轮被裁掉的组只是暂时不发送，仍保留在 `LoopResult.messages`。
++
++## 管理后的正常运行
++
++<a id="managed-run"></a>
++
++`managed-window` 会保留规则、当前目标和最新完整工具组，移除旧的 `g0`。它的事件可以概括为：`beforeUnits: 644`、`afterUnits: 239`、`requiredUnits: 239`、`keptGroups: ["g1","g4"]`、`removedGroups: ["g0"]`。随后 `model_requested.messages` 才会真正进入 adapter。adapter 在收到最新 assistant 调用及两个 tool result 后，按声明调用顺序拼接 `最新事实 A\n最新事实 B`，这就是返回的答案。答案来自实际消息内容；它没有读取 `expected`，也没有按案例 ID 查表。
++
++这个案例的 `history` 中的工具结果是预先给定的材料，所以 CLI 这一次展示的是“管理并发送固定历史”，不是现场读取文件。实际文件读取仍由 loop 测试覆盖：测试创建临时目录，第一回合读取一个文件，第二回合用不同 ID 读取另一个文件，第三次模型请求从新结果回答；事件会显示最新工具组替换，旧组可以被裁剪。读者运行共享 CLI 时不要把 fixture 中预置的 tool message 说成这次命令刚刚执行的文件操作。
++
++未管理模式是明确的对照实验。`manage: false` 仍验证历史、组织规则和目标，仍记录 `context_prepared`，但不裁剪、不因为预算拒绝；完整消息直接交给有预算限制的离线 adapter，由 adapter 产生 `model_error`。这不是提前实现后续的四种上下文策略，而是让同一个输入显示管理开关的可观察差异。
++
++## 失败要读停止原因
++
++<a id="context-failure"></a>
++
++`required-overflow` 的规则和当前目标本身就超过预算。它的 `requests` 是 0，`result.reason` 是 `context_budget_exhausted`；规则、目标和最新工具依据不能被静默删掉。`invalid-orphan` 含孤立 tool result，`invalid-missing` 的 assistant 调用没有结果；二者都在模型派发前返回 `invalid_context_history`，并记录稳定的 `errorCode`，请求数也是 0。非法历史中的 NaN、Infinity 等不支持 JSON 值使用 `invalid_context_history` 和 `errorCode: "invalid_context_history"`；负预算、非安全整数或非字符串规则才是配置错误，使用 `errorCode: "invalid_context_config"`。
++
++预算事件包含 `budget`、`beforeUnits`、`requiredUnits` 和 `mode`；非法历史事件只保留适用字段：`turn`、`reason`、`unit`、`mode`、`errorCode`。`beforeUnits` 与 `afterUnits` 都包含注入规则：前者是完整候选消息，后者是实际发送消息；未管理模式没有裁剪，所以两者相等。`LoopResult.error` 只在非法输入时保存稳定短码，预算停止不伪造额外错误。旧的 ch05/ch06 停止控制仍然有效，最大回合、工具预算、重复动作、取消和超时仍在上下文检查之后按原规则工作。
++
++## 从源码回到请求边界
++
++入口仍是 `runAgentLoop(adapter, workspace, prompt, options)`。初始化部分建立独立历史副本；每轮开始时再次验证完整 `messages`，调用 `prepareContext` 计算组、必要内容和裁剪结果，然后记录 `context_prepared`，再记录 `model_requested`。传给 adapter 的调用使用 `structuredClone(sentMessages)`，因此日志中的请求快照和 adapter 实际拿到的数组都不会成为审计历史的可变别名。
++
++调用方把配置和当前目标实际接到入口：
++
++```ts
++const context: ContextConfig = {
++  rules: fixture.rules,
++  history: fixture.history,
++  budget: fixture.budget,
++  manage: fixture.managed,
++}
++const result = await runAgentLoop(adapter, { root }, fixture.goal, { context })
++```
++
++这里 `fixture.goal` 是 `prompt`，`context.history` 是完整历史，`rules` 会生成 system 消息，`budget` 控制估算上限，`manage` 选择裁剪或未管理对照。完整源码仍见 `ts/src/rein/loop.ts`。
++
++```ts
++const prepared = prepareContext(messages, context, contextGoalIndex!)
++if (prepared.rejected) {
++  events.push({ type: 'context_rejected', reason: 'context_budget_exhausted', ... })
++  return finish(messages, events, 'failed', 'context_budget_exhausted')
++}
++events.push({ type: 'context_prepared', ...prepared, turn })
++model = await raceControl(
++  () => adapter.complete(structuredClone(prepared.messages), tools, control),
++  signal,
++  remaining,
++)
++```
++
++上面是流程的缩写，省略字段展开和控制竞态处理；完整实现请看 `ts/src/rein/loop.ts`。`prepareContext` 从 `messages` 重新建立组，不把上一轮的裁剪数组当成新历史。`readonly Message[]` 让调用方不能正常地 `push` 到共享数组，但 adapter 仍可能通过运行时手段改变收到的对象，因此深复制是审计隔离的实际边界。
++
++## 三个可以改变输入的练习
++
++练习使用临时副本，不覆盖冻结 fixture。每个生成命令都直接读取原 fixture，并写入 `$REIN_CH07_DIR`。
++
++<a id="practice-07-1"></a>
++
++### 练习 07-1：修改最新事实
++
++用 Node 从原 fixture 生成独立的单案例文件，并只改最新 tool result 内容：
++
++```bash
++node --input-type=module -e 'import{readFileSync,writeFileSync}from"node:fs";const x=JSON.parse(readFileSync("fixtures/cases/ch07-context.json"));const c=x.cases.find(c=>c.id==="managed-window");c.history.find(m=>m.role==="tool"&&m.toolCallId==="latest-a").content="现场改写 A";writeFileSync(process.argv[1],JSON.stringify({unit:x.unit,cases:[c]}))' "$REIN_CH07_DIR/practice-07-1.json"
++npm run --silent ch07:context --workspace ts -- "$REIN_CH07_DIR/practice-07-1.json"
++```
++
++预期该案例仍是 `final_answer`、请求数仍为 1，但答案中的第一行变成 `现场改写 A`。如果答案没有变化，说明适配器可能按案例 ID 或预置成功字符串作答；这不符合本章的公开行为。不要改 `expected` 来掩盖结果，先检查 tool message 的 ID、内容和发送快照。
++
++<a id="practice-07-2"></a>
++
++### 练习 07-2：预算卡在边界
++
++用 Node 从原 fixture 分别生成预算为 239 和 238 的独立单案例文件：
++
++```bash
++node --input-type=module -e 'import{readFileSync,writeFileSync}from"node:fs";const x=JSON.parse(readFileSync("fixtures/cases/ch07-context.json"));for(const b of[239,238]){const c=structuredClone(x.cases.find(c=>c.id==="managed-window"));c.budget=b;writeFileSync(process.argv[b===239?1:2],JSON.stringify({unit:x.unit,cases:[c]}))}' "$REIN_CH07_DIR/practice-07-2-239.json" "$REIN_CH07_DIR/practice-07-2-238.json"
++npm run --silent ch07:context --workspace ts -- "$REIN_CH07_DIR/practice-07-2-239.json"
++npm run --silent ch07:context --workspace ts -- "$REIN_CH07_DIR/practice-07-2-238.json"
++```
++
++预算为 239 时，必要上下文恰好放下，预期 `final_answer`、请求数 1；预算为 238 时，预期 `context_budget_exhausted`、请求数 0。两次都查看 `requiredUnits`，不要只比较输出是否有 `answer`。如果你误删规则或目标后 238 也成功，裁剪算法就违反了必要组约束。
++
++<a id="practice-07-3"></a>
++
++### 练习 07-3：删除一个结果
++
++用 Node 从原 fixture 生成单案例文件，并删除 `managed-window.history` 中与 `latest-a` 对应的 tool message：
++
++```bash
++node --input-type=module -e 'import{readFileSync,writeFileSync}from"node:fs";const x=JSON.parse(readFileSync("fixtures/cases/ch07-context.json"));const c=x.cases.find(c=>c.id==="managed-window");c.history=c.history.filter(m=>!(m.role==="tool"&&m.toolCallId==="latest-a"));writeFileSync(process.argv[1],JSON.stringify({unit:x.unit,cases:[c]}))' "$REIN_CH07_DIR/practice-07-3.json"
++npm run --silent ch07:context --workspace ts -- "$REIN_CH07_DIR/practice-07-3.json"
++```
++
++预期该案例不进入 adapter，`result.reason` 为 `invalid_context_history`，`requests` 为 0。缺失结果不能被当成空字符串，也不能让模型“猜”出答案。若只删除 `latest-b`，同样应该失败；一个多调用回合必须完整保留或整体拒绝。
++
++Rust 版本使用完全相同的输入和语义，命令是：
++
++```bash
++cargo run --quiet --manifest-path rust/Cargo.toml --example ch07_context -- "$REIN_CH07_DIR/practice-07-1.json"
++```
++
++两种语言的 `estimated-bytes-v1` 结果、组 ID、停止原因和动态答案应一致。离线 adapter 的一致性不等于两个真实模型服务的回答能力一致；服务 token、网络延迟和供应商上下文窗口仍需另行测量。本章只证明本地合同在给定输入上的可观察行为。
++
++## 把一次裁剪手算出来
++
++为了避免把预算当成神秘的模型数值，可以拿 `multi-tool-boundary` 做一次手算。它的完整候选上下文为 382，规则消息和当前目标先进入必要集合；最新的多调用组从 `g5` 开始，目标组是 `g8`。在预算 220 下，最旧的 `g0` 与 `g1` 先被逐组考虑。`g1` 含一个 assistant 声明和两个结果，不能只删除其中一个结果；删除完整组后，`g4`、`g5`、`g8` 的保留组合为 219，刚好不超过预算。事件中的 `keptGroups` 是按完整历史位置升序排列的，`removedGroups` 也是如此。这个过程没有重新排列消息，模型仍按历史顺序看到保留下来的内容。
++
++这里的 219 与服务端 token 没有换算关系。一个供应商可能对中文、工具 schema 或消息角色使用不同 tokenizer；另一个供应商还可能把系统提示、响应格式和安全字段加入上下文。本地单位的价值在于它对两个离线实现给出同一个边界：同一输入、同一规则和同一预算会得到同一保留组。需要真实服务容量时，应把服务返回的 token usage 另行记录，不能用本章的 219 冒充线上用量。
++
++输入验证也属于上下文构造的一部分。程序先确认每条消息的 role、content 和可选字段，再确认 assistant 调用与 tool result 的邻接关系。多调用结果可以是 `latest-b` 后 `latest-a`，因为程序按 ID 配对；但它们必须连续位于声明之后，不能在中间插入另一个 user 消息。调用 ID 在完整历史中不能复用，即便新一轮使用了不同的工具参数也不允许偷换关联。JSON 对象键的排列不影响估算和动作身份，数组顺序则保留，因为数组常常表达调用顺序。
++
++在 TypeScript 测试中，临时目录的文件由 `writeFile` 写入，`dispatchReadonly` 真正读取它们。第一回合返回 `round-a`，第二回合返回 `round-b`，第三回合只从最后一个 tool message 生成答案；因此这项测试与 fixture 的预置历史实验不同。测试还验证第三轮发送的必要组 ID 已变化，旧组出现在 `removedGroups`，以及新文件内容确实成为答案。测试是代码的回归证据，读者自己的 CLI 运行仍应查看本次输出中的 `answer`、`requests` 和事件，而不是把测试输出当作命令已经做过的文件读取。
++
++如果看到 `model_error`，先区分两层：未管理案例是 adapter 主动发现 `E(messages)>budget` 后抛错；如果是网络适配器或响应解析失败，则是另一种模型错误。`context_budget_exhausted` 说明循环在调用 adapter 以前就发现必要内容放不下；`invalid_context_history` 说明输入结构不能代表合法对话。三者的 `requests` 和事件位置不同，修复方法也不同。不要把提高 `maxTurns`、重复发送或删掉历史中的目标当成上下文管理。
++
++从实现角度看，规则注入、历史保存和请求发送是三个不同的边界。规则数组可以由配置拥有，历史数组由循环拥有，adapter 只拥有一次请求的副本。这样的所有权划分让故障诊断有明确位置：规则错误属于配置校验，历史错误属于输入校验，预算错误属于构造阶段，服务拒绝则属于 adapter。后续增加摘要或检索策略时，也应保持这条边界，先产生可审计的待发消息，再交给同一个模型请求入口。
++
++你也可以把事件当作一次运行的解释器：先看 `context_prepared` 知道删了哪些组，再看 `model_requested` 确认实际发送了哪些消息，最后看 `model_received`、`tool_result` 和 `stopped` 判断行为是否闭合。这样的阅读顺序比只看最后一句答案更可靠，因为答案可能恰好正确，却没有使用最新依据。对预算和历史的判断都应回到这些可观察字段。
++这也是排查“看起来成功”的最短路径。
+ 
+-本章计划组织规则、目标、工具结果与运行历史，建立可观察的上下文预算。
++本章代码入口是 `ts/src/rein/loop.ts`，共享演示是 `ts/examples/ch07-context.ts`，公开输入是 `fixtures/cases/ch07-context.json`。[阅读材料 2](/readings/02.html) 说明如何从 `rein-ch07.tar.gz` 解包并恢复这棵代码树；跟随材料中的实际路径操作即可。
+diff --git a/docs/milestones/02.md b/docs/milestones/02.md
+index 40473ed..34bdbf8 100644
+--- a/docs/milestones/02.md
++++ b/docs/milestones/02.md
+@@ -1,5 +1,68 @@
+-# 阶段性汇总 1　极简 Harness 的完成
++---
++prev: { text: 01 HelloWorld——从模型调用开始, link: /milestones/01.html }
++next: { text: 03 可审查修改的编码助手, link: /milestones/03.html }
++---
+ 
+-**状态：待撰写｜限时免费｜发布节点：Rein v0.2**
++# 阶段性汇总 1　极简 Harness
+ 
+-计划整合命令行工作区助手，补齐运行说明、成功案例与失败测试。
++这一阶段接通一条可观察路径：模型提出只读动作，Harness 在受限工作区执行，真实结果回到下一轮，最后由结构化停止原因结束。第 05 章给出单文件和多文件读取，第 06 章加入预算、重复动作、取消和截止时间。00–04 的完整交付不由这份阶段汇总代为宣称；这里直接使用已经具备的合同、只读分派器和两章入口。
++
++本页的命令对应携带的 `chapter-snapshots/rein-ch06.tar.gz` 文件树快照。需要恢复时，先阅读[阅读材料 2](/readings/02.html)，再从书仓库根目录解包到新的临时目录，进入其中的 `rein-ch06`；不要覆盖自己的工作区。首次运行在该书根执行 `npm ci`，Rust 则使用 `rust/Cargo.toml`。
++
++## 单文件任务
++
++从书仓库根目录准备自己的绝对目录：
++
++```bash
++export REIN_STAGE1_DIR="$(mktemp -d)"
++printf 'marker: ch06 alpha\n' > "$REIN_STAGE1_DIR/README.md"
++printf 'marker: ch06 beta\n' > "$REIN_STAGE1_DIR/guide.md"
++npm run ch05:offline --workspace ts -- workspace "$REIN_STAGE1_DIR" single
++cargo run --manifest-path rust/Cargo.toml --example ch05_loop -- workspace "$REIN_STAGE1_DIR" single
++```
++
++`single` 会提出一次 `read_file`，工具结果包含 `marker: ch06 alpha`，下一轮才生成最终回答。两种语言都把路径限制在 `Workspace` 根目录内；绝对目录也避免 npm workspace 或 Cargo 改变 cwd 后读错位置。
++
++## 多文件任务
++
++```bash
++npm run ch05:offline --workspace ts -- workspace "$REIN_STAGE1_DIR" multi
++cargo run --manifest-path rust/Cargo.toml --example ch05_loop -- workspace "$REIN_STAGE1_DIR" multi
++```
++
++第一轮是 `search_files`，第二轮根据搜索输出产生两个 `read_file`，第三轮回答 `多文件摘要：marker: ch06 alpha | marker: ch06 beta`。Harness 的关键是把工具结果作为下一轮消息，而不是把答案写在工具脚本中。删除 `guide.md` 会改变搜索和摘要；越出工作区的路径会得到结构化错误。
++
++## 停止控制
++
++```bash
++npm run ch06:offline --workspace ts -- normal "$REIN_STAGE1_DIR"
++cargo run --manifest-path rust/Cargo.toml --example ch06_loop -- normal "$REIN_STAGE1_DIR"
++npm run ch06:offline --workspace ts -- budget "$REIN_STAGE1_DIR"
++npm run ch06:offline --workspace ts -- tool-zero "$REIN_STAGE1_DIR"
++npm run ch06:offline --workspace ts -- zero "$REIN_STAGE1_DIR"
++cargo run --manifest-path rust/Cargo.toml --example ch06_loop -- budget "$REIN_STAGE1_DIR"
++cargo run --manifest-path rust/Cargo.toml --example ch06_loop -- tool-zero "$REIN_STAGE1_DIR"
++cargo run --manifest-path rust/Cargo.toml --example ch06_loop -- zero "$REIN_STAGE1_DIR"
++```
++
++正常场景先搜索再读取两个文件，`reason` 是 `final_answer`。`zero` 的模型请求数为 0，原因是 `max_turns`；`tool-zero` 仍请求一次模型但所有工具跳过；`budget` 执行第一个工具、跳过第二个。CLI 退出码为 0 只表示它打印了 JSON，必须查看 `state` 和 `reason`。
++
++## 失败原因
++
++```bash
++export REIN_STAGE1_EMPTY="$(mktemp -d)"
++printf 'unrelated\n' > "$REIN_STAGE1_EMPTY/other.txt"
++npm run ch06:offline --workspace ts -- normal "$REIN_STAGE1_EMPTY"
++cargo run --manifest-path rust/Cargo.toml --example ch06_loop -- normal "$REIN_STAGE1_EMPTY"
++```
++
++没有匹配文件时本章回放报告 `model_error`，没有 `answer`。模型适配、传输或解析异常也属于 `model_error`；工具失败以结构化工具结果反馈，空最终文本是 `empty_final`。取消是 `cancelled`，整体截止时间是 `timeout`，重复动作和工具额度各有独立原因。区分这些结果，调用方才知道重试、补输入还是结束。
++
++## 综合练习
++
++1. 改写 `README.md` 的 marker，分别运行 TS/Rust 的 `multi`，确认摘要随真实内容改变。
++2. 运行两种语言的 `duplicate`，检查不同调用 ID 仍因同一规范化动作被拦截。
++3. 运行 `cancel-before`、`cancel`、`cancel-at-return`、`cancel-between-tools`，记录模型/工具计数分别为 0/0、1/0、1/0、1/1。
++4. 同时查看 `events` 与 `messages`：真实工具结果两处都存在，被跳过调用只有 `action_skipped`。
++
++本页只覆盖单/多文件循环与停止控制；更复杂的上下文、修改、持久化和并发所有权留在后续阶段。
+diff --git a/fixtures/cases/ch07-context.json b/fixtures/cases/ch07-context.json
+new file mode 100644
+index 0000000..d5d087a
+--- /dev/null
++++ b/fixtures/cases/ch07-context.json
+@@ -0,0 +1,12 @@
++{
++  "unit": "estimated-bytes-v1",
++  "cases": [
++    {"id":"unmanaged-overflow","rules":["依据保留上下文"],"goal":"请根据最新工具结果回答","history":[{"role":"user","content":"很长的旧历史材料 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},{"role":"assistant","content":"","toolCalls":[{"id":"latest-a","name":"read_file","arguments":{"path":"a"}},{"id":"latest-b","name":"read_file","arguments":{"path":"b"}}]},{"role":"tool","toolCallId":"latest-a","content":"最新事实 A"},{"role":"tool","toolCallId":"latest-b","content":"最新事实 B"}],"budget":300,"managed":false,"expected":{"reason":"model_error","requests":1}},
++    {"id":"managed-window","rules":["依据保留上下文"],"goal":"请根据最新工具结果回答","history":[{"role":"user","content":"很长的旧历史材料 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},{"role":"assistant","content":"","toolCalls":[{"id":"latest-a","name":"read_file","arguments":{"path":"a"}},{"id":"latest-b","name":"read_file","arguments":{"path":"b"}}]},{"role":"tool","toolCallId":"latest-a","content":"最新事实 A"},{"role":"tool","toolCallId":"latest-b","content":"最新事实 B"}],"budget":300,"managed":true,"expected":{"reason":"final_answer","requests":1}},
++    {"id":"required-overflow","rules":["规则必须保留且很长"],"goal":"必须保留的目标内容","history":[],"budget":10,"managed":true,"expected":{"reason":"context_budget_exhausted","requests":0}},
++    {"id":"multi-tool-boundary","rules":["使用工具结果"],"goal":"继续回答","history":[{"role":"user","content":"旧"},{"role":"assistant","content":"","toolCalls":[{"id":"old-a","name":"read_file","arguments":{"path":"old"}},{"id":"old-b","name":"read_file","arguments":{"path":"old2"}}]},{"role":"tool","toolCallId":"old-a","content":"old-a-result"},{"role":"tool","toolCallId":"old-b","content":"old-b-result"},{"role":"user","content":"新"},{"role":"assistant","content":"","toolCalls":[{"id":"new-a","name":"read_file","arguments":{"path":"new"}},{"id":"new-b","name":"read_file","arguments":{"path":"new2"}}]},{"role":"tool","toolCallId":"new-b","content":"new-b-result"},{"role":"tool","toolCallId":"new-a","content":"new-a-result"}],"budget":220,"managed":true,"expected":{"reason":"final_answer","requests":1}},
++    {"id":"invalid-orphan","rules":[],"goal":"检查","history":[{"role":"tool","toolCallId":"missing","content":"孤立"}],"budget":200,"managed":true,"expected":{"reason":"invalid_context_history","requests":0}},
++    {"id":"invalid-missing","rules":[],"goal":"检查","history":[{"role":"assistant","content":"","toolCalls":[{"id":"missing-result","name":"read_file","arguments":{"path":"x"}}]}],"budget":200,"managed":true,"expected":{"reason":"invalid_context_history","requests":0}},
++    {"id":"unicode-content","rules":["保留中文与 emoji"],"goal":"读取并回答","history":[{"role":"assistant","content":"","toolCalls":[{"id":"unicode-call","name":"read_file","arguments":{"path":"x"}}]},{"role":"tool","toolCallId":"unicode-call","content":"你好 🌏"}],"budget":300,"managed":true,"expected":{"reason":"final_answer","requests":1}}
++  ]
++}
+diff --git a/package.json b/package.json
+index 377e53f..eed9aa4 100644
+--- a/package.json
++++ b/package.json
+@@ -14,6 +14,8 @@
+     "typecheck": "npm run typecheck --workspace ts",
+     "ch05:compare-all": "node scripts/ch05-compare.mjs",
+     "ch06:compare-all": "node scripts/ch06-compare.mjs"
++    ,"ch07:context": "npm run ch07:context --workspace ts"
++    ,"ch07:compare-all": "node scripts/ch07-compare.mjs"
+   },
+   "devDependencies": {
+     "vitepress": "1.6.4"
+diff --git a/rust/examples/ch06_loop.rs b/rust/examples/ch06_loop.rs
+index c55848a..5a5f843 100644
+--- a/rust/examples/ch06_loop.rs
++++ b/rust/examples/ch06_loop.rs
+@@ -208,6 +208,7 @@ async fn main() {
+         )
+         .then_some(signal.clone()),
+         tool_observer: observer,
++        context: None,
+     };
+     let result = run_agent_loop_with_options(
+         &Replay {
+diff --git a/rust/examples/ch07_context.rs b/rust/examples/ch07_context.rs
+new file mode 100644
+index 0000000..c21d4dc
+--- /dev/null
++++ b/rust/examples/ch07_context.rs
+@@ -0,0 +1,158 @@
++use rein_ch01_helloworld::rein::{
++    estimated_units, run_agent_loop_with_options, ContextConfig, LoopOptions, Message,
++    ModelAdapter, ModelTurn, ToolDefinition, ToolError, Workspace,
++};
++use serde::{Deserialize, Serialize};
++use std::{
++    future::Future,
++    pin::Pin,
++    sync::{Arc, Mutex},
++};
++
++#[derive(Deserialize)]
++struct Input {
++    unit: String,
++    cases: Vec<Case>,
++}
++#[derive(Deserialize)]
++struct Case {
++    id: String,
++    rules: Vec<String>,
++    goal: String,
++    history: Vec<Message>,
++    budget: usize,
++    managed: bool,
++}
++#[derive(Serialize)]
++struct Output {
++    unit: String,
++    cases: Vec<CaseOutput>,
++}
++#[derive(Serialize)]
++struct CaseOutput {
++    id: String,
++    result: rein_ch01_helloworld::rein::LoopResult,
++    requests: usize,
++    #[serde(rename = "sentMessages")]
++    sent_messages: Vec<Vec<Message>>,
++}
++
++struct Offline {
++    requests: Arc<Mutex<Vec<Vec<Message>>>>,
++    budget: usize,
++}
++impl ModelAdapter for Offline {
++    fn complete<'a>(
++        &'a self,
++        messages: &'a [Message],
++        _: &'a [ToolDefinition],
++    ) -> Pin<Box<dyn Future<Output = Result<ModelTurn, ToolError>> + Send + 'a>> {
++        let snapshot = messages.to_vec();
++        let requests = self.requests.clone();
++        let budget = self.budget;
++        Box::pin(async move {
++            requests.lock().unwrap().push(snapshot.clone());
++            if estimated_units(&snapshot) > budget {
++                return Err(ToolError {
++                    code: "context_budget_exhausted".into(),
++                    message: "offline adapter budget exceeded".into(),
++                });
++            }
++            let tool_messages: Vec<&Message> = snapshot
++                .iter()
++                .rev()
++                .find(|m| m.role == "assistant" && !m.tool_calls.is_empty())
++                .map(|assistant| {
++                    assistant
++                        .tool_calls
++                        .iter()
++                        .filter_map(|call| {
++                            snapshot.iter().find(|m| {
++                                m.role == "tool"
++                                    && m.tool_call_id.as_deref() == Some(call.id.as_str())
++                            })
++                        })
++                        .collect()
++                })
++                .unwrap_or_default();
++            let answer = if tool_messages.is_empty() {
++                snapshot
++                    .iter()
++                    .rev()
++                    .find(|m| m.role == "user")
++                    .map(|m| m.content.clone())
++                    .unwrap_or_default()
++            } else {
++                tool_messages
++                    .iter()
++                    .map(|m| m.content.as_str())
++                    .collect::<Vec<_>>()
++                    .join("\n")
++            };
++            Ok(ModelTurn {
++                message: Message {
++                    role: "assistant".into(),
++                    content: answer,
++                    tool_call_id: None,
++                    tool_calls: vec![],
++                },
++                tool_calls: vec![],
++            })
++        })
++    }
++}
++
++#[tokio::main]
++async fn main() {
++    let path = std::env::args()
++        .nth(1)
++        .map(std::path::PathBuf::from)
++        .unwrap_or_else(|| {
++            std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
++                .join("../fixtures/cases/ch07-context.json")
++        });
++    let input: Input =
++        serde_json::from_str(&std::fs::read_to_string(path).expect("read case file"))
++            .expect("valid case schema");
++    let mut cases = Vec::new();
++    for case in input.cases {
++        let requests = Arc::new(Mutex::new(Vec::new()));
++        let adapter = Offline {
++            requests: requests.clone(),
++            budget: case.budget,
++        };
++        let result = run_agent_loop_with_options(
++            &adapter,
++            &Workspace {
++                root: std::env::temp_dir(),
++            },
++            &case.goal,
++            LoopOptions {
++                max_turns: 2,
++                context: Some(ContextConfig {
++                    rules: case.rules,
++                    history: case.history,
++                    budget: case.budget,
++                    manage: case.managed,
++                }),
++                ..LoopOptions::default()
++            },
++        )
++        .await;
++        let sent = requests.lock().unwrap().clone();
++        cases.push(CaseOutput {
++            id: case.id,
++            result,
++            requests: sent.len(),
++            sent_messages: sent,
++        });
++    }
++    println!(
++        "{}",
++        serde_json::to_string(&Output {
++            unit: input.unit,
++            cases
++        })
++        .unwrap()
++    );
++}
+diff --git a/rust/src/rein/loop.rs b/rust/src/rein/loop.rs
+index 29797a6..f3a9a3f 100644
+--- a/rust/src/rein/loop.rs
++++ b/rust/src/rein/loop.rs
+@@ -44,10 +44,11 @@ impl ControlSignal {
+     }
+ }
+ 
+-/// A trusted observation point after a real tool has completed.
++/// A provided trusted local observer after a real tool has completed.
+ ///
+-/// The callback can only observe the call and result and can cancel the
+-/// existing run. It cannot enqueue a tool or mutate the workspace.
++/// This example only uses it to cancel a run; it provides no permission
++/// isolation, so a caller-supplied closure remains able to mutate its own
++/// captured state (including the workspace).
+ pub type ToolObserver = Arc<dyn Fn(&ToolCall, &ToolResult, &ControlSignal) + Send + Sync>;
+ 
+ pub struct OpenAiModelAdapter<'a, H: OpenAiHttp> {
+@@ -101,10 +102,46 @@ pub enum StopReason {
+     DuplicateAction,
+     Cancelled,
+     Timeout,
++    ContextBudgetExhausted,
++    InvalidContextHistory,
+ }
+ #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+ #[serde(tag = "type", rename_all = "snake_case")]
+ pub enum LoopEvent {
++    ContextPrepared {
++        turn: usize,
++        unit: String,
++        budget: usize,
++        #[serde(rename = "beforeUnits")]
++        before_units: usize,
++        #[serde(rename = "afterUnits")]
++        after_units: usize,
++        #[serde(rename = "requiredUnits")]
++        required_units: usize,
++        #[serde(rename = "keptGroups")]
++        kept_groups: Vec<String>,
++        #[serde(rename = "removedGroups")]
++        removed_groups: Vec<String>,
++        #[serde(rename = "requiredGroups")]
++        required_groups: Vec<String>,
++        mode: ContextMode,
++    },
++    ContextRejected {
++        turn: usize,
++        reason: String,
++        unit: String,
++        mode: ContextMode,
++        #[serde(rename = "errorCode", skip_serializing_if = "Option::is_none")]
++        error_code: Option<String>,
++        #[serde(skip_serializing_if = "Option::is_none")]
++        budget: Option<usize>,
++        #[serde(rename = "beforeUnits")]
++        #[serde(skip_serializing_if = "Option::is_none")]
++        before_units: Option<usize>,
++        #[serde(rename = "requiredUnits")]
++        #[serde(skip_serializing_if = "Option::is_none")]
++        required_units: Option<usize>,
++    },
+     ModelRequested {
+         turn: usize,
+         messages: Vec<Message>,
+@@ -136,6 +173,28 @@ pub enum LoopEvent {
+         reason: StopReason,
+     },
+ }
++
++#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
++#[serde(rename_all = "lowercase")]
++pub enum ContextMode {
++    Managed,
++    Unmanaged,
++}
++
++#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
++pub struct ContextConfig {
++    #[serde(default)]
++    pub rules: Vec<String>,
++    #[serde(default)]
++    pub history: Vec<Message>,
++    pub budget: usize,
++    #[serde(default = "default_manage")]
++    pub manage: bool,
++}
++
++fn default_manage() -> bool {
++    true
++}
+ #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+ pub struct LoopResult {
+     pub state: LoopState,
+@@ -195,6 +254,7 @@ pub struct LoopOptions {
+     pub timeout: Option<Duration>,
+     pub signal: Option<ControlSignal>,
+     pub tool_observer: Option<ToolObserver>,
++    pub context: Option<ContextConfig>,
+ }
+ impl Default for LoopOptions {
+     fn default() -> Self {
+@@ -205,6 +265,7 @@ impl Default for LoopOptions {
+             timeout: None,
+             signal: None,
+             tool_observer: None,
++            context: None,
+         }
+     }
+ }
+@@ -215,13 +276,69 @@ pub async fn run_agent_loop_with_options<A: ModelAdapter>(
+     prompt: &str,
+     options: LoopOptions,
+ ) -> LoopResult {
+-    let mut messages = vec![Message {
++    let context = options.context.clone();
++    let history_len = context.as_ref().map(|c| c.history.len()).unwrap_or(0);
++    let mut messages = context
++        .as_ref()
++        .map(|c| c.history.clone())
++        .unwrap_or_default();
++    let mut events = Vec::new();
++    messages.push(Message {
+         role: "user".into(),
+         content: prompt.into(),
+         tool_call_id: None,
+         tool_calls: vec![],
+-    }];
+-    let mut events = Vec::new();
++    });
++    if let Some(config) = &context {
++        if config.budget > 9_007_199_254_740_991 {
++            events.push(LoopEvent::ContextRejected {
++                turn: 0,
++                reason: "invalid_context_history".into(),
++                error_code: Some("invalid_context_config".into()),
++                unit: CONTEXT_UNIT.into(),
++                budget: None,
++                before_units: None,
++                required_units: None,
++                mode: if config.manage {
++                    ContextMode::Managed
++                } else {
++                    ContextMode::Unmanaged
++                },
++            });
++            return finish_loop(
++                messages,
++                events,
++                LoopState::Failed,
++                StopReason::InvalidContextHistory,
++                None,
++                Some("invalid_context_config".into()),
++            );
++        }
++        if let Err(code) = validate_context_history(&config.history) {
++            events.push(LoopEvent::ContextRejected {
++                turn: 0,
++                reason: "invalid_context_history".into(),
++                error_code: Some(code.into()),
++                unit: CONTEXT_UNIT.into(),
++                budget: None,
++                before_units: None,
++                required_units: None,
++                mode: if config.manage {
++                    ContextMode::Managed
++                } else {
++                    ContextMode::Unmanaged
++                },
++            });
++            return finish_loop(
++                messages,
++                events,
++                LoopState::Failed,
++                StopReason::InvalidContextHistory,
++                None,
++                Some(code.into()),
++            );
++        }
++    }
+     let definitions = READONLY_TOOLS.iter().map(|(name, description)| ToolDefinition { name: (*name).into(), description: (*description).into(), input_schema: match *name {
+         "read_file" => serde_json::json!({"type":"object","properties":{"path":{"type":"string"}},"required":["path"],"additionalProperties":false}),
+         "search_files" => serde_json::json!({"type":"object","properties":{"needle":{"type":"string"}},"required":["needle"],"additionalProperties":false}), _ => serde_json::json!({"type":"object"}),
+@@ -247,14 +364,46 @@ pub async fn run_agent_loop_with_options<A: ModelAdapter>(
+         if let Some(reason) = control_reason(&signal, deadline) {
+             return finish_loop(messages, events, LoopState::Failed, reason, None, None);
+         }
++        if context.is_some() && validate_context_history(&messages).is_err() {
++            let config = context.as_ref().unwrap();
++            events.push(LoopEvent::ContextRejected {
++                turn,
++                reason: "invalid_context_history".into(),
++                error_code: Some("invalid_context_history".into()),
++                unit: CONTEXT_UNIT.into(),
++                budget: None,
++                before_units: None,
++                required_units: None,
++                mode: if config.manage {
++                    ContextMode::Managed
++                } else {
++                    ContextMode::Unmanaged
++                },
++            });
++            return finish_loop(
++                messages,
++                events,
++                LoopState::Failed,
++                StopReason::InvalidContextHistory,
++                None,
++                Some("invalid_context_history".into()),
++            );
++        }
++        let sent_messages =
++            match prepare_context(&messages, history_len, context.as_ref(), turn, &mut events) {
++                Ok(value) => value,
++                Err(reason) => {
++                    return finish_loop(messages, events, LoopState::Failed, reason, None, None)
++                }
++            };
+         events.push(LoopEvent::ModelRequested {
+             turn,
+-            messages: messages.clone(),
++            messages: sent_messages.clone(),
+             tools: definitions.clone(),
+         });
+         let remaining = deadline.map(|d| d.saturating_duration_since(Instant::now()));
+         let response = match await_control(
+-            adapter.complete_controlled(&messages, &definitions, &signal),
++            adapter.complete_controlled(&sent_messages, &definitions, &signal),
+             &signal,
+             remaining,
+         )
+@@ -483,6 +632,283 @@ fn canonical_json(value: &serde_json::Value) -> String {
+         other => other.to_string(),
+     }
+ }
++
++const CONTEXT_UNIT: &str = "estimated-bytes-v1";
++
++#[derive(Clone)]
++struct ContextGroup {
++    id: String,
++    start: usize,
++    end: usize,
++    has_tool_result: bool,
++}
++
++fn validate_context_history(history: &[Message]) -> Result<(), &'static str> {
++    let mut used = std::collections::HashSet::new();
++    let mut index = 0;
++    while index < history.len() {
++        let message = &history[index];
++        match message.role.as_str() {
++            "user" => {
++                if message.tool_call_id.is_some() || !message.tool_calls.is_empty() {
++                    return Err("invalid_context_history");
++                }
++                index += 1;
++            }
++            "assistant" => {
++                if message.tool_call_id.is_some() {
++                    return Err("invalid_context_history");
++                }
++                if message.tool_calls.is_empty() {
++                    index += 1;
++                    continue;
++                }
++                let mut ids = std::collections::HashSet::new();
++                for call in &message.tool_calls {
++                    if call.id.is_empty()
++                        || call.name.is_empty()
++                        || !ids.insert(call.id.clone())
++                        || !used.insert(call.id.clone())
++                    {
++                        return Err("invalid_context_history");
++                    }
++                }
++                index += 1;
++                for _ in 0..message.tool_calls.len() {
++                    let result = history.get(index).ok_or("invalid_context_history")?;
++                    if result.role != "tool" || result.tool_calls.len() != 0 {
++                        return Err("invalid_context_history");
++                    }
++                    let id = result
++                        .tool_call_id
++                        .as_ref()
++                        .ok_or("invalid_context_history")?;
++                    if !ids.remove(id) {
++                        return Err("invalid_context_history");
++                    }
++                    index += 1;
++                }
++                if !ids.is_empty() {
++                    return Err("invalid_context_history");
++                }
++            }
++            "tool" => return Err("invalid_context_history"),
++            _ => return Err("invalid_context_history"),
++        }
++    }
++    Ok(())
++}
++
++fn context_groups(messages: &[Message]) -> Vec<ContextGroup> {
++    let mut groups = Vec::new();
++    let mut index = 0;
++    while index < messages.len() {
++        let start = index;
++        let mut has_tool_result = false;
++        index += 1;
++        if messages[start].role == "assistant" && !messages[start].tool_calls.is_empty() {
++            while index < messages.len() && messages[index].role == "tool" {
++                has_tool_result = true;
++                index += 1;
++            }
++        }
++        groups.push(ContextGroup {
++            id: format!("g{start}"),
++            start,
++            end: index,
++            has_tool_result,
++        });
++    }
++    groups
++}
++
++fn estimated_json(value: &serde_json::Value) -> usize {
++    match value {
++        serde_json::Value::Null => 4,
++        serde_json::Value::Bool(v) => {
++            if *v {
++                4
++            } else {
++                5
++            }
++        }
++        serde_json::Value::Number(_) => 8,
++        serde_json::Value::String(v) => 2 + v.as_bytes().len(),
++        serde_json::Value::Array(values) => {
++            2 + values.iter().map(estimated_json).sum::<usize>() + values.len().saturating_sub(1)
++        }
++        serde_json::Value::Object(values) => {
++            2 + values
++                .iter()
++                .map(|(key, value)| 2 + key.as_bytes().len() + 1 + estimated_json(value))
++                .sum::<usize>()
++                + values.len().saturating_sub(1)
++        }
++    }
++}
++
++fn estimated_message(message: &Message) -> usize {
++    8 + message.role.as_bytes().len()
++        + message.content.as_bytes().len()
++        + message
++            .tool_call_id
++            .as_ref()
++            .map_or(0, |id| id.as_bytes().len())
++        + message
++            .tool_calls
++            .iter()
++            .map(|call| {
++                8 + call.id.as_bytes().len()
++                    + call.name.as_bytes().len()
++                    + estimated_json(&call.arguments)
++            })
++            .sum::<usize>()
++}
++
++/// The deterministic teaching estimate used by the chapter's offline adapter.
++pub fn estimated_units(messages: &[Message]) -> usize {
++    messages.iter().map(estimated_message).sum()
++}
++
++fn prepare_context(
++    messages: &[Message],
++    goal_index: usize,
++    config: Option<&ContextConfig>,
++    turn: usize,
++    events: &mut Vec<LoopEvent>,
++) -> Result<Vec<Message>, StopReason> {
++    let Some(config) = config else {
++        return Ok(messages.to_vec());
++    };
++    let groups = context_groups(messages);
++    let rules_units = config
++        .rules
++        .iter()
++        .map(|rule| {
++            estimated_message(&Message {
++                role: "system".into(),
++                content: rule.clone(),
++                tool_call_id: None,
++                tool_calls: vec![],
++            })
++        })
++        .sum::<usize>();
++    let before_units = messages.iter().map(estimated_message).sum::<usize>() + rules_units;
++    let goal_id = format!("g{goal_index}");
++    let latest_tool = groups
++        .iter()
++        .rev()
++        .find(|group| group.has_tool_result)
++        .map(|group| group.id.clone());
++    let mut required = vec![goal_id];
++    if let Some(id) = latest_tool {
++        if !required.contains(&id) {
++            required.push(id);
++        }
++    }
++    required.sort_by_key(|id| id[1..].parse::<usize>().unwrap_or(usize::MAX));
++    let required_units = groups
++        .iter()
++        .filter(|group| required.contains(&group.id))
++        .flat_map(|group| messages[group.start..group.end].iter())
++        .map(estimated_message)
++        .sum::<usize>()
++        + rules_units;
++    let mode = if config.manage {
++        ContextMode::Managed
++    } else {
++        ContextMode::Unmanaged
++    };
++    if !config.manage {
++        events.push(LoopEvent::ContextPrepared {
++            turn,
++            unit: CONTEXT_UNIT.into(),
++            budget: config.budget,
++            before_units,
++            after_units: before_units,
++            required_units,
++            kept_groups: groups.iter().map(|g| g.id.clone()).collect(),
++            removed_groups: vec![],
++            required_groups: required,
++            mode,
++        });
++        return Ok(with_rules(messages, &config.rules));
++    }
++    if required_units > config.budget {
++        events.push(LoopEvent::ContextRejected {
++            turn,
++            reason: "context_budget_exhausted".into(),
++            error_code: None,
++            unit: CONTEXT_UNIT.into(),
++            budget: Some(config.budget),
++            before_units: Some(before_units),
++            required_units: Some(required_units),
++            mode,
++        });
++        return Err(StopReason::ContextBudgetExhausted);
++    }
++    let mut kept = vec![true; groups.len()];
++    let mut after_units = before_units;
++    let mut removed = Vec::new();
++    for (index, group) in groups.iter().enumerate() {
++        if after_units <= config.budget {
++            break;
++        }
++        if required.contains(&group.id) {
++            continue;
++        }
++        kept[index] = false;
++        let units = messages[group.start..group.end]
++            .iter()
++            .map(estimated_message)
++            .sum::<usize>();
++        after_units -= units;
++        removed.push(group.id.clone());
++    }
++    let kept_groups: Vec<String> = groups
++        .iter()
++        .enumerate()
++        .filter(|(i, _)| kept[*i])
++        .map(|(_, g)| g.id.clone())
++        .collect();
++    let mut sent = Vec::new();
++    sent.extend(with_rules_prefix(&config.rules));
++    for (index, group) in groups.iter().enumerate() {
++        if kept[index] {
++            sent.extend(messages[group.start..group.end].iter().cloned());
++        }
++    }
++    events.push(LoopEvent::ContextPrepared {
++        turn,
++        unit: CONTEXT_UNIT.into(),
++        budget: config.budget,
++        before_units,
++        after_units,
++        required_units,
++        kept_groups,
++        removed_groups: removed,
++        required_groups: required,
++        mode,
++    });
++    Ok(sent)
++}
++
++fn with_rules_prefix(rules: &[String]) -> Vec<Message> {
++    rules
++        .iter()
++        .map(|rule| Message {
++            role: "system".into(),
++            content: rule.clone(),
++            tool_call_id: None,
++            tool_calls: vec![],
++        })
++        .collect()
++}
++fn with_rules(messages: &[Message], rules: &[String]) -> Vec<Message> {
++    let mut output = with_rules_prefix(rules);
++    output.extend(messages.iter().cloned());
++    output
++}
+ fn finish_loop(
+     messages: Vec<Message>,
+     mut events: Vec<LoopEvent>,
+diff --git a/rust/src/rein/mod.rs b/rust/src/rein/mod.rs
+index 24dfcfd..4a6d23f 100644
+--- a/rust/src/rein/mod.rs
++++ b/rust/src/rein/mod.rs
+@@ -6,9 +6,9 @@ use std::time::Duration;
+ 
+ pub mod r#loop;
+ pub use r#loop::{
+-    run_agent_loop, run_agent_loop_with_adapter, run_agent_loop_with_options, ControlSignal,
+-    LoopEvent, LoopOptions, LoopResult, LoopState, ModelAdapter, OpenAiModelAdapter, StopReason,
+-    ToolObserver,
++    estimated_units, run_agent_loop, run_agent_loop_with_adapter, run_agent_loop_with_options,
++    ContextConfig, ContextMode, ControlSignal, LoopEvent, LoopOptions, LoopResult, LoopState,
++    ModelAdapter, OpenAiModelAdapter, StopReason, ToolObserver,
+ };
+ 
+ #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+diff --git a/rust/tests/loop.rs b/rust/tests/loop.rs
+index d69270a..104135c 100644
+--- a/rust/tests/loop.rs
++++ b/rust/tests/loop.rs
+@@ -1,7 +1,7 @@
+ use rein_ch01_helloworld::rein::{
+-    run_agent_loop_with_adapter, run_agent_loop_with_options, ControlSignal, LoopEvent,
+-    LoopOptions, LoopState, Message, ModelAdapter, ModelTurn, StopReason, ToolCall, ToolDefinition,
+-    ToolError, Workspace,
++    run_agent_loop_with_adapter, run_agent_loop_with_options, ContextConfig, ControlSignal,
++    LoopEvent, LoopOptions, LoopState, Message, ModelAdapter, ModelTurn, StopReason, ToolCall,
++    ToolDefinition, ToolError, Workspace,
+ };
+ use std::{
+     collections::VecDeque,
+@@ -508,3 +508,369 @@ fn loop_wire_values_are_snake_case_and_fields_camel_case() {
+     assert_eq!(value["type"], "model_received");
+     assert!(value.get("toolCallIds").is_some());
+ }
++
++struct ContextCapture(Arc<Mutex<Vec<Vec<Message>>>>);
++impl ModelAdapter for ContextCapture {
++    fn complete<'a>(
++        &'a self,
++        messages: &'a [Message],
++        _: &'a [ToolDefinition],
++    ) -> Pin<Box<dyn Future<Output = Result<ModelTurn, ToolError>> + Send + 'a>> {
++        self.0.lock().unwrap().push(messages.to_vec());
++        Box::pin(async { Ok(turn("答案", vec![])) })
++    }
++}
++
++#[tokio::test]
++async fn ch07_context_keeps_goal_and_latest_tool_group_but_audits_all_history() {
++    let ws = workspace("ch07-context", &[]);
++    let captured = Arc::new(Mutex::new(Vec::new()));
++    let history = vec![
++        Message {
++            role: "user".into(),
++            content: "old".into(),
++            tool_call_id: None,
++            tool_calls: vec![],
++        },
++        Message {
++            role: "assistant".into(),
++            content: "".into(),
++            tool_call_id: None,
++            tool_calls: vec![call(
++                "old-call",
++                "read_file",
++                serde_json::json!({"path":"a"}),
++            )],
++        },
++        Message {
++            role: "tool".into(),
++            content: "old-result".into(),
++            tool_call_id: Some("old-call".into()),
++            tool_calls: vec![],
++        },
++    ];
++    let result = run_agent_loop_with_options(
++        &ContextCapture(captured.clone()),
++        &ws,
++        "goal",
++        LoopOptions {
++            max_turns: 1,
++            context: Some(ContextConfig {
++                rules: vec!["rule".into()],
++                history,
++                budget: 125,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++    assert_eq!(result.answer.as_deref(), Some("答案"));
++    assert_eq!(result.messages.len(), 5);
++    let sent = &captured.lock().unwrap()[0];
++    assert!(sent
++        .iter()
++        .any(|m| m.role == "system" && m.content == "rule"));
++    assert!(sent.iter().any(|m| m.content == "goal"));
++    let prepared = result
++        .events
++        .iter()
++        .find_map(|e| {
++            if let LoopEvent::ContextPrepared {
++                kept_groups,
++                removed_groups,
++                ..
++            } = e
++            {
++                Some((kept_groups, removed_groups))
++            } else {
++                None
++            }
++        })
++        .unwrap();
++    assert!(prepared.0.contains(&"g3".into()));
++    assert!(prepared.1.contains(&"g0".into()));
++}
++
++#[tokio::test]
++async fn ch07_context_rejects_invalid_history_and_required_overflow_without_dispatch() {
++    let ws = workspace("ch07-invalid", &[]);
++    let captured = Arc::new(Mutex::new(Vec::new()));
++    let orphan = Message {
++        role: "tool".into(),
++        content: "orphan".into(),
++        tool_call_id: Some("x".into()),
++        tool_calls: vec![],
++    };
++    let invalid = run_agent_loop_with_options(
++        &ContextCapture(captured.clone()),
++        &ws,
++        "goal",
++        LoopOptions {
++            context: Some(ContextConfig {
++                rules: vec![],
++                history: vec![orphan],
++                budget: 100,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++    assert_eq!(invalid.reason, StopReason::InvalidContextHistory);
++    assert!(captured.lock().unwrap().is_empty());
++    let overflow = run_agent_loop_with_options(
++        &ContextCapture(captured.clone()),
++        &ws,
++        "long goal",
++        LoopOptions {
++            context: Some(ContextConfig {
++                rules: vec!["large rule".repeat(20)],
++                history: vec![],
++                budget: 1,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++    assert_eq!(overflow.reason, StopReason::ContextBudgetExhausted);
++    assert!(captured.lock().unwrap().is_empty());
++}
++
++#[tokio::test]
++async fn ch07_context_rejects_unsafe_integer_budget_as_invalid_context_config() {
++    let ws = workspace("ch07-unsafe-budget", &[]);
++    let captured = Arc::new(Mutex::new(Vec::new()));
++    let result = run_agent_loop_with_options(
++        &ContextCapture(captured.clone()),
++        &ws,
++        "goal",
++        LoopOptions {
++            context: Some(ContextConfig {
++                rules: vec![],
++                history: vec![],
++                budget: 9_007_199_254_740_992,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++
++    assert_eq!(result.reason, StopReason::InvalidContextHistory);
++    assert_eq!(result.error.as_deref(), Some("invalid_context_config"));
++    assert!(captured.lock().unwrap().is_empty());
++    assert!(result.events.iter().any(|event| matches!(
++        event,
++        LoopEvent::ContextRejected {
++            reason,
++            error_code: Some(error_code),
++            budget: None,
++            before_units: None,
++            required_units: None,
++            ..
++        } if reason == "invalid_context_history" && error_code == "invalid_context_config"
++    )));
++}
++
++struct Ch07RoundAdapter {
++    requests: Arc<Mutex<Vec<Vec<Message>>>>,
++    duplicate_id: bool,
++}
++impl ModelAdapter for Ch07RoundAdapter {
++    fn complete<'a>(
++        &'a self,
++        messages: &'a [Message],
++        _: &'a [ToolDefinition],
++    ) -> Pin<Box<dyn Future<Output = Result<ModelTurn, ToolError>> + Send + 'a>> {
++        let requests = self.requests.clone();
++        let round = requests.lock().unwrap().len();
++        requests.lock().unwrap().push(messages.to_vec());
++        let tool_count = messages.iter().filter(|m| m.role == "tool").count();
++        let id = if self.duplicate_id {
++            "same-id"
++        } else if tool_count == 0 {
++            "first-id"
++        } else {
++            "second-id"
++        };
++        let response = if tool_count == 0 {
++            turn(
++                "",
++                vec![call(id, "read_file", serde_json::json!({"path":"a.txt"}))],
++            )
++        } else if tool_count == 1 && round < 2 {
++            turn(
++                "",
++                vec![call(id, "read_file", serde_json::json!({"path":"b.txt"}))],
++            )
++        } else {
++            turn(
++                &messages
++                    .iter()
++                    .rev()
++                    .find(|m| m.role == "tool")
++                    .map(|m| m.content.clone())
++                    .unwrap_or_default(),
++                vec![],
++            )
++        };
++        Box::pin(async move { Ok(response) })
++    }
++}
++
++#[tokio::test]
++async fn ch07_context_tracks_latest_group_across_real_tool_rounds() {
++    let ws = workspace(
++        "ch07-rounds",
++        &[("a.txt", "first fact"), ("b.txt", "second fact")],
++    );
++    let requests = Arc::new(Mutex::new(Vec::new()));
++    let result = run_agent_loop_with_options(
++        &Ch07RoundAdapter {
++            requests: requests.clone(),
++            duplicate_id: false,
++        },
++        &ws,
++        "read both",
++        LoopOptions {
++            max_turns: 4,
++            context: Some(ContextConfig {
++                rules: vec!["keep facts".into()],
++                history: vec![],
++                budget: 180,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++    assert_eq!(result.reason, StopReason::FinalAnswer);
++    assert!(result.answer.as_deref().unwrap().contains("second fact"));
++    let prepared: Vec<(Vec<String>, Vec<String>)> = result
++        .events
++        .iter()
++        .filter_map(|event| match event {
++            LoopEvent::ContextPrepared {
++                required_groups,
++                removed_groups,
++                ..
++            } => Some((required_groups.clone(), removed_groups.clone())),
++            _ => None,
++        })
++        .collect();
++    assert!(prepared.len() >= 3);
++    assert!(prepared[1].0.iter().any(|id| id == "g1"));
++    assert!(prepared[2].0.iter().any(|id| id == "g3"));
++    assert!(prepared[2].1.iter().any(|id| id == "g1"));
++    assert_eq!(
++        result.messages.iter().filter(|m| m.role == "tool").count(),
++        2
++    );
++}
++
++#[tokio::test]
++async fn ch07_context_stops_when_new_latest_group_does_not_fit() {
++    let ws = workspace(
++        "ch07-budget",
++        &[("a.txt", &"x".repeat(400)), ("b.txt", "unused")],
++    );
++    let requests = Arc::new(Mutex::new(Vec::new()));
++    let result = run_agent_loop_with_options(
++        &Ch07RoundAdapter {
++            requests: requests.clone(),
++            duplicate_id: false,
++        },
++        &ws,
++        "read",
++        LoopOptions {
++            max_turns: 4,
++            context: Some(ContextConfig {
++                rules: vec![],
++                history: vec![],
++                budget: 80,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++    assert_eq!(result.reason, StopReason::ContextBudgetExhausted);
++    assert_eq!(requests.lock().unwrap().len(), 1);
++    assert!(result.events.iter().any(|event| matches!(event, LoopEvent::ContextRejected { reason, .. } if reason == "context_budget_exhausted")));
++}
++
++#[tokio::test]
++async fn ch07_context_allows_adjacent_seeded_groups_but_rejects_new_duplicate_id() {
++    let seeded = vec![
++        Message {
++            role: "assistant".into(),
++            content: "".into(),
++            tool_call_id: None,
++            tool_calls: vec![call("a", "read_file", serde_json::json!({"path":"a.txt"}))],
++        },
++        Message {
++            role: "tool".into(),
++            content: "A".into(),
++            tool_call_id: Some("a".into()),
++            tool_calls: vec![],
++        },
++        Message {
++            role: "assistant".into(),
++            content: "".into(),
++            tool_call_id: None,
++            tool_calls: vec![call("b", "read_file", serde_json::json!({"path":"b.txt"}))],
++        },
++        Message {
++            role: "tool".into(),
++            content: "B".into(),
++            tool_call_id: Some("b".into()),
++            tool_calls: vec![],
++        },
++    ];
++    let ws = workspace("ch07-adjacent", &[("a.txt", "A"), ("b.txt", "B")]);
++    let ok_requests = Arc::new(Mutex::new(Vec::new()));
++    let ok = run_agent_loop_with_options(
++        &Ch07RoundAdapter {
++            requests: ok_requests.clone(),
++            duplicate_id: false,
++        },
++        &ws,
++        "goal",
++        LoopOptions {
++            max_turns: 1,
++            context: Some(ContextConfig {
++                rules: vec![],
++                history: seeded.clone(),
++                budget: 300,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++    assert_eq!(ok.reason, StopReason::FinalAnswer);
++    let duplicate_requests = Arc::new(Mutex::new(Vec::new()));
++    let duplicate = run_agent_loop_with_options(
++        &Ch07RoundAdapter {
++            requests: duplicate_requests.clone(),
++            duplicate_id: true,
++        },
++        &ws,
++        "goal",
++        LoopOptions {
++            max_turns: 3,
++            context: Some(ContextConfig {
++                rules: vec![],
++                history: vec![],
++                budget: 300,
++                manage: true,
++            }),
++            ..LoopOptions::default()
++        },
++    )
++    .await;
++    assert_eq!(duplicate.reason, StopReason::InvalidContextHistory);
++    assert_eq!(duplicate_requests.lock().unwrap().len(), 2);
++}
+diff --git a/scripts/ch07-compare.mjs b/scripts/ch07-compare.mjs
+new file mode 100644
+index 0000000..dd1b875
+--- /dev/null
++++ b/scripts/ch07-compare.mjs
+@@ -0,0 +1,54 @@
++import { readFileSync } from 'node:fs'
++import { fileURLToPath } from 'node:url'
++import { spawnSync } from 'node:child_process'
++import { resolve } from 'node:path'
++import { isDeepStrictEqual } from 'node:util'
++const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
++const fixture = resolve(root, 'fixtures/cases/ch07-context.json')
++const run = (command, args, cwd) => { const result = spawnSync(command, args, { cwd, encoding: 'utf8' }); if (result.error) throw result.error; if (result.status !== 0) throw new Error(`${command} failed: ${result.stderr}`); return JSON.parse(result.stdout) }
++const ts = run('npm', ['run', '--silent', 'ch07:context', '--', fixture], root)
++const rust = run('cargo', ['run', '--quiet', '--manifest-path', resolve(root, 'rust/Cargo.toml'), '--example', 'ch07_context', '--', fixture], root)
++const normalize = (value, path = []) => {
++  if (Array.isArray(value)) return value.map((item, index) => normalize(item, [...path, index]))
++  if (!value || typeof value !== 'object') return value
++  const out = {}
++  for (const [key, child] of Object.entries(value)) {
++    const resultError = key === 'error' && path.at(-1) === 'result'
++    if (resultError && child && typeof child === 'object') out[key] = { code: child.code ?? null }
++    else if (resultError && typeof child === 'string') out[key] = null
++    else out[key] = normalize(child, [...path, key])
++  }
++  return out
++}
++const fixtureCases = JSON.parse(readFileSync(fixture, 'utf8')).cases
++const acceptedMetrics = new Map([['managed-window', { beforeUnits: 644, afterUnits: 239, requiredUnits: 239, keptGroups: ['g1', 'g4'], removedGroups: ['g0'] }], ['multi-tool-boundary', { beforeUnits: 382, afterUnits: 219, requiredUnits: 204, keptGroups: ['g4', 'g5', 'g8'], removedGroups: ['g0', 'g1'] }]])
++const caseIds = fixtureCases.map(item => item.id)
++if (new Set(caseIds).size !== caseIds.length || new Set(caseIds).size !== 7) throw new Error('fixture case IDs must be unique and complete')
++for (const implementation of [ts, rust]) {
++  if (implementation.unit !== 'estimated-bytes-v1' || implementation.cases.length !== fixtureCases.length) throw new Error('invalid ch07 output envelope')
++  const actualIds = implementation.cases.map(item => item.id)
++  if (new Set(actualIds).size !== actualIds.length || !isDeepStrictEqual([...actualIds].sort(), [...caseIds].sort())) throw new Error('implementation case IDs do not exactly match fixture')
++  for (const actual of implementation.cases) {
++    const expected = fixtureCases.find(item => item.id === actual.id)
++    if (!expected) throw new Error(`unknown case ${actual.id}`)
++    if (actual.result.reason !== expected.expected.reason || actual.requests !== expected.expected.requests) throw new Error(`${actual.id} does not satisfy fixture expectation`)
++    const requested = actual.result.events.filter(event => event.type === 'model_requested')
++    if (requested.length !== actual.requests || requested.length !== actual.sentMessages.length) throw new Error(`${actual.id} request/event mismatch`)
++    for (let i = 0; i < requested.length; i++) if (!isDeepStrictEqual(requested[i].messages, actual.sentMessages[i])) throw new Error(`${actual.id} sent message audit mismatch`)
++    const contextEvent = actual.result.events.find(event => event.type === 'context_prepared')
++    const metrics = acceptedMetrics.get(actual.id)
++    if (metrics && implementation === ts && (!contextEvent || !isDeepStrictEqual({ beforeUnits: contextEvent.beforeUnits, afterUnits: contextEvent.afterUnits, requiredUnits: contextEvent.requiredUnits, keptGroups: contextEvent.keptGroups, removedGroups: contextEvent.removedGroups }, metrics))) throw new Error(`${actual.id} context metrics differ from accepted values`)
++    if (actual.result.reason === 'final_answer' && actual.result.answer && contextEvent) {
++      const sent = actual.sentMessages.at(-1) ?? []
++      const groups = sent.map((message, index) => message.role === 'assistant' && message.toolCalls?.length ? { index, calls: message.toolCalls } : undefined).filter(Boolean)
++      const latest = groups.at(-1)
++      if (latest) {
++        const contentById = new Map(sent.filter(message => message.role === 'tool').map(message => [message.toolCallId, message.content]))
++        const derived = latest.calls.map(call => contentById.get(call.id)).join('\n')
++        if (derived !== actual.result.answer) throw new Error(`${actual.id} answer is not derived from latest tool group`)
++      }
++    }
++  }
++}
++if (!isDeepStrictEqual(normalize(ts), normalize(rust))) throw new Error('ch07 TypeScript/Rust behavior differs')
++process.stdout.write(JSON.stringify({ unit: ts.unit, cases: ts.cases.map(c => ({ id: c.id, reason: c.result.reason, requests: c.requests })) }) + '\n')
+diff --git a/ts/examples/ch07-context.ts b/ts/examples/ch07-context.ts
+new file mode 100644
+index 0000000..0e9e641
+--- /dev/null
++++ b/ts/examples/ch07-context.ts
+@@ -0,0 +1,31 @@
++import { readFile } from 'node:fs/promises'
++import { fileURLToPath } from 'node:url'
++import { resolve } from 'node:path'
++import { runAgentLoop, estimateMessages } from '../src/rein/loop'
++import type { ChatAdapter, Message, ModelTurn } from '../src/rein/contracts'
++import { createHash } from 'node:crypto'
++
++const fixturePath = process.argv[2] ? resolve(process.argv[2]) : fileURLToPath(new URL('../../fixtures/cases/ch07-context.json', import.meta.url))
++const fixture = JSON.parse(await readFile(fixturePath, 'utf8')) as { unit: string; cases: any[] }
++const outputs = []
++for (const scenario of fixture.cases) {
++  const requests: Message[][] = []
++  const adapter: ChatAdapter = { async complete(messages) {
++    requests.push(structuredClone(messages) as Message[])
++    if (estimateMessages(messages) > scenario.budget) throw new Error('adapter_budget_exceeded')
++    const candidates: string[] = []
++    for (let i = 0; i < messages.length; i++) {
++      const message = messages[i]!
++      if (message.role !== 'assistant' || !message.toolCalls?.length) continue
++      const byId = new Map(messages.slice(i + 1).filter(item => item.role === 'tool').map(item => [item.toolCallId, item.content]))
++      if (message.toolCalls.every(call => byId.has(call.id))) candidates.push(message.toolCalls.map(call => byId.get(call.id)).join('\n'))
++    }
++    const content = candidates.length > 0 ? candidates.at(-1)! : messages.filter(message => message.role === 'user').at(-1)?.content ?? ''
++    return { message: { role: 'assistant', content }, toolCalls: [] } satisfies ModelTurn
++  } }
++  const result = await runAgentLoop(adapter, { root: process.cwd() }, scenario.goal, { context: { rules: scenario.rules, history: scenario.history, budget: scenario.budget, manage: scenario.managed } })
++  outputs.push({ id: scenario.id, result, requests: requests.length, sentMessages: requests })
++}
++const rendered = JSON.stringify({ unit: fixture.unit, cases: outputs })
++process.stdout.write(rendered + '\n')
++process.stderr.write(`fixture_sha256=${createHash('sha256').update(await readFile(fixturePath)).digest('hex')}\n`)
+diff --git a/ts/package.json b/ts/package.json
+index cea4a61..e2532fb 100644
+--- a/ts/package.json
++++ b/ts/package.json
+@@ -12,6 +12,7 @@
+     "ch05:compare": "node --import tsx examples/ch05-compare.ts",
+     "ch05:live": "node --import tsx examples/ch05-live.ts"
+     ,"ch06:offline": "node --import tsx examples/ch06-loop.ts"
++    ,"ch07:context": "node --import tsx examples/ch07-context.ts"
+   },
+   "devDependencies": {
+     "@types/node": "^22.10.2",
+diff --git a/ts/src/rein/contracts.ts b/ts/src/rein/contracts.ts
+index 153c795..b45f76e 100644
+--- a/ts/src/rein/contracts.ts
++++ b/ts/src/rein/contracts.ts
+@@ -7,6 +7,13 @@ export interface Message {
+   readonly toolCalls?: readonly ToolCall[]
+ }
+ 
++export interface ContextConfig {
++  readonly rules: readonly string[]
++  readonly history: readonly Message[]
++  readonly budget: number
++  readonly manage?: boolean
++}
++
+ export interface ToolCall {
+   readonly id: string
+   readonly name: string
+diff --git a/ts/src/rein/loop.ts b/ts/src/rein/loop.ts
+index 46528f7..7434ed6 100644
+--- a/ts/src/rein/loop.ts
++++ b/ts/src/rein/loop.ts
+@@ -1,13 +1,15 @@
+-import type { ChatAdapter, Message, ToolCall, ToolDefinition, ToolResult } from './contracts'
++import type { ChatAdapter, ContextConfig, Message, ToolCall, ToolDefinition, ToolResult } from './contracts'
+ import type { Workspace } from './readonly'
+ import { dispatchReadonly } from './readonly'
+ 
+ export type LoopState = 'running' | 'completed' | 'failed'
+-export type StopReason = 'final_answer' | 'empty_final' | 'model_error' | 'max_turns' | 'tool_budget_exhausted' | 'duplicate_action' | 'cancelled' | 'timeout'
++export type StopReason = 'final_answer' | 'empty_final' | 'model_error' | 'max_turns' | 'tool_budget_exhausted' | 'duplicate_action' | 'cancelled' | 'timeout' | 'context_budget_exhausted' | 'invalid_context_history'
+ export type LoopEvent =
+   | { readonly type: 'model_requested'; readonly turn: number; readonly messages: readonly Message[]; readonly tools: readonly ToolDefinition[] }
+   | { readonly type: 'model_received'; readonly turn: number; readonly message: Message; readonly toolCallIds: readonly string[]; readonly text: string }
+   | { readonly type: 'tool_result'; readonly turn: number; readonly call: ToolCall; readonly toolCallId: string; readonly result: ToolResult }
++  | { readonly type: 'context_prepared'; readonly turn: number; readonly unit: 'estimated-bytes-v1'; readonly budget: number; readonly beforeUnits: number; readonly afterUnits: number; readonly requiredUnits: number; readonly keptGroups: readonly string[]; readonly removedGroups: readonly string[]; readonly requiredGroups: readonly string[]; readonly mode: 'managed' | 'unmanaged' }
++  | { readonly type: 'context_rejected'; readonly turn: number; readonly reason: 'context_budget_exhausted' | 'invalid_context_history'; readonly unit: 'estimated-bytes-v1'; readonly budget?: number; readonly beforeUnits?: number; readonly requiredUnits?: number; readonly mode: 'managed' | 'unmanaged'; readonly errorCode?: string }
+   | { readonly type: 'action_skipped'; readonly turn: number; readonly action: 'model' | 'tool'; readonly callId?: string; readonly reason: StopReason }
+   | { readonly type: 'stopped'; readonly state: Exclude<LoopState, 'running'>; readonly reason: StopReason }
+ 
+@@ -23,6 +25,7 @@ export interface LoopOptions {
+   readonly tools?: readonly ToolDefinition[]
+   /** Trusted local observation hook, called after each real tool result. */
+   readonly onToolResult?: (call: ToolCall, result: ToolResult) => void
++  readonly context?: ContextConfig
+ }
+ 
+ export interface LoopResult {
+@@ -39,13 +42,111 @@ export const readonlyToolDefinitions: readonly ToolDefinition[] = [
+   { name: 'read_file', description: 'Read one UTF-8 file in the workspace.', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'], additionalProperties: false } },
+ ]
+ 
++export function estimateMessages(messages: readonly Message[]): number {
++  return messages.reduce((sum, message) => sum + estimateMessage(message), 0)
++}
++
++function utf8(value: string): number { return new TextEncoder().encode(value).byteLength }
++function validJson(value: unknown): boolean {
++  if (value === null || typeof value === 'string' || typeof value === 'boolean') return true
++  if (typeof value === 'number') return Number.isFinite(value)
++  if (Array.isArray(value)) return value.every(validJson)
++  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>).every(([key, item]) => typeof key === 'string' && validJson(item))
++  return false
++}
++function estimateJson(value: unknown): number {
++  if (value === null) return 4
++  if (typeof value === 'boolean') return value ? 4 : 5
++  if (typeof value === 'number') return 8
++  if (typeof value === 'string') return 2 + utf8(value)
++  if (Array.isArray(value)) return 2 + value.reduce((n, item) => n + estimateJson(item), 0) + Math.max(0, value.length - 1)
++  if (typeof value === 'object') { const entries = Object.entries(value as Record<string, unknown>); return 2 + entries.reduce((n, [key, item]) => n + 2 + utf8(key) + 1 + estimateJson(item), 0) + Math.max(0, entries.length - 1) }
++  return 0
++}
++function estimateMessage(message: Message): number {
++  return 8 + utf8(message.role) + utf8(message.content) + (message.toolCallId ? utf8(message.toolCallId) : 0) + (message.toolCalls ?? []).reduce((n, call) => n + 8 + utf8(call.id) + utf8(call.name) + estimateJson(call.arguments), 0)
++}
++
++type Group = { id: string; start: number; end: number; messages: Message[] }
++function validateHistory(history: readonly Message[]): string | undefined {
++  const ids = new Set<string>()
++  for (let i = 0; i < history.length; i++) {
++    const message = history[i]!
++    if (!['user', 'assistant', 'tool'].includes(message.role)) return 'invalid_context_history'
++    if (typeof message.content !== 'string' || (message.toolCalls !== undefined && (!Array.isArray(message.toolCalls) || !validJson(message.toolCalls)))) return 'invalid_context_history'
++    if ((message.toolCalls ?? []).some(call => !call || typeof call !== 'object' || typeof call.id !== 'string' || !call.id || typeof call.name !== 'string' || !call.name || !validJson(call.arguments))) return 'invalid_context_history'
++    if (message.role === 'tool') {
++      if ((message.toolCalls ?? []).length) return 'invalid_context_history'
++      if (!message.toolCallId || ids.has(message.toolCallId)) return 'invalid_context_history'
++      const previous = history[i - 1]
++      if (!previous || previous.role !== 'assistant' || !(previous.toolCalls ?? []).some(call => call.id === message.toolCallId)) return 'invalid_context_history'
++      ids.add(message.toolCallId)
++      continue
++    }
++    if (message.role === 'user' && ((message.toolCalls ?? []).length || message.toolCallId !== undefined)) return 'invalid_context_history'
++    if (message.role === 'assistant') {
++      if (message.toolCallId !== undefined) return 'invalid_context_history'
++      const calls = message.toolCalls ?? []
++      const callIds = calls.map(call => call.id)
++      if (new Set(callIds).size !== callIds.length || callIds.some(id => !id || ids.has(id))) return 'invalid_context_history'
++      if (calls.length) {
++        const results = history.slice(i + 1, i + 1 + calls.length)
++        if (results.length !== calls.length || results.some(result => !isValidToolResultMessage(result) || !callIds.includes(result.toolCallId)) || new Set(results.map(result => result.toolCallId)).size !== calls.length) return 'invalid_context_history'
++        callIds.forEach(id => ids.add(id))
++        i += calls.length
++      }
++    }
++  }
++  return undefined
++}
++
++function isValidToolResultMessage(message: Message): message is Message & { readonly toolCallId: string } {
++  return message.role === 'tool' && typeof message.toolCallId === 'string' && message.toolCallId.length > 0 && typeof message.content === 'string' && (message.toolCalls === undefined || Array.isArray(message.toolCalls)) && (message.toolCalls ?? []).length === 0
++}
++
++function makeGroups(messages: readonly Message[]): Group[] {
++  const groups: Group[] = []
++  for (let i = 0; i < messages.length; i++) {
++    const message = messages[i]!
++    if (message.role === 'tool') continue
++    const end = message.role === 'assistant' && (message.toolCalls ?? []).length ? i + (message.toolCalls ?? []).length : i
++    groups.push({ id: `g${i}`, start: i, end, messages: messages.slice(i, end + 1) as Message[] })
++    i = end
++  }
++  return groups
++}
++
++function prepareContext(messages: readonly Message[], context: ContextConfig, currentGoalIndex: number): { messages: Message[]; beforeUnits: number; afterUnits: number; requiredUnits: number; keptGroups: string[]; removedGroups: string[]; requiredGroups: string[]; mode: 'managed' | 'unmanaged'; rejected?: boolean } {
++  const groups = makeGroups(messages)
++  const goal = groups.find(group => group.start === currentGoalIndex) ?? groups.at(-1)
++  const latestTool = [...groups].reverse().find(group => group.messages.some(message => message.role === 'assistant' && (message.toolCalls ?? []).length))
++  const required = new Set([goal?.id, latestTool?.id].filter((id): id is string => Boolean(id)))
++  const rulesMessages = context.rules.map(content => ({ role: 'system' as const, content }))
++  const beforeUnits = estimateMessages([...rulesMessages, ...messages])
++  const requiredUnits = estimateMessages(rulesMessages) + groups.filter(group => required.has(group.id)).reduce((n, group) => n + estimateMessages(group.messages), 0)
++  const mode = context.manage === false ? 'unmanaged' : 'managed'
++  if (mode === 'managed' && requiredUnits > context.budget) return { messages: [], beforeUnits, afterUnits: beforeUnits, requiredUnits, keptGroups: [], removedGroups: [], requiredGroups: [...required].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1))), mode, rejected: true }
++  const kept = new Set(groups.map(group => group.id))
++  if (mode === 'managed') for (const group of groups) {
++    if (estimateMessages(rulesMessages) + groups.filter(candidate => kept.has(candidate.id)).reduce((n, candidate) => n + estimateMessages(candidate.messages), 0) <= context.budget) break
++    if (!required.has(group.id)) kept.delete(group.id)
++  }
++  const keptGroups = groups.filter(group => kept.has(group.id))
++  const removedGroups = groups.filter(group => !kept.has(group.id))
++  const audit = keptGroups.flatMap(group => group.messages)
++  const sent = [...rulesMessages, ...audit]
++  return { messages: sent, beforeUnits, afterUnits: mode === 'unmanaged' ? beforeUnits : estimateMessages(sent), requiredUnits, keptGroups: keptGroups.map(group => group.id), removedGroups: removedGroups.map(group => group.id), requiredGroups: [...required].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1))), mode }
++}
++
+ /** Runs the small, replayable tool loop. One model turn may produce many tools. */
+ export async function runAgentLoop(adapter: ChatAdapter, workspace: Workspace, prompt: string, options: LoopOptions = {}): Promise<LoopResult> {
+   const maxTurns = options.maxTurns ?? 32
+   const maxToolCalls = options.maxToolCalls ?? Number.POSITIVE_INFINITY
+   const duplicateLimit = options.duplicateLimit ?? Number.POSITIVE_INFINITY
+   const tools = options.tools ?? readonlyToolDefinitions
+-  const messages: Message[] = [{ role: 'user', content: prompt }]
++  const context = options.context ? structuredClone(options.context) : undefined
++  const contextGoalIndex = context?.history.length
++  const messages: Message[] = context ? structuredClone(context.history).concat({ role: 'user', content: prompt }) : [{ role: 'user', content: prompt }]
+   const events: LoopEvent[] = []
+   const startedAt = Date.now()
+   const deadline = options.timeoutMs === undefined ? undefined : startedAt + Math.max(0, options.timeoutMs)
+@@ -56,17 +157,35 @@ export async function runAgentLoop(adapter: ChatAdapter, workspace: Workspace, p
+   }
+   let toolStarted = 0
+   const seen = new Map<string, number>()
++  if (context) {
++    const invalid = validateHistory(context.history)
++    const mode = context.manage === false ? 'unmanaged' : 'managed'
++    if (invalid) { events.push({ type: 'context_rejected', turn: 0, reason: 'invalid_context_history', unit: 'estimated-bytes-v1', mode, errorCode: invalid }); return finish(messages, events, 'failed', 'invalid_context_history', undefined, invalid) }
++    if (!Number.isSafeInteger(context.budget) || context.budget < 0 || context.rules.some(rule => typeof rule !== 'string')) { events.push({ type: 'context_rejected', turn: 0, reason: 'invalid_context_history', unit: 'estimated-bytes-v1', mode, errorCode: 'invalid_context_config' }); return finish(messages, events, 'failed', 'invalid_context_history', undefined, 'invalid_context_config') }
++  }
+   if (maxTurns <= 0) return finish(messages, events, 'failed', 'max_turns')
+   const initialReason = controlReason()
+   if (initialReason) return finish(messages, events, 'failed', initialReason)
+   for (let turn = 1; turn <= maxTurns; turn++) {
+     const beforeModel = controlReason()
+     if (beforeModel) return finish(messages, events, 'failed', beforeModel)
+-    events.push({ type: 'model_requested', turn, messages: structuredClone(messages), tools: structuredClone(tools) })
++    let sentMessages = messages
++    if (context) {
++      const invalid = validateHistory(messages)
++      if (invalid) { events.push({ type: 'context_rejected', turn, reason: 'invalid_context_history', unit: 'estimated-bytes-v1', mode: context.manage === false ? 'unmanaged' : 'managed', errorCode: invalid }); return finish(messages, events, 'failed', 'invalid_context_history', undefined, invalid) }
++      const prepared = prepareContext(messages, context, contextGoalIndex!)
++      if (prepared.rejected) {
++        events.push({ type: 'context_rejected', turn, reason: 'context_budget_exhausted', unit: 'estimated-bytes-v1', budget: context.budget, beforeUnits: prepared.beforeUnits, requiredUnits: prepared.requiredUnits, mode: prepared.mode })
++        return finish(messages, events, 'failed', 'context_budget_exhausted')
++      }
++      sentMessages = prepared.messages
++      events.push({ type: 'context_prepared', turn, unit: 'estimated-bytes-v1', budget: context.budget, beforeUnits: prepared.beforeUnits, afterUnits: prepared.afterUnits, requiredUnits: prepared.requiredUnits, keptGroups: prepared.keptGroups, removedGroups: prepared.removedGroups, requiredGroups: prepared.requiredGroups, mode: prepared.mode })
++    }
++    events.push({ type: 'model_requested', turn, messages: structuredClone(sentMessages), tools: structuredClone(tools) })
+     let model
+     try {
+       const remaining = deadline === undefined ? undefined : Math.max(0, deadline - Date.now())
+-      model = await raceControl(() => adapter.complete(messages, tools, { timeoutMs: remaining, signal: options.signal }), options.signal, remaining)
++      model = await raceControl(() => adapter.complete(structuredClone(sentMessages), tools, { timeoutMs: remaining, signal: options.signal }), options.signal, remaining)
+     }
+     catch (error) {
+       const reason = controlReason()
+diff --git a/ts/tests/ch07-context.test.ts b/ts/tests/ch07-context.test.ts
+new file mode 100644
+index 0000000..086d51e
+--- /dev/null
++++ b/ts/tests/ch07-context.test.ts
+@@ -0,0 +1,97 @@
++import { describe, expect, it } from 'vitest'
++import { runAgentLoop, estimateMessages } from '../src/rein/loop'
++import type { ChatAdapter } from '../src/rein/contracts'
++import { mkdtemp, rm, writeFile } from 'node:fs/promises'
++import { join } from 'node:path'
++import { tmpdir } from 'node:os'
++
++const answer = (content: string) => ({ message: { role: 'assistant' as const, content }, toolCalls: [] })
++
++describe('ch07 context management', () => {
++  it('keeps rules, goal, and the complete latest multi-tool group while removing old groups', async () => {
++    const history = [
++      { role: 'user' as const, content: 'old' },
++      { role: 'assistant' as const, content: '', toolCalls: [{ id: 'a', name: 'read_file', arguments: { path: 'a' } }, { id: 'b', name: 'read_file', arguments: { path: 'b' } }] },
++      { role: 'tool' as const, toolCallId: 'a', content: 'A' }, { role: 'tool' as const, toolCallId: 'b', content: 'B' },
++    ]
++    let received: any[] = []
++    const adapter: ChatAdapter = { async complete(messages) { received = structuredClone(messages) as any; return answer('ok') } }
++    const result = await runAgentLoop(adapter, { root: process.cwd() }, 'goal', { context: { rules: ['rule'], history, budget: 139 } })
++    expect(result.reason).toBe('final_answer')
++    expect(received.filter(m => m.role === 'system').map(m => m.content)).toEqual(['rule'])
++    expect(received.filter(m => m.role === 'tool').map(m => m.toolCallId)).toEqual(['a', 'b'])
++    expect(result.messages).toHaveLength(history.length + 2)
++    expect(result.events.find(e => e.type === 'context_prepared')).toMatchObject({ removedGroups: ['g0'], requiredGroups: ['g1', 'g4'] })
++  })
++
++  it('does not dispatch when required content exceeds budget', async () => {
++    let calls = 0
++    const adapter: ChatAdapter = { async complete() { calls++; return answer('bad') } }
++    const result = await runAgentLoop(adapter, { root: process.cwd() }, 'goal', { context: { rules: ['rule'], history: [], budget: 1 } })
++    expect(result).toMatchObject({ reason: 'context_budget_exhausted', state: 'failed' })
++    expect(calls).toBe(0)
++  })
++
++  it('rejects malformed history and protects audit history from adapter mutation', async () => {
++    const malformed = await runAgentLoop({ async complete() { return answer('never') } }, { root: process.cwd() }, 'goal', { context: { rules: [], history: [{ role: 'tool', toolCallId: 'orphan', content: 'x' }], budget: 100 } })
++    expect(malformed.reason).toBe('invalid_context_history')
++    const history = [{ role: 'user' as const, content: 'source' }]
++    const result = await runAgentLoop({ async complete(messages) { (messages as any).push({ role: 'system', content: 'tampered' }); return answer('ok') } }, { root: process.cwd() }, 'goal', { context: { rules: [], history, budget: 100 } })
++    expect(result.messages.map(message => message.content)).toEqual(['source', 'goal', 'ok'])
++  })
++
++  it('counts UTF-8 bytes deterministically', () => {
++    expect(estimateMessages([{ role: 'user', content: '你好 🌏' }])).toBe(8 + 4 + 11)
++  })
++
++  it('runs two real tool rounds and replaces the latest required group', async () => {
++    const root = await mkdtemp(join(tmpdir(), 'rein-ch07-rounds-'))
++    try {
++      await writeFile(join(root, 'a.txt'), 'first real result')
++      await writeFile(join(root, 'b.txt'), 'second real result')
++      let calls = 0
++      const adapter: ChatAdapter = { async complete(messages) {
++        calls++
++        const tools = messages.filter(message => message.role === 'tool')
++        if (calls === 1) return { message: { role: 'assistant', content: '', toolCalls: [{ id: 'round-a', name: 'read_file', arguments: { path: 'a.txt' } }] }, toolCalls: [{ id: 'round-a', name: 'read_file', arguments: { path: 'a.txt' } }] }
++        if (calls === 2) return { message: { role: 'assistant', content: '', toolCalls: [{ id: 'round-b', name: 'read_file', arguments: { path: 'b.txt' } }] }, toolCalls: [{ id: 'round-b', name: 'read_file', arguments: { path: 'b.txt' } }] }
++        return answer(tools.at(-1)?.content ?? 'missing')
++      } }
++      const result = await runAgentLoop(adapter, { root }, 'inspect', { maxTurns: 3, context: { rules: [], history: [], budget: 200 } })
++      expect(result.answer).toBe('second real result')
++      expect(calls).toBe(3)
++      const prepared = result.events.filter(event => event.type === 'context_prepared')
++      expect(prepared.at(-1)).toMatchObject({ requiredGroups: ['g0', 'g3'], removedGroups: ['g1'] })
++    } finally { await rm(root, { recursive: true, force: true }) }
++  })
++
++  it('stops before the next model when a newly formed required group cannot fit', async () => {
++    const root = await mkdtemp(join(tmpdir(), 'rein-ch07-overflow-'))
++    try {
++      await writeFile(join(root, 'a.txt'), 'large tool result '.repeat(8))
++      let calls = 0
++      const adapter: ChatAdapter = { async complete() { calls++; return { message: { role: 'assistant', content: '', toolCalls: [{ id: 'overflow-a', name: 'read_file', arguments: { path: 'a.txt' } }] }, toolCalls: [{ id: 'overflow-a', name: 'read_file', arguments: { path: 'a.txt' } }] } } }
++      const result = await runAgentLoop(adapter, { root }, 'inspect', { maxTurns: 3, context: { rules: [], history: [], budget: 100 } })
++      expect(result.reason).toBe('context_budget_exhausted')
++      expect(calls).toBe(1)
++    } finally { await rm(root, { recursive: true, force: true }) }
++  })
++
++  it('rejects malformed declarations and repeated IDs in a later round', async () => {
++    const bad = await runAgentLoop({ async complete() { return answer('never') } }, { root: process.cwd() }, 'x', { context: { rules: [], history: [{ role: 'assistant', content: '', toolCalls: {} as any }], budget: 100 } })
++    expect(bad.reason).toBe('invalid_context_history')
++    let calls = 0
++    const repeated = await runAgentLoop({ async complete() { calls++; return { message: { role: 'assistant', content: '', toolCalls: [{ id: 'same', name: 'read_file', arguments: { path: 'missing' } }] }, toolCalls: [{ id: 'same', name: 'read_file', arguments: { path: 'missing' } }] } } }, { root: process.cwd() }, 'x', { maxTurns: 3, context: { rules: [], history: [], budget: 300 } })
++    expect(repeated.reason).toBe('invalid_context_history')
++    expect(calls).toBe(2)
++  })
++
++  it('rejects empty non-tool IDs and malformed paired results before estimating', async () => {
++    const emptyId = await runAgentLoop({ async complete() { return answer('never') } }, { root: process.cwd() }, 'x', { context: { rules: [], history: [{ role: 'user', content: 'x', toolCallId: '' } as any], budget: 100 } })
++    expect(emptyId.reason).toBe('invalid_context_history')
++    const emptyAssistantId = await runAgentLoop({ async complete() { return answer('never') } }, { root: process.cwd() }, 'x', { context: { rules: [], history: [{ role: 'assistant', content: 'x', toolCallId: '' } as any], budget: 100 } })
++    expect(emptyAssistantId.reason).toBe('invalid_context_history')
++    const pairedBad = await runAgentLoop({ async complete() { return answer('never') } }, { root: process.cwd() }, 'x', { context: { rules: [], history: [{ role: 'assistant', content: '', toolCalls: [{ id: 'c', name: 'read_file', arguments: {} }] }, { role: 'tool', toolCallId: 'c', content: 'x', toolCalls: {} as any }], budget: 100 } })
++    expect(pairedBad.reason).toBe('invalid_context_history')
++  })
++})

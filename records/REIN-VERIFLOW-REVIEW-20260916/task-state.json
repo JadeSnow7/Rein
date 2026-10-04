@@ -1,0 +1,985 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "SPEC-1",
+    "authority": "state.spec",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "保留当前脏工作区及作者风格",
+      "单次交付不声称因果提升",
+      "真实调用仅合成输入和 fixture，每入口一次，明确修复后最多复验一次"
+    ],
+    "exceptions": [
+      "环境受限保留 undetermined；未满足必要验收报告部分完成"
+    ],
+    "conditions": [
+      {
+        "id": "SC-001",
+        "metric_ids": [
+          "MET-001"
+        ],
+        "deliverables": [
+          "docs/chapters/01.md",
+          "docs/chapters/08.md"
+        ]
+      },
+      {
+        "id": "SC-002",
+        "metric_ids": [
+          "MET-002"
+        ],
+        "deliverables": [
+          "ts/src/rein/loop.ts",
+          "rust/src/rein/loop.rs"
+        ]
+      },
+      {
+        "id": "SC-003",
+        "metric_ids": [
+          "MET-003"
+        ],
+        "deliverables": [
+          "README.md",
+          "docs/toc.md"
+        ]
+      },
+      {
+        "id": "SC-004",
+        "metric_ids": [
+          "MET-004"
+        ],
+        "deliverables": [
+          "ts/src/hello.ts",
+          "rust/src/bin/hello.rs",
+          "ts/examples/ch05-live.ts"
+        ]
+      }
+    ],
+    "contracts": [
+      "contracts/extension-v0.1.md"
+    ],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-VERIFLOW-REVIEW-20260916",
+    "title": "全书审查修复及 Veriflow 实际交付验证",
+    "mode": "new",
+    "status": "blocked",
+    "source_ids": [
+      "SRC-001"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "Rein 学习者与作者",
+    "scenario": "按当前书稿逐章阅读运行",
+    "problem": "需核对教学、实现与完成状态并评估 skill 实用性",
+    "expected_outcome": "已有内容可跟做且声明有当前证据，交付可复核的 skill 效果报告",
+    "scope": "全书审查；修复已有正文代码练习导航；未写章仅规划一致性；最小真实模型验证",
+    "acceptable_result": "书稿及代码修复、完整覆盖记录、原始执行证据；缺少必要实测则部分完成"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:2026-09-16-approved-plan",
+      "summary": "执行已批准全书审查修复计划，保留当前工作区，包含最小真实调用，不提交推送部署或修改 skill",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "读者能够顺序跟做",
+      "scope": [
+        "docs",
+        "chapter-snapshots",
+        "examples"
+      ],
+      "non_goals": [
+        "补写未完成章节",
+        "提交推送部署",
+        "修改 skill"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "当前工作区为作者基线"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-001"
+      ],
+      "implementation_task_ids": [
+        "IT-001"
+      ]
+    },
+    {
+      "id": "MT-002",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "正文与实现一致且回归通过",
+      "scope": [
+        "ts",
+        "rust",
+        "contracts",
+        "fixtures",
+        "scripts",
+        "package.json",
+        "package-lock.json",
+        ".github"
+      ],
+      "non_goals": [
+        "补写未完成章节",
+        "提交推送部署",
+        "修改 skill"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "当前工作区为作者基线"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-002"
+      ],
+      "implementation_task_ids": [
+        "IT-002"
+      ]
+    },
+    {
+      "id": "MT-003",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "入口状态准确且效果报告证据完整",
+      "scope": [
+        "README.md",
+        "DECISIONS.md",
+        "MIGRATIONS.md",
+        "reports",
+        "records"
+      ],
+      "non_goals": [
+        "补写未完成章节",
+        "提交推送部署",
+        "修改 skill"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "当前工作区为作者基线"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-003"
+      ],
+      "implementation_task_ids": [
+        "IT-003"
+      ]
+    },
+    {
+      "id": "MT-004",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "真实模型最小路径实测",
+      "scope": [
+        "ts",
+        "rust"
+      ],
+      "non_goals": [
+        "补写未完成章节",
+        "提交推送部署",
+        "修改 skill"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "当前工作区为作者基线"
+      ],
+      "status": "blocked",
+      "metric_ids": [
+        "MET-004"
+      ],
+      "implementation_task_ids": [
+        "IT-004"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "读者能够顺序跟做",
+      "baseline": "未知；先冻结当前书稿并实测",
+      "target": "审查覆盖完整且发现有处置证据；相关实测通过",
+      "method": "最终 Markdown 跟做、代码检查、浏览器或真实调用，读取原始输出与实际差异",
+      "environment_data": "当前 Node/Rust、本地 fixture、已配置模型；不输出密钥",
+      "evidence_ids": [
+        "EVD-007",
+        "EVD-018",
+        "EVD-020"
+      ],
+      "status": "passed",
+      "verification": "manual"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-002",
+      "kind": "mandatory_gate",
+      "name": "正文与实现一致且回归通过",
+      "baseline": "未知；先冻结当前书稿并实测",
+      "target": "审查覆盖完整且发现有处置证据；相关实测通过",
+      "method": "最终 Markdown 跟做、代码检查、浏览器或真实调用，读取原始输出与实际差异",
+      "environment_data": "当前 Node/Rust、本地 fixture、已配置模型；不输出密钥",
+      "evidence_ids": [
+        "EVD-007",
+        "EVD-009",
+        "EVD-018"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-003",
+      "main_task_id": "MT-003",
+      "kind": "mandatory_gate",
+      "name": "入口状态准确且效果报告证据完整",
+      "baseline": "未知；先冻结当前书稿并实测",
+      "target": "审查覆盖完整且发现有处置证据；相关实测通过",
+      "method": "最终 Markdown 跟做、代码检查、浏览器或真实调用，读取原始输出与实际差异",
+      "environment_data": "当前 Node/Rust、本地 fixture、已配置模型；不输出密钥",
+      "evidence_ids": [
+        "EVD-011",
+        "EVD-016",
+        "EVD-018",
+        "EVD-019",
+        "EVD-020"
+      ],
+      "status": "passed",
+      "verification": "manual"
+    },
+    {
+      "id": "MET-004",
+      "main_task_id": "MT-004",
+      "kind": "mandatory_gate",
+      "name": "真实模型最小路径实测",
+      "baseline": "未知；先冻结当前书稿并实测",
+      "target": "审查覆盖完整且发现有处置证据；相关实测通过",
+      "method": "最终 Markdown 跟做、代码检查、浏览器或真实调用，读取原始输出与实际差异",
+      "environment_data": "当前 Node/Rust、本地 fixture、已配置模型；不输出密钥",
+      "evidence_ids": [
+        "EVD-021"
+      ],
+      "status": "undetermined",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "读者能够顺序跟做",
+      "file_scope": [
+        "docs",
+        "chapter-snapshots",
+        "examples",
+        "ts/README.md",
+        "rust/README.md",
+        "ts/examples/README.md"
+      ],
+      "interface_constraints": [
+        "保持 Rust core + Node host 路线及既有公开合同",
+        "保留当前用户修改，限定本次增量"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-007",
+        "EVD-018",
+        "EVD-020"
+      ],
+      "owner": "coder",
+      "status": "verified"
+    },
+    {
+      "id": "IT-002",
+      "main_task_id": "MT-002",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "正文与实现一致且回归通过",
+      "file_scope": [
+        "ts",
+        "rust",
+        "contracts",
+        "fixtures",
+        "scripts",
+        "package.json",
+        "package-lock.json",
+        ".github"
+      ],
+      "interface_constraints": [
+        "保持 Rust core + Node host 路线及既有公开合同",
+        "保留当前用户修改，限定本次增量"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-007",
+        "EVD-009",
+        "EVD-018"
+      ],
+      "owner": "coder",
+      "status": "verified"
+    },
+    {
+      "id": "IT-003",
+      "main_task_id": "MT-003",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "入口状态准确且效果报告证据完整",
+      "file_scope": [
+        "README.md",
+        "DECISIONS.md",
+        "MIGRATIONS.md",
+        "reports",
+        "records"
+      ],
+      "interface_constraints": [
+        "保持 Rust core + Node host 路线及既有公开合同",
+        "保留当前用户修改，限定本次增量"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-003"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-011",
+        "EVD-016",
+        "EVD-018",
+        "EVD-019",
+        "EVD-020"
+      ],
+      "owner": "main-thread",
+      "status": "verified"
+    },
+    {
+      "id": "IT-004",
+      "main_task_id": "MT-004",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "真实模型最小路径实测",
+      "file_scope": [
+        "ts",
+        "rust"
+      ],
+      "interface_constraints": [
+        "保持 Rust core + Node host 路线及既有公开合同",
+        "保留当前用户修改，限定本次增量"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-004"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-021"
+      ],
+      "owner": "main-thread",
+      "status": "blocked"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EVD-001",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-build.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:26:31.957186Z",
+      "sha256": "0e8b02f9198558ab6df3fde5f850b5ed9254a28735eb086d17785fe1ab16b4b9",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-002",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-rust-writable-target.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "undetermined",
+      "observed_at": "2026-09-16T15:29:01.009901Z",
+      "sha256": "ad89c4cbe061d10a9220ef8ac87ab74d4cd8e554937de7698ab880f9d4aff060",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-003",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-rust.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "failed",
+      "observed_at": "2026-09-16T15:26:27.913150Z",
+      "sha256": "11d0616ddc109a0665b9ef7d9ab16d44507eba2e474b406a41b97666f5435b14",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-004",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-ts-loopback.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:27:49.479414Z",
+      "sha256": "b311e17fa879ce2053b0430ad849ef4d64389d75f52ab16b18586a5e5a5f6c89",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-005",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-ts.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "failed",
+      "observed_at": "2026-09-16T15:26:27.313269Z",
+      "sha256": "c1669806762266ebba560b38ec344bf245f6efdf754a111521ae9731e14f6acd",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-006",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-markdown-r2.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "failed",
+      "observed_at": "2026-09-16T15:45:33.410120Z",
+      "sha256": "a07a58d866c60f55a6f8059d98617789483fa1e4c3c1deaf20ab7013b65be7c0",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-007",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-markdown-r3.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001",
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:52:33.335336Z",
+      "sha256": "12e70da9bb3367faf5be4fb1c8cc2cc98857707f5472139112a354c1a35722d7"
+    },
+    {
+      "id": "EVD-008",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-markdown.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "failed",
+      "observed_at": "2026-09-16T15:42:35.660318Z",
+      "sha256": "9b46f78c53602f156236bd060197341aa64ca612d94944e71af1edbe40a7a93a",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-009",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-repo-r2.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:50:41.779115Z",
+      "sha256": "74c7a753e1e66936575321c8fd8532e37ead2697ba1db528acf4634436d4cc39"
+    },
+    {
+      "id": "EVD-010",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-repo.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "undetermined",
+      "observed_at": "2026-09-16T15:45:39.294248Z",
+      "sha256": "6f1a99ff106820283a9d37f09c5d82a1fb1c6778859aac11574d26333a72f77f",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-011",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-site.json",
+      "kind": "execution",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:45:28.381849Z",
+      "sha256": "1ef2f312f746b1e91036fc12429572dd1d65a0eefc6d2b8ee90339fe540cdebe"
+    },
+    {
+      "id": "EVD-012",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-cli-failure-before.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:28:10.183303Z",
+      "sha256": "73b48a5667d5590c8401cd5027324956a224aea3861fdfac5efdb678400956c9",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-013",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-loop.json",
+      "kind": "execution",
+      "supports": [
+        "MET-004"
+      ],
+      "status": "stale",
+      "result": "failed",
+      "observed_at": "2026-09-16T15:40:39.384403Z",
+      "sha256": "b6a51182f6e8d340a629c94e7aaee7d7198dc3628a3c5ead2faeaf75e1caa8f3",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-014",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-rust.json",
+      "kind": "execution",
+      "supports": [
+        "MET-004"
+      ],
+      "status": "stale",
+      "result": "failed",
+      "observed_at": "2026-09-16T15:41:56.648126Z",
+      "sha256": "8259aaa36d4a1c9a755dceb9784e41ee09b62913e2271f2ad6b300c84c0dbf56",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-015",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-ts.json",
+      "kind": "execution",
+      "supports": [
+        "MET-004"
+      ],
+      "status": "stale",
+      "result": "failed",
+      "observed_at": "2026-09-16T15:40:28.872161Z",
+      "sha256": "ba19bf2b5a4b0e5cd4c3f1f563f6f5b5b26668a958517f380289d1f50b1fe73d",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-016",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/skill-self-tests-r2.json",
+      "kind": "execution",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:53:20.082168Z",
+      "sha256": "016c71db3ece2590e5ed11027f553bd4f1c40b013e5b391378fc11ed2320f6c1"
+    },
+    {
+      "id": "EVD-017",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/skill-self-tests.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "undetermined",
+      "observed_at": "2026-09-16T15:43:37.352046Z",
+      "sha256": "9fe37225e6440cf5897c87bdd0eb04716fe300e2139a6c8fc70384a6ea6b6143",
+      "stale_reason": "Historical baseline, pre-format version, superseded verifier, or unsuccessful diagnostic run; preserved without changing raw evidence. Not used to satisfy current acceptance."
+    },
+    {
+      "id": "EVD-018",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/review-after.md",
+      "kind": "manual",
+      "supports": [
+        "MET-001",
+        "MET-002",
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:55:04.325718+00:00",
+      "sha256": "9e210cf54e585973522bcabafcf933bf936295e367aa02eb120393953a391d6a",
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:c55437bb4a1fd3721a699d2ad6df6f282556ff9b4815ba13d6db661275825305:spec:c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8",
+      "spec_version": "SPEC-1",
+      "spec_sha256": "c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8"
+    },
+    {
+      "id": "EVD-019",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/browser-review.md",
+      "kind": "manual",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:55:04.325718+00:00",
+      "sha256": "22c319dd8a456e13360b4b7a691c0df1f055766f04a237db0d9f558a3ab2d5d0",
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:c55437bb4a1fd3721a699d2ad6df6f282556ff9b4815ba13d6db661275825305:spec:c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8",
+      "spec_version": "SPEC-1",
+      "spec_sha256": "c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8"
+    },
+    {
+      "id": "EVD-020",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/snapshot-integrity.json",
+      "kind": "manual",
+      "supports": [
+        "MET-001",
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-16T15:55:04.325718+00:00",
+      "sha256": "3d789a0c32ba3df44ace9dc7f727b2ca0fc4ebc13e5663caa3ef0162e83e6e55",
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:c55437bb4a1fd3721a699d2ad6df6f282556ff9b4815ba13d6db661275825305:spec:c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8",
+      "spec_version": "SPEC-1",
+      "spec_sha256": "c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8"
+    },
+    {
+      "id": "EVD-021",
+      "path": "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-assessment.json",
+      "kind": "manual",
+      "supports": [
+        "MET-004"
+      ],
+      "status": "current",
+      "result": "undetermined",
+      "observed_at": "2026-09-16T15:55:04.325718+00:00",
+      "sha256": "c9f7bd1bdec2c60189785c031d18f16666a2987bef79c6ead066be06f7d56d41",
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:c55437bb4a1fd3721a699d2ad6df6f282556ff9b4815ba13d6db661275825305:spec:c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8",
+      "spec_version": "SPEC-1",
+      "spec_sha256": "c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8"
+    }
+  ],
+  "changes": [
+    {
+      "id": "CHG-BASELINE",
+      "implementation_task_ids": [
+        "IT-001",
+        "IT-002",
+        "IT-003"
+      ],
+      "paths": [
+        ".github/workflows/deploy.yml",
+        ".github/workflows/test.yml",
+        ".gitignore",
+        "DECISIONS.md",
+        "MIGRATIONS.md",
+        "chapter-snapshots/README.md",
+        "chapter-snapshots/ch05-to-ch06.patch",
+        "chapter-snapshots/ch06-to-ch07.patch",
+        "chapter-snapshots/pre-ch05-to-ch05.patch",
+        "chapter-snapshots/rein-ch05.manifest.json",
+        "chapter-snapshots/rein-ch05.tar.gz",
+        "chapter-snapshots/rein-ch06.manifest.json",
+        "chapter-snapshots/rein-ch06.tar.gz",
+        "chapter-snapshots/rein-ch07.manifest.json",
+        "chapter-snapshots/rein-ch07.tar.gz",
+        "chapter-snapshots/rein-pre-ch05.manifest.json",
+        "chapter-snapshots/rein-pre-ch05.tar.gz",
+        "contracts/README.md",
+        "contracts/extension-v0.1.md",
+        "docs/.vitepress/config.mts",
+        "docs/.vitepress/theme/SourceVersionSwitch.vue",
+        "docs/.vitepress/theme/custom.css",
+        "docs/.vitepress/theme/index.ts",
+        "docs/.vitepress/theme/sourceVersionState.test.ts",
+        "docs/.vitepress/theme/sourceVersionState.ts",
+        "docs/access.md",
+        "docs/appendices/a1.md",
+        "docs/appendices/a2.md",
+        "docs/chapters/00.md",
+        "docs/chapters/01-ts-advanced.md",
+        "docs/chapters/01-ts.md",
+        "docs/chapters/02.md",
+        "docs/chapters/06-plugin.md",
+        "docs/chapters/06-rust.md",
+        "docs/chapters/06.md",
+        "docs/chapters/07-rust.md",
+        "docs/chapters/07.md",
+        "docs/chapters/09.md",
+        "docs/chapters/10.md",
+        "docs/chapters/11.md",
+        "docs/chapters/12.md",
+        "docs/chapters/13.md",
+        "docs/chapters/14.md",
+        "docs/chapters/15.md",
+        "docs/chapters/16.md",
+        "docs/index.md",
+        "docs/milestones/01.md",
+        "docs/milestones/03.md",
+        "docs/milestones/04.md",
+        "docs/public/mark.svg",
+        "docs/readings/00-ts.md",
+        "docs/readings/00.md",
+        "docs/readings/01.md",
+        "docs/readings/03.md",
+        "docs/toc.md",
+        "examples/ch08-context-methods/README.md",
+        "examples/ch08-context-methods/docs/demo.md",
+        "examples/ch08-context-methods/entry.mjs",
+        "examples/ch08-context-methods/input/index.json",
+        "examples/ch08-context-methods/input/tasks.json",
+        "fixtures/README.md",
+        "fixtures/cases/.gitkeep",
+        "fixtures/cases/ch05-loop.json",
+        "fixtures/cases/ch06-control.json",
+        "fixtures/cases/ch07-context.json",
+        "fixtures/cases/prerequisites.json",
+        "fixtures/ch08-context/docs/approval.md",
+        "fixtures/ch08-context/docs/cache.md",
+        "fixtures/ch08-context/docs/early-runtime.md",
+        "fixtures/ch08-context/docs/failure.md",
+        "fixtures/ch08-context/docs/indexing.md",
+        "fixtures/ch08-context/docs/release.md",
+        "fixtures/ch08-context/index.json",
+        "fixtures/ch08-context/tasks.json",
+        "fixtures/hybrid-marker.txt",
+        "fixtures/responses/.gitkeep",
+        "fixtures/responses/openai/insufficient-quota-1.json",
+        "fixtures/responses/opencode-go/hello-1.json",
+        "fixtures/workspaces/.gitkeep",
+        "fixtures/workspaces/prerequisites/README.md",
+        "fixtures/workspaces/prerequisites/notes.md",
+        "package-lock.json",
+        "package.json",
+        "reports/2026-09-13-chapter-alignment.md",
+        "reports/ch01-author-style.md",
+        "reports/ch01-rust-quality.md",
+        "reports/ch01-ts-quality.md",
+        "reports/ch01-verification.md",
+        "reports/ch01-writing-plan.md",
+        "rust/.env.example",
+        "rust/Cargo.lock",
+        "rust/Cargo.toml",
+        "rust/examples/ch05_compare.rs",
+        "rust/examples/ch06_loop.rs",
+        "rust/examples/ch07_context.rs",
+        "rust/examples/ch08_context.rs",
+        "rust/examples/hybrid_stdio.rs",
+        "rust/examples/reading-00/.gitignore",
+        "rust/examples/reading-00/Cargo.lock",
+        "rust/examples/reading-00/Cargo.toml",
+        "rust/examples/reading-00/src/main.rs",
+        "rust/src/README.md",
+        "rust/src/bin/hello.rs",
+        "rust/src/lib.rs",
+        "rust/src/main.rs",
+        "rust/src/rein/context_methods.rs",
+        "rust/src/rein/loop.rs",
+        "rust/src/rein/mod.rs",
+        "rust/src/rein/stdio_executor.rs",
+        "rust/tests/README.md",
+        "rust/tests/ch08_context.rs",
+        "rust/tests/loop.rs",
+        "rust/tests/prerequisites.rs",
+        "rust/tests/stdio_host.rs",
+        "scripts/ch05-compare.mjs",
+        "scripts/ch06-compare.mjs",
+        "scripts/ch07-compare.mjs",
+        "scripts/ch08-compare.mjs",
+        "scripts/ch08-verify.mjs",
+        "scripts/check-book-links.mjs",
+        "ts/.env.example",
+        "ts/examples/ch05-compare.ts",
+        "ts/examples/ch05-loop.ts",
+        "ts/examples/ch06-loop.ts",
+        "ts/examples/ch07-context.ts",
+        "ts/examples/reading-00/main.ts",
+        "ts/examples/reading-00/reading-00.test.ts",
+        "ts/examples/reading-00/reading-00.ts",
+        "ts/examples/reading-00/vitest.config.ts",
+        "ts/package.json",
+        "ts/scripts/record.ts",
+        "ts/src/README.md",
+        "ts/src/chat.ts",
+        "ts/src/config.ts",
+        "ts/src/errors.ts",
+        "ts/src/hello-safe.ts",
+        "ts/src/hello.ts",
+        "ts/src/hybrid-host.ts",
+        "ts/src/main.ts",
+        "ts/src/rein/adapters.ts",
+        "ts/src/rein/contracts.ts",
+        "ts/src/rein/loop.ts",
+        "ts/src/rein/readonly.ts",
+        "ts/src/transport.ts",
+        "ts/tests/README.md",
+        "ts/tests/ch07-context.test.ts",
+        "ts/tests/chat.test.ts",
+        "ts/tests/config.test.ts",
+        "ts/tests/fixtures/hybrid-fault-host.ts",
+        "ts/tests/hello.test.ts",
+        "ts/tests/hybrid-host.test.ts",
+        "ts/tests/loop.test.ts",
+        "ts/tests/record.test.ts",
+        "ts/tests/recorded.test.ts",
+        "ts/tests/rein-prerequisites.test.ts",
+        "ts/tests/transport.test.ts",
+        "ts/tsconfig.json",
+        "ts/vitest.config.ts"
+      ],
+      "evidence_ids": [
+        "EVD-020",
+        "EVD-018",
+        "EVD-009"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:c55437bb4a1fd3721a699d2ad6df6f282556ff9b4815ba13d6db661275825305:spec:c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8",
+      "status": "reviewed",
+      "summary": "Preserved inherited dirty baseline; full page inventory, scoped code/contract review, current regression and baseline hash comparison. Not authored anew by this task."
+    },
+    {
+      "id": "CHG-REPAIRS",
+      "implementation_task_ids": [
+        "IT-001",
+        "IT-002",
+        "IT-003"
+      ],
+      "paths": [
+        "README.md",
+        "docs/about.md",
+        "docs/appendices/a3.md",
+        "docs/appendices/a4.md",
+        "docs/appendices/a5.md",
+        "docs/chapters/01-rust.md",
+        "docs/chapters/01.md",
+        "docs/chapters/03.md",
+        "docs/chapters/04.md",
+        "docs/chapters/05-rust.md",
+        "docs/chapters/05.md",
+        "docs/chapters/08.md",
+        "docs/milestones/02.md",
+        "docs/readings/00-rust.md",
+        "docs/readings/02.md",
+        "rust/README.md",
+        "rust/examples/ch05_loop.rs",
+        "ts/README.md",
+        "ts/examples/README.md",
+        "ts/examples/ch05-live.ts",
+        "ts/tests/ch05-live.test.ts"
+      ],
+      "evidence_ids": [
+        "EVD-018",
+        "EVD-009",
+        "EVD-007"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:c55437bb4a1fd3721a699d2ad6df6f282556ff9b4815ba13d6db661275825305:spec:c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8",
+      "status": "reviewed",
+      "summary": "21 file task-only increment; 18 registered findings resolved; public API unchanged, live CLI failure exit becomes 1."
+    },
+    {
+      "id": "CHG-RECORDS",
+      "implementation_task_ids": [
+        "IT-003"
+      ],
+      "paths": [
+        "records/REIN-VERIFLOW-REVIEW-20260916"
+      ],
+      "evidence_ids": [
+        "EVD-018",
+        "EVD-016"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:c55437bb4a1fd3721a699d2ad6df6f282556ff9b4815ba13d6db661275825305:spec:c285abf455e9a3676eca764eb83cdb52a10f3c2b06d9a77537b73d74a8eebcd8",
+      "status": "reviewed",
+      "summary": "Frozen baseline and skill, original raw evidence, reviewer records; no secrets or commits."
+    }
+  ],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002",
+      "MET-003",
+      "MET-004"
+    ],
+    "evidence_ids": [
+      "EVD-009",
+      "EVD-007",
+      "EVD-011",
+      "EVD-016"
+    ],
+    "status": "undetermined"
+  },
+  "baseline": {
+    "git_ref": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+    "worktree_status": "dirty_dependency_confirmed",
+    "ownership": "用户批准以现有全部书稿与实现作为审查基线；baseline/files.json 与 book.tar.gz 保存原样；仅修复审查确认的问题",
+    "foreign_paths": [],
+    "prepared_at": "2026-09-16T15:25:49.261640+00:00"
+  },
+  "binding": {
+    "receipt_paths": []
+  },
+  "authorization": {
+    "commit": {
+      "status": "not_authorized",
+      "source_id": "SRC-001"
+    },
+    "push": {
+      "status": "not_authorized",
+      "source_id": "SRC-001"
+    },
+    "merge": {
+      "status": "not_authorized",
+      "source_id": "SRC-001"
+    },
+    "deploy": {
+      "status": "not_authorized",
+      "source_id": "SRC-001"
+    }
+  },
+  "delivery": {
+    "local_validation": "passed",
+    "remote_ci": "not_started",
+    "remote_ci_revision": null
+  },
+  "actions": [],
+  "decisions": [],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "本次修改破坏原有内容或回归",
+    "steps": [
+      "对照冻结基线逐文件回退本次增量，保留原有修改"
+    ],
+    "owner": "main-thread"
+  }
+}

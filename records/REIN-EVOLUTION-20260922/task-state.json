@@ -1,0 +1,1183 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "EVOLUTION-SLICE-1",
+    "authority": "records/REIN-EVOLUTION-20260922/implementation-spec.md",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "preserve inherited dirty changes",
+      "independent local tooling only",
+      "offline calibration is not model effectiveness"
+    ],
+    "exceptions": [
+      "whole repository and complete chapters are not accepted by this increment"
+    ],
+    "conditions": [
+      {
+        "id": "SC-DECISION",
+        "metric_ids": [
+          "MET-001"
+        ],
+        "deliverables": [
+          "scripts/architecture/decisions.mjs",
+          "architecture/decisions.json",
+          "scripts/architecture/README.md"
+        ]
+      },
+      {
+        "id": "SC-EVOLUTION",
+        "metric_ids": [
+          "MET-002"
+        ],
+        "deliverables": [
+          "scripts/evolution/README.md",
+          "scripts/evolution/runner.mjs",
+          "scripts/evolution/demo.mjs"
+        ]
+      },
+      {
+        "id": "SC-DOC",
+        "metric_ids": [
+          "MET-003"
+        ],
+        "deliverables": [
+          "DECISIONS.md",
+          "REIN-IMPLEMENTATION-PLAN.md",
+          "docs/chapters/task-planning.md",
+          "docs/chapters/project-evaluation.md"
+        ]
+      }
+    ],
+    "contracts": [
+      "records/REIN-EVOLUTION-20260922/implementation-spec.md"
+    ],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-EVOLUTION-20260922",
+    "title": "设计决策失效检查与连续演化评测首批增量",
+    "mode": "new",
+    "status": "completed",
+    "source_ids": [
+      "SRC-001"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "Rein developer and reader",
+    "scenario": "维护设计约束并检查连续变更",
+    "problem": "缺少可失效设计记忆与连续演化评分工具",
+    "expected_outcome": "可运行只读决策检查、12轮离线评分校准与教学补充",
+    "scope": "独立 Node 工具、两章增量及当前决策/计划追加",
+    "acceptable_result": "MET-001到003按指定输入通过；不作真实模型效果结论"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:20260922",
+      "summary": "用户确认开始补充前述设计决策失效机制及连续演化评测",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "设计决策失效检查",
+      "scope": [
+        "只读文件前提登记与复审"
+      ],
+      "non_goals": [
+        "real model effectiveness",
+        "whole repository acceptance"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "Node built-ins and local offline fixtures"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-001"
+      ],
+      "implementation_task_ids": [
+        "IT-001"
+      ]
+    },
+    {
+      "id": "MT-002",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "连续演化评分",
+      "scope": [
+        "12轮离线继承与回归校准"
+      ],
+      "non_goals": [
+        "real model effectiveness",
+        "whole repository acceptance"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "Node built-ins and local offline fixtures"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-002"
+      ],
+      "implementation_task_ids": [
+        "IT-002"
+      ]
+    },
+    {
+      "id": "MT-003",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "文档与非退化",
+      "scope": [
+        "正文命令、构建与原有文件保护"
+      ],
+      "non_goals": [
+        "real model effectiveness",
+        "whole repository acceptance"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "Node built-ins and local offline fixtures"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-003"
+      ],
+      "implementation_task_ids": [
+        "IT-003"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "设计决策失效检查",
+      "baseline": "New tools absent; record pre-implementation tests. Existing files captured in baseline.",
+      "target": "matching, drift, missing, malformed and bounded path behavior",
+      "method": "Node tests, CLI and document walkthrough",
+      "environment_data": "Current macOS workspace, Node built-ins, offline fixtures, EVOLUTION-SLICE-1",
+      "evidence_ids": [
+        "EVD-101",
+        "EVD-102"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-002",
+      "kind": "mandatory_gate",
+      "name": "连续演化评分",
+      "baseline": "New tools absent; record pre-implementation tests. Existing files captured in baseline.",
+      "target": "persistent trajectories, independent regression, failure and evidence behavior",
+      "method": "Node tests, CLI and document walkthrough",
+      "environment_data": "Current macOS workspace, Node built-ins, offline fixtures, EVOLUTION-SLICE-1",
+      "evidence_ids": [
+        "EVD-101",
+        "EVD-103",
+        "EVD-106",
+        "EVD-107"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-003",
+      "main_task_id": "MT-003",
+      "kind": "non_regression",
+      "name": "文档与非退化",
+      "baseline": "New tools absent; record pre-implementation tests. Existing files captured in baseline.",
+      "target": "final chapter walkthrough, book build, protected source/contracts/index/snapshots unchanged; concurrent foreign prose changes reported separately",
+      "method": "Node tests and actual documented CLI; book:check/build; baseline hash comparison with explicit foreign observations",
+      "environment_data": "Current macOS workspace, Node built-ins, offline fixtures, EVOLUTION-SLICE-1",
+      "evidence_ids": [
+        "EVD-104",
+        "EVD-105",
+        "EVD-106"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "只读文件前提登记与复审",
+      "file_scope": [
+        "scripts/architecture",
+        "architecture",
+        "docs/chapters/task-planning.md"
+      ],
+      "interface_constraints": [
+        "independent tooling; no runtime state writes",
+        "preserve existing dirty files"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-101",
+        "EVD-102"
+      ],
+      "owner": "coder_decision initial implementation; coder_evolution owns reviewed fixes",
+      "status": "verified"
+    },
+    {
+      "id": "IT-002",
+      "main_task_id": "MT-002",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "12轮离线继承与回归校准",
+      "file_scope": [
+        "scripts/evolution",
+        "fixtures/evolution",
+        "docs/chapters/project-evaluation.md"
+      ],
+      "interface_constraints": [
+        "independent tooling; no runtime state writes",
+        "preserve existing dirty files"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-101",
+        "EVD-103",
+        "EVD-106",
+        "EVD-107"
+      ],
+      "owner": "coder-evolution",
+      "status": "verified"
+    },
+    {
+      "id": "IT-003",
+      "main_task_id": "MT-003",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "正文命令、构建与原有文件保护",
+      "file_scope": [
+        "DECISIONS.md",
+        "REIN-IMPLEMENTATION-PLAN.md",
+        "records/REIN-EVOLUTION-20260922"
+      ],
+      "interface_constraints": [
+        "independent tooling; no runtime state writes",
+        "preserve existing dirty files"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-003"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-104",
+        "EVD-105",
+        "EVD-106"
+      ],
+      "owner": "main-thread",
+      "status": "verified"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EVD-B001",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/baseline-decisions.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "stale",
+      "stale_reason": "Pre-implementation missing-module baseline; product implementation and/or Spec exact-path clarification followed.",
+      "result": "failed",
+      "observed_at": "2026-09-22T06:31:59.265747Z",
+      "sha256": "7edd7b7f9568ba08fc04016fd77d7226621025dff44e74b6c52d64f6d5b72976"
+    },
+    {
+      "id": "EVD-B002",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/baseline-evolution.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "stale_reason": "Pre-implementation missing-module baseline; product implementation and/or Spec exact-path clarification followed.",
+      "result": "failed",
+      "observed_at": "2026-09-22T06:35:34.791595Z",
+      "sha256": "25cae6bf09f08920fdcd845444f4179d00fb8e8b092780016cb8eb5157adf62f"
+    },
+    {
+      "id": "EVD-001",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-tests.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001",
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-22T06:54:14.264125Z",
+      "sha256": "6060d520d5142dc470a5de09d090d669ded1bf6fbdd6272d390bbc4794b3d491",
+      "stale_reason": "Concurrent first-part editorial task created its owned reports/2026-09-22-part1-publication-review.md after baseline. Added this exact external path to foreign classification; Spec digest changed. Source bytes unchanged; rerun at classified final state follows."
+    },
+    {
+      "id": "EVD-002",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-decisions.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-22T06:54:11.087746Z",
+      "sha256": "6286ed61318bb5f6dc50b70e49ab9ed895528d4d235e2b69ca40c5610cd69db0",
+      "stale_reason": "Concurrent first-part editorial task created its owned reports/2026-09-22-part1-publication-review.md after baseline. Added this exact external path to foreign classification; Spec digest changed. Source bytes unchanged; rerun at classified final state follows."
+    },
+    {
+      "id": "EVD-003",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-calibration.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-22T06:54:17.146353Z",
+      "sha256": "7bc79052957d7f7f7aae73596f00cbe1d9e2b7bb4e7ed9be93463ee11ccc8ec7",
+      "stale_reason": "Concurrent first-part editorial task created its owned reports/2026-09-22-part1-publication-review.md after baseline. Added this exact external path to foreign classification; Spec digest changed. Source bytes unchanged; rerun at classified final state follows."
+    },
+    {
+      "id": "EVD-004",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-book.json",
+      "kind": "execution",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-22T06:54:12.221253Z",
+      "sha256": "d104568d8bf200641617b7e6e65cb5ccbfbab94bb0fa8c2a9c6ebd038c61dd2c",
+      "stale_reason": "Concurrent first-part editorial task created its owned reports/2026-09-22-part1-publication-review.md after baseline. Added this exact external path to foreign classification; Spec digest changed. Source bytes unchanged; rerun at classified final state follows."
+    },
+    {
+      "id": "EVD-005",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-build.json",
+      "kind": "execution",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-22T06:54:21.027470Z",
+      "sha256": "ecc11536305b5a5d1a02dc09468d6885b7bb331139ad3574b9d4facf69373275",
+      "stale_reason": "Concurrent first-part editorial task created its owned reports/2026-09-22-part1-publication-review.md after baseline. Added this exact external path to foreign classification; Spec digest changed. Source bytes unchanged; rerun at classified final state follows."
+    },
+    {
+      "id": "EVD-006",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-review-v2.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002",
+        "MET-003"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-22T06:58:35.297703Z",
+      "sha256": "4f09c6b092daa7afe947ea7bccd1c52ce6edd5f322be7dd8ec24090b52e74cd5",
+      "stale_reason": "Concurrent first-part editorial task created its owned reports/2026-09-22-part1-publication-review.md after baseline. Added this exact external path to foreign classification; Spec digest changed. Source bytes unchanged; rerun at classified final state follows."
+    },
+    {
+      "id": "EVD-007",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-cli.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "stale",
+      "result": "passed",
+      "observed_at": "2026-09-22T06:57:49.344339Z",
+      "sha256": "53a4d36301cdcd7ac3997a7f3735ee1f41e5fdebdb49184cb8a45af053206d14",
+      "stale_reason": "Concurrent first-part editorial task created its owned reports/2026-09-22-part1-publication-review.md after baseline. Added this exact external path to foreign classification; Spec digest changed. Source bytes unchanged; rerun at classified final state follows."
+    },
+    {
+      "id": "EVD-Q001",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/final-review.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002",
+        "MET-003"
+      ],
+      "status": "stale",
+      "stale_reason": "Supplemental reviewer script assumed check status failed. Public runner schema retains nonzero process results as error with exitCode; corrected to require error and exitCode 8. Raw failed probe preserved; superseded by final-review-v2, with no product/source changes.",
+      "result": "failed",
+      "observed_at": "2026-09-22T06:57:49.143848Z",
+      "sha256": "808e858b4a2d81b12db529b73d2a473195351e3f4cdb8c04c3a6afac146a3e45"
+    },
+    {
+      "id": "EVD-101",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/accepted-tests.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001",
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:02:01.846371Z",
+      "sha256": "d5e13570587c768e640f582a3655b64d6ed1f1431fbb51681844c82a11e3311c"
+    },
+    {
+      "id": "EVD-102",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/accepted-decisions.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:01:57.193216Z",
+      "sha256": "341096509d7f4e8ca0ff2805857f09af9b5100060d401b5e3719a4848e76b491"
+    },
+    {
+      "id": "EVD-103",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/accepted-calibration.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:02:05.514004Z",
+      "sha256": "891a0046b92260a8fbb912d19ed29113ffc8963b3b90e6e0db17535aa0b6091b"
+    },
+    {
+      "id": "EVD-104",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/accepted-book.json",
+      "kind": "execution",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:01:58.970581Z",
+      "sha256": "64506c33dcfc88f5133c86cf4e99a1c222e7b99e31f84d9f83b57fd4e5cd8862"
+    },
+    {
+      "id": "EVD-105",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/accepted-build.json",
+      "kind": "execution",
+      "supports": [
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:02:09.531303Z",
+      "sha256": "9a478b17e228d9fbf5c4270de61a6fcef8437ef6ae66fccd6b63b53858208fba"
+    },
+    {
+      "id": "EVD-106",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/accepted-review.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002",
+        "MET-003"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:02:33.297923Z",
+      "sha256": "b448850e211538e85223df7b2b135b8f110a7c89743d745e850b2c2a4bc0c98d"
+    },
+    {
+      "id": "EVD-107",
+      "path": "records/REIN-EVOLUTION-20260922/evidence/accepted-cli.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T07:02:33.757315Z",
+      "sha256": "a1cd5eac25dabee0843dd7fc0a37e06ca3e05cf5d0aaf5e8f9b90814e9fc300a"
+    }
+  ],
+  "changes": [
+    {
+      "id": "CHG-001",
+      "implementation_task_ids": [
+        "IT-001"
+      ],
+      "paths": [
+        "scripts/architecture",
+        "architecture",
+        "docs/chapters/task-planning.md"
+      ],
+      "evidence_ids": [
+        "EVD-101",
+        "EVD-102",
+        "EVD-104",
+        "EVD-105"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:838e2a1d1d9beb73e62715fc47c240460d75591b28e95c47ddf6fc5854710192:spec:2852b42a3a8c9818d7681f28244ab8660e71f1dcc9a3382c0635747b997ac115",
+      "status": "reviewed"
+    },
+    {
+      "id": "CHG-002",
+      "implementation_task_ids": [
+        "IT-002"
+      ],
+      "paths": [
+        "scripts/evolution",
+        "fixtures/evolution",
+        "docs/chapters/project-evaluation.md"
+      ],
+      "evidence_ids": [
+        "EVD-101",
+        "EVD-103",
+        "EVD-106",
+        "EVD-107",
+        "EVD-104",
+        "EVD-105"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:838e2a1d1d9beb73e62715fc47c240460d75591b28e95c47ddf6fc5854710192:spec:2852b42a3a8c9818d7681f28244ab8660e71f1dcc9a3382c0635747b997ac115",
+      "status": "reviewed"
+    },
+    {
+      "id": "CHG-003",
+      "implementation_task_ids": [
+        "IT-003"
+      ],
+      "paths": [
+        "DECISIONS.md",
+        "REIN-IMPLEMENTATION-PLAN.md",
+        "records/REIN-EVOLUTION-20260922"
+      ],
+      "evidence_ids": [
+        "EVD-104",
+        "EVD-105",
+        "EVD-106"
+      ],
+      "revision": "patch:1dfa82b9d90196c2294f61914d2017449e5548e3:838e2a1d1d9beb73e62715fc47c240460d75591b28e95c47ddf6fc5854710192:spec:2852b42a3a8c9818d7681f28244ab8660e71f1dcc9a3382c0635747b997ac115",
+      "status": "reviewed"
+    }
+  ],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002",
+      "MET-003"
+    ],
+    "evidence_ids": [
+      "EVD-101",
+      "EVD-102",
+      "EVD-103",
+      "EVD-104",
+      "EVD-105",
+      "EVD-106",
+      "EVD-107"
+    ],
+    "status": "passed"
+  },
+  "baseline": {
+    "git_ref": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+    "worktree_status": "dirty_dependency_confirmed",
+    "ownership": "Existing owned documents copied in baseline/owned; all inherited regular file hashes in baseline/files.json; task additions preserve inherited work.",
+    "foreign_paths": [
+      ".github/workflows/deploy.yml",
+      ".github/workflows/test.yml",
+      ".gitignore",
+      "Cargo.lock",
+      "Cargo.toml",
+      "LICENSE",
+      "MIGRATIONS.md",
+      "README.md",
+      "REIN-DESIGN.md",
+      "REIN-FILE-TREE.md",
+      "REIN-INTEGRATION-SPEC.md",
+      "REIN-MODULES.md",
+      "book/chapters.json",
+      "chapter-snapshots/README.md",
+      "chapter-snapshots/ch05-to-ch06.patch",
+      "chapter-snapshots/ch06-to-ch07.patch",
+      "chapter-snapshots/pre-ch05-to-ch05.patch",
+      "chapter-snapshots/rein-ch05.manifest.json",
+      "chapter-snapshots/rein-ch05.tar.gz",
+      "chapter-snapshots/rein-ch06.manifest.json",
+      "chapter-snapshots/rein-ch06.tar.gz",
+      "chapter-snapshots/rein-ch07.manifest.json",
+      "chapter-snapshots/rein-ch07.tar.gz",
+      "chapter-snapshots/rein-pre-ch05.manifest.json",
+      "chapter-snapshots/rein-pre-ch05.tar.gz",
+      "contracts/README.md",
+      "contracts/extension-v0.1.md",
+      "contracts/extension-v0.2.md",
+      "contracts/maintenance-session-v1.md",
+      "contracts/maintenance-v1.md",
+      "contracts/runtime/schemas/intent.json",
+      "contracts/runtime/schemas/intent.ts",
+      "contracts/runtime/schemas/observation.json",
+      "contracts/runtime/schemas/observation.ts",
+      "contracts/runtime/schemas/session.json",
+      "contracts/runtime/schemas/session.ts",
+      "contracts/runtime/schemas/step-result.json",
+      "contracts/runtime/schemas/step-result.ts",
+      "core/Cargo.toml",
+      "core/src/lib.rs",
+      "docs/.vitepress/config.mts",
+      "docs/.vitepress/theme/SourceVersionSwitch.vue",
+      "docs/.vitepress/theme/custom.css",
+      "docs/.vitepress/theme/index.ts",
+      "docs/.vitepress/theme/sourceVersionState.test.ts",
+      "docs/.vitepress/theme/sourceVersionState.ts",
+      "docs/about.md",
+      "docs/access.md",
+      "docs/appendices/a1.md",
+      "docs/appendices/a2.md",
+      "docs/appendices/a3.md",
+      "docs/appendices/a4.md",
+      "docs/appendices/a5.md",
+      "docs/chapters/00.md",
+      "docs/chapters/01-rust.md",
+      "docs/chapters/01-ts-advanced.md",
+      "docs/chapters/01-ts.md",
+      "docs/chapters/01.md",
+      "docs/chapters/02.md",
+      "docs/chapters/03.md",
+      "docs/chapters/04.md",
+      "docs/chapters/05-rust.md",
+      "docs/chapters/05.md",
+      "docs/chapters/06-plugin.md",
+      "docs/chapters/06-rust.md",
+      "docs/chapters/06.md",
+      "docs/chapters/07-rust.md",
+      "docs/chapters/07.md",
+      "docs/chapters/08.md",
+      "docs/chapters/09.md",
+      "docs/chapters/10.md",
+      "docs/chapters/11.md",
+      "docs/chapters/12.md",
+      "docs/chapters/13.md",
+      "docs/chapters/14.md",
+      "docs/chapters/15.md",
+      "docs/chapters/16.md",
+      "docs/chapters/agent-loop.md",
+      "docs/chapters/approved-patch.md",
+      "docs/chapters/bounded-delegation.md",
+      "docs/chapters/bounded-repair.md",
+      "docs/chapters/cancellation.md",
+      "docs/chapters/context-compression.md",
+      "docs/chapters/context-retrieval.md",
+      "docs/chapters/context-state.md",
+      "docs/chapters/durable-recovery.md",
+      "docs/chapters/execution-hooks.md",
+      "docs/chapters/extension-sdk.md",
+      "docs/chapters/loop-budget.md",
+      "docs/chapters/mcp-tools.md",
+      "docs/chapters/model-hello-rust.md",
+      "docs/chapters/model-hello.md",
+      "docs/chapters/patch-candidate.md",
+      "docs/chapters/provider-adapter.md",
+      "docs/chapters/rust-migration.md",
+      "docs/chapters/task-map.md",
+      "docs/chapters/task-spec.md",
+      "docs/chapters/task-verification.md",
+      "docs/chapters/tool-host.md",
+      "docs/chapters/tool-roundtrip.md",
+      "docs/chapters/trust-permissions.md",
+      "docs/history.md",
+      "docs/index.md",
+      "docs/milestones/01.md",
+      "docs/milestones/02.md",
+      "docs/milestones/03.md",
+      "docs/milestones/04.md",
+      "docs/milestones/controlled-harness.md",
+      "docs/milestones/evidence-qa.md",
+      "docs/milestones/grounded-answer.md",
+      "docs/milestones/project-defense.md",
+      "docs/milestones/single-agent-maintainer.md",
+      "docs/prompt-examples.md",
+      "docs/public/mark.svg",
+      "docs/readings/00-rust.md",
+      "docs/readings/00-ts.md",
+      "docs/readings/00.md",
+      "docs/readings/01.md",
+      "docs/readings/02.md",
+      "docs/readings/03.md",
+      "docs/toc.md",
+      "examples/ch08-context-methods/README.md",
+      "examples/ch08-context-methods/docs/demo.md",
+      "examples/ch08-context-methods/entry.mjs",
+      "examples/ch08-context-methods/input/index.json",
+      "examples/ch08-context-methods/input/tasks.json",
+      "examples/document-maintenance/verify.mjs",
+      "fixtures/README.md",
+      "fixtures/cases/.gitkeep",
+      "fixtures/cases/ch05-loop.json",
+      "fixtures/cases/ch06-control.json",
+      "fixtures/cases/ch07-context.json",
+      "fixtures/cases/prerequisites.json",
+      "fixtures/ch08-context/docs/approval.md",
+      "fixtures/ch08-context/docs/cache.md",
+      "fixtures/ch08-context/docs/early-runtime.md",
+      "fixtures/ch08-context/docs/failure.md",
+      "fixtures/ch08-context/docs/indexing.md",
+      "fixtures/ch08-context/docs/release.md",
+      "fixtures/ch08-context/index.json",
+      "fixtures/ch08-context/tasks.json",
+      "fixtures/document-maintenance/README.md",
+      "fixtures/document-maintenance/cases.json",
+      "fixtures/hybrid-marker.txt",
+      "fixtures/responses/.gitkeep",
+      "fixtures/responses/openai/insufficient-quota-1.json",
+      "fixtures/responses/opencode-go/hello-1.json",
+      "fixtures/runtime-r1a/alpha.txt",
+      "fixtures/runtime-r1a/baseline.json",
+      "fixtures/runtime-r1a/beta.txt",
+      "fixtures/runtime-r1a/invalid-utf8.bin",
+      "fixtures/runtime-r1a/oversized.txt",
+      "fixtures/workspaces/.gitkeep",
+      "fixtures/workspaces/prerequisites/README.md",
+      "fixtures/workspaces/prerequisites/notes.md",
+      "package-lock.json",
+      "package.json",
+      "records/REIN-BOOK-V2-20260917/evidence/baseline-supplement.json",
+      "records/REIN-BOOK-V2-20260917/evidence/baseline.json",
+      "records/REIN-BOOK-V2-20260917/evidence/baseline.tar.gz",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-a-action-gate-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-a-action-gate.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-a-manifest.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-a-writeback.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-a2-gate.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-a2-manifest.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-a2-writeback.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-maintenance-gate.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-maintenance-manifest.json",
+      "records/REIN-BOOK-V2-20260917/evidence/batch-maintenance-writeback.json",
+      "records/REIN-BOOK-V2-20260917/evidence/g-substrate-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/g-substrate-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/g-substrate-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/isolated-work-checkpoint-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/isolated-work-checkpoint-v1.tar.gz",
+      "records/REIN-BOOK-V2-20260917/evidence/isolated-work-checkpoint-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/isolated-work-checkpoint-v2.tar.gz",
+      "records/REIN-BOOK-V2-20260917/evidence/isolated-work-checkpoint-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/isolated-work-checkpoint-v3.tar.gz",
+      "records/REIN-BOOK-V2-20260917/evidence/lesson-13-negative-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/lesson-16-demo-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/lesson-16-review-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-12cases-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-12cases-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-focused-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-runtime-final-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-rust-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-structure-check.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-tests-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-ts-final-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-typecheck-final-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-verifier-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/maintenance-writeback-preflight-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/mcp-hardening-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/primary-extension02-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/primary-host-boundaries-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/primary-mcp-fixtures-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/primary-runtime-boundaries-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/primary-typecheck-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/resume-check-20260917-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-extension02-adversarial-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-extension02-adversarial.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-extension02-tests.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-extension02-typecheck.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-g-plan-journal-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-g-plan-journal-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-g-plan-journal-v4.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-g-plan-journal.json",
+      "records/REIN-BOOK-V2-20260917/evidence/runtime-maintenance-tools-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/structure-book-check-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/structure-book-check-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/structure-book-check.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-book-check-a-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-book-check-a2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-build-a2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-language-routes-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-links-a2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-book-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-build-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-fmt-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-links-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-rust-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-rust-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-ts-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-ts-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-maintenance-typecheck-v1.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-record-gate-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-record-gate-v3.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-site-build-a.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-ts-tests-a-local-network.json",
+      "records/REIN-BOOK-V2-20260917/evidence/target-ts-tests-a.json",
+      "records/REIN-BOOK-V2-20260917/evidence/veriflow-integration-review.md",
+      "records/REIN-BOOK-V2-20260917/evidence/veriflow-skill.json",
+      "records/REIN-BOOK-V2-20260917/evidence/veriflow-sync-20260917-v2.json",
+      "records/REIN-BOOK-V2-20260917/evidence/veriflow-sync-20260917-v3.json",
+      "records/REIN-BOOK-V2-20260917/runtime-extension02-typecheck.json",
+      "records/REIN-BOOK-V2-20260917/source-v2.md",
+      "records/REIN-BOOK-V2-20260917/task-state.json",
+      "records/REIN-BOOK-V2-20260917/task-summary.md",
+      "records/REIN-BOOK-V2-20260917/work-log.md",
+      "records/REIN-RUNTIME-R1A-20260921/baseline/git-status.z",
+      "records/REIN-RUNTIME-R1A-20260921/baseline/license-inventory.json",
+      "records/REIN-RUNTIME-R1A-20260921/baseline/source-inputs.json",
+      "records/REIN-RUNTIME-R1A-20260921/baseline/source-inputs.tar.gz",
+      "records/REIN-RUNTIME-R1A-20260921/baseline/working-inputs.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/acceptance-gate-initial.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/acceptance-gate.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/artifact-module-tests-round3.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-TARGET-tmp-rein-r0-target-20260921-CARGO-TARGET-DIR-TARGET-cargo-check-locked-manifest-path-rust-Cargo-toml.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-TARGET-tmp-rein-r0-target-20260921-CARGO-TARGET-DIR-TARGET-cargo-test-locked-manifest-path-rust-Cargo-toml-test-loop-test-maintenance-test-maintenance-session-test-extension02-test-maintenance-profile-test-prerequisites-test-stdio-host.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-TARGET-tmp-rein-r0-target-20260921-CARGO-TARGET-DIR-TARGET-npm-run-ch06-compare-all.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-TARGET-tmp-rein-r0-target-20260921-CARGO-TARGET-DIR-TARGET-npm-run-ch07-compare-all.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-environment.txt",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-npm-run-ch05-compare-all.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-npm-run-ch06-compare-all.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-npm-run-ch07-compare-all.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-npm-run-hybrid-verify.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-npm-run-typecheck-workspace-ts.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-npm-test-workspace-ts.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-rust-fmt.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-rust-test.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/baseline-ts-offline-subset.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/cli-final-20260921.txt",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/cli-intermediate-empty-state/state.sqlite",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/cli-lifecycle-v1.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/cli-lifecycle-v2.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/contract-check-v1.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/contract-check-v2.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/contract-check-v3.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/contract-check-v4.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/contract-tests-v1.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/contract-v1.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/contract-v2.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/control-final-review.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/durable-boundaries-preimplementation-v1.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/durable-boundaries-v2.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/final-license.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/final-regression.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/final-runtime.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/invalid-utf8-fixture-correction.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-hybrid.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-01.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-02.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-03.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-04.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-05.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-06.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-07.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-08.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-09.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeat-10.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-loop-repeats.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-rerun.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-rust.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-source-integrity.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/legacy-ts.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/license-book-check.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/license-build.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/owner-rustc-v1.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/preexisting-review-boundary.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/record-gate.json",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-preimplementation.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v2-preimplementation.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v3.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v4.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v5.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v6.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v7.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v8.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-acceptance-v9.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-baseline-preimplementation.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-baseline-v2-preimplementation.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-durable-unit2.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/runtime-tools-tests-round3.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/schema-generator-baseline-missing.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/schema-generator-tests-round2.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/schema-generator-tests-round3.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/schema-generator-tests.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/schema-generator-tools-round3.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/store-atomicity-b01.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/store-atomicity-b05.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/store-atomicity-package.log",
+      "records/REIN-RUNTIME-R1A-20260921/evidence/store-atomicity-r1a.log",
+      "records/REIN-RUNTIME-R1A-20260921/handoffs/baseline.md",
+      "records/REIN-RUNTIME-R1A-20260921/handoffs/license-before.json",
+      "records/REIN-RUNTIME-R1A-20260921/handoffs/runtime-baseline-v3.json",
+      "records/REIN-RUNTIME-R1A-20260921/implementation-spec.md",
+      "records/REIN-RUNTIME-R1A-20260921/task-state.json",
+      "records/REIN-RUNTIME-R1A-20260921/task-summary.md",
+      "records/REIN-RUNTIME-R1A-20260921/work-log.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/book.tar.gz",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/files.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/head.txt",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/skill-files.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/skill-git-status.txt",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/skill-head.txt",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/staged.patch",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/status.txt",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/unstaged.patch",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/SKILL.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/agents/claude-code/veriflow-coder.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/agents/claude-code/veriflow-reviewer.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/agents/openai.yaml",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/assets/templates/handoff.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/assets/templates/task-state.example.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/assets/templates/task-summary.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/assets/templates/work-log.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/assets/templates/writing-handoff.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/claude-code.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/delegation-and-handoffs.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/design.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/examples.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/metrics-and-evidence.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/records.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/workflow.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/references/writing.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/scripts/__pycache__/authorization_snapshot.cpython-314.pyc",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/scripts/__pycache__/spec_contract.cpython-314.pyc",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/scripts/authorization_snapshot.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/scripts/integrate_boundary.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/scripts/record_execution.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/scripts/spec_contract.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/scripts/validate_task.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/tests/test_authorization_snapshot.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/tests/test_evidence_history.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/tests/test_scenarios.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/tests/test_spec_binding.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/tests/test_spec_model.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/tests/test_temporal_chain.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/baseline/veriflow/tests/test_tools.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-build.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-rust-writable-target.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-rust.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-ts-loopback.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/baseline-ts.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/browser-review.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/coverage.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/external-facts.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-markdown-r2.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-markdown-r3.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-markdown.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-repo-r2.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-repo.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/final-site.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/findings-resolved.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/gate-acceptance.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/gate-implementation.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/gate-record.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-assessment.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-cli-failure-before.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-loop.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-probes.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-rust.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/live-ts.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/review-after.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/review-before.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/skill-self-tests-r2.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/skill-self-tests.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/snapshot-integrity.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/task-only-files.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/task-only.patch",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/usage.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/verify-live-cli.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/verify-markdown-final.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/verify-markdown.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/verify-repo-final.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/evidence/verify-repo.py",
+      "records/REIN-VERIFLOW-REVIEW-20260916/task-state.json",
+      "records/REIN-VERIFLOW-REVIEW-20260916/task-summary.md",
+      "records/REIN-VERIFLOW-REVIEW-20260916/work-log.md",
+      "reports/2026-09-13-chapter-alignment.md",
+      "reports/2026-09-17-book-structure-plan.md",
+      "reports/2026-09-17-book-v2-implementation.md",
+      "reports/2026-09-17-maintenance-integration.md",
+      "reports/2026-09-20-rein-architecture-research.md",
+      "reports/2026-09-20-rein-core-harness-checks.json",
+      "reports/2026-09-20-rein-research-checks.json",
+      "reports/2026-09-20-rein-research-sources.json",
+      "reports/2026-09-21-product-line-plan-checks.json",
+      "reports/ch01-author-style.md",
+      "reports/ch01-rust-quality.md",
+      "reports/ch01-ts-quality.md",
+      "reports/ch01-verification.md",
+      "reports/ch01-writing-plan.md",
+      "runtime/Cargo.toml",
+      "runtime/README.md",
+      "runtime/src/artifact.rs",
+      "runtime/src/lib.rs",
+      "runtime/src/main.rs",
+      "runtime/src/owner.rs",
+      "runtime/src/tools.rs",
+      "runtime/src/verify.rs",
+      "runtime/tests/cli.rs",
+      "runtime/tests/control.rs",
+      "runtime/tests/durable_boundaries.rs",
+      "runtime/tests/r1a_acceptance.rs",
+      "rust/.env.example",
+      "rust/Cargo.lock",
+      "rust/Cargo.toml",
+      "rust/README.md",
+      "rust/examples/ch05_compare.rs",
+      "rust/examples/ch05_loop.rs",
+      "rust/examples/ch06_loop.rs",
+      "rust/examples/ch07_context.rs",
+      "rust/examples/ch08_context.rs",
+      "rust/examples/document_maintenance.rs",
+      "rust/examples/hybrid_stdio.rs",
+      "rust/examples/reading-00/.gitignore",
+      "rust/examples/reading-00/Cargo.lock",
+      "rust/examples/reading-00/Cargo.toml",
+      "rust/examples/reading-00/src/main.rs",
+      "rust/src/README.md",
+      "rust/src/bin/hello.rs",
+      "rust/src/lib.rs",
+      "rust/src/main.rs",
+      "rust/src/rein/context_methods.rs",
+      "rust/src/rein/extension02.rs",
+      "rust/src/rein/extension02_executor.rs",
+      "rust/src/rein/loop.rs",
+      "rust/src/rein/maintenance.rs",
+      "rust/src/rein/maintenance_session.rs",
+      "rust/src/rein/mod.rs",
+      "rust/src/rein/stdio_executor.rs",
+      "rust/tests/README.md",
+      "rust/tests/ch08_context.rs",
+      "rust/tests/extension02.rs",
+      "rust/tests/loop.rs",
+      "rust/tests/maintenance.rs",
+      "rust/tests/maintenance_profile.rs",
+      "rust/tests/maintenance_session.rs",
+      "rust/tests/prerequisites.rs",
+      "rust/tests/stdio_host.rs",
+      "scripts/book-check.mjs",
+      "scripts/book-generate.mjs",
+      "scripts/book-links.mjs",
+      "scripts/book-toc.mjs",
+      "scripts/ch05-compare.mjs",
+      "scripts/ch06-compare.mjs",
+      "scripts/ch07-compare.mjs",
+      "scripts/ch08-compare.mjs",
+      "scripts/ch08-verify.mjs",
+      "scripts/check-book-links.mjs",
+      "scripts/maintenance-fixture.mjs",
+      "scripts/runtime/check-contracts.mjs",
+      "scripts/runtime/r1a-baseline.mjs",
+      "scripts/runtime/schema-to-ts.mjs",
+      "scripts/runtime/schema-to-ts.test.mjs",
+      "ts/.env.example",
+      "ts/README.md",
+      "ts/examples/README.md",
+      "ts/examples/ch05-compare.ts",
+      "ts/examples/ch05-live.ts",
+      "ts/examples/ch05-loop.ts",
+      "ts/examples/ch06-loop.ts",
+      "ts/examples/ch07-context.ts",
+      "ts/examples/reading-00/main.ts",
+      "ts/examples/reading-00/reading-00.test.ts",
+      "ts/examples/reading-00/reading-00.ts",
+      "ts/examples/reading-00/vitest.config.ts",
+      "ts/package.json",
+      "ts/scripts/record.ts",
+      "ts/src/README.md",
+      "ts/src/chat.ts",
+      "ts/src/config.ts",
+      "ts/src/errors.ts",
+      "ts/src/hello-safe.ts",
+      "ts/src/hello.ts",
+      "ts/src/hybrid-host.ts",
+      "ts/src/main.ts",
+      "ts/src/rein/adapters.ts",
+      "ts/src/rein/contracts.ts",
+      "ts/src/rein/extension02-host.ts",
+      "ts/src/rein/loop.ts",
+      "ts/src/rein/maintenance-tools.ts",
+      "ts/src/rein/readonly.ts",
+      "ts/src/transport.ts",
+      "ts/tests/README.md",
+      "ts/tests/ch05-live.test.ts",
+      "ts/tests/ch07-context.test.ts",
+      "ts/tests/chat.test.ts",
+      "ts/tests/config.test.ts",
+      "ts/tests/fixtures/hybrid-fault-host.ts",
+      "ts/tests/hello.test.ts",
+      "ts/tests/hybrid-host.test.ts",
+      "ts/tests/loop.test.ts",
+      "ts/tests/maintenance-tools.test.ts",
+      "ts/tests/record.test.ts",
+      "ts/tests/recorded.test.ts",
+      "ts/tests/rein-prerequisites.test.ts",
+      "ts/tests/transport.test.ts",
+      "ts/tsconfig.json",
+      "ts/vitest.config.ts",
+      "records/REIN-PART1-EDITORIAL-20260922",
+      "reports/2026-09-22-part1-publication-review.md"
+    ],
+    "prepared_at": "2026-09-22T06:29:51.321105+00:00"
+  },
+  "binding": {
+    "receipt_paths": []
+  },
+  "authorization": {
+    "commit": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "push": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "merge": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "deploy": {
+      "status": "not_authorized",
+      "source_id": null
+    }
+  },
+  "delivery": {
+    "local_validation": "passed",
+    "remote_ci": "not_started"
+  },
+  "actions": [],
+  "decisions": [],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "failed verification",
+    "steps": [
+      "preserve raw failure evidence",
+      "repair only task-owned changes and rerun baseline"
+    ],
+    "owner": "main-thread"
+  }
+}

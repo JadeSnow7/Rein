@@ -1,0 +1,30 @@
+{
+  "request": "第一章增加 API key 获取和配置，并给出运行结果",
+  "scope": [
+    "docs/chapters/python-model-call.md"
+  ],
+  "baseline_head": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+  "existing_dirty_work_preserved": true,
+  "chapter_sha256": "5bc285a201db4952bb6c4426592fbfe3b25550577da70b41746fa18b381645ac",
+  "review": "Primary reviewed coder diff and raw execution evidence",
+  "checks": {
+    "offline": "passed; published JSON matches execution",
+    "missing_config": "passed; expected exit 1 and no request",
+    "bash_zsh_configuration": "passed with dummy credential; no key in stdout",
+    "python_tests": "17 passed including SDK mocks",
+    "vitepress_build": "passed; live-result-build.json",
+    "browser": "updated chapter content visible at local URL",
+    "live_documentation": "matches actual JSON; local browser content verified"
+  },
+  "live_request": {
+    "status": "executed_failed",
+    "approval": "User replied 允许 to named endpoint and credential use",
+    "attempt_count": 1,
+    "exit_code": 1,
+    "error": "model_error",
+    "evidence": "live-approved.json",
+    "specific_cause": "undetermined; CLI omits underlying exception details"
+  },
+  "delivery": "local files and preview only; no commit or push",
+  "checked_at": "2026-09-22T10:09:09.940254+00:00"
+}

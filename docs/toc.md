@@ -1,63 +1,76 @@
 # 全书目录
 
-旧版规划为五篇、00–24 共 25 章，下面保留其历史编号与目录语义；Python 00–03 是当前发布的独立主线，旧版 04–24 不表示 Python 主线已经接续到这些章节。
+本书现行结构为**六部分、00–29 共 30 章**。00–04 已有正文与配套程序：00–03 是第一部分的 Python 终端助手，04 分析 Agent 的核心能力，并把不依赖模型协议的行为迁移到 Rust；05–29 先提供逐部分规划入口。目录中的“规划中”不是实现或教学验收通过。
 
-当前 Python 主线开放 00–03 章及配套代码。Rust 迁移尚未完成；旧版五部分目录和历史页面仍保留，后续新版章节仅列出规划。
+第一部分围绕 C++ Hello World 建立终端代码修改助手。第二部分先分析 Agent 的核心能力并迁移既有行为，再增加 Rust 的统一消息、循环、停止和取消。第三部分建立可信修改；第四部分按需接入扩展；第五部分把 Harness 用在轻量 IDE；第六部分研究架构与持续演进。第一至五部分由人确定设计和验收条件、AI 编程助手编写代码，第六部分研究完全 vibe coding 的前提（见[阅读方式](./chapters/minimal-agent.md#division)）。从第 04 章起，正式正文末尾附交给代码助手的提示词，并标明来源。
 
-## Python 主线：生成、修复并验证 Hello World
+<!-- book:toc:start -->
 
-- [00 最小 Agent](./chapters/minimal-agent.md)
-- [01 用 Python 完成第一次模型调用](./chapters/python-model-call.md)
-- [02 让 AI 读取代码与日志](./chapters/python-file-read.md)
-- [03 做一个终端代码修改助手](./chapters/python-suggestions.md)
+## 极简 Harness
 
-当前配套位于 `python/hello_world/`。第一章按环境、请求、完整任务、失败处理、效果检查与练习六节推进；第二章通过 read_file 与受限 Bash 取得源码、日志和有限环境信息；第三章展示全文和彩色差异，接受才写入并验证。新框架第04章 Rust 等价迁移尚未交付。
+- 00 [我们要实现一个怎样的 Agent](/chapters/minimal-agent.md) · 初稿 · 永久免费 · Apache-2.0
+- 01 [用 Python 完成第一次模型调用](/chapters/python-model-call.md) · 初稿 · 永久免费 · Apache-2.0
+- 02 [让 AI 读取代码与日志](/chapters/python-file-read.md) · 初稿 · 永久免费 · Apache-2.0
+- 03 [做一个终端代码修改助手](/chapters/python-suggestions.md) · 初稿 · 永久免费 · Apache-2.0
+- [阶段汇总：终端代码修改助手](/milestones/part-01.md)
 
-## 旧版第一部分：让模型完成一个小任务
+## 核心循环
 
-- [00 从一次文档维护任务认识 Rein](./chapters/task-map.md) · 文字已开放，待教学验收
-- [01 HelloWorld：从模型调用开始](./chapters/model-hello.md) · 文字已开放，待教学验收
-- [02 把任务说清楚：提示词与成功标准](./chapters/task-spec.md) · 文字已开放，待教学验收
-- [03 工具调用：让模型读取真实文件](./chapters/tool-roundtrip.md) · 文字已开放，待教学验收
-- [01 Rust 可选对照](./chapters/model-hello-rust.md) · 文字已开放，待教学验收
-- [阶段汇总 1：真实资料问答原型](./milestones/evidence-qa.md) · 复查步骤已开放，阶段项目待验收
+- 04 [Agent 的核心能力](/chapters/agent-capabilities.md) · 初稿 · 永久免费 · Apache-2.0
+- 05 [统一模型消息与工具协议](/roadmap/part-02.md#ch05) · 规划中 · 永久免费 · Apache-2.0
+- 06 [写出核心 Agent Loop](/roadmap/part-02.md#ch06) · 规划中 · 永久免费 · Apache-2.0
+- 07 [让循环适时停止](/roadmap/part-02.md#ch07) · 规划中 · 永久免费 · Apache-2.0
+- 08 [取消任务与观察运行过程](/roadmap/part-02.md#ch08) · 规划中 · 永久免费 · Apache-2.0
+- [阶段汇总：可控 Rust Agent Loop](/milestones/part-02.md)
 
-## 建立可控的混合运行时
+## 可信 Harness
 
-- [04 模型接口：隔离服务商差异](./chapters/provider-adapter.md) · 后续章节待发布
-- [05 从 TypeScript 原型走向 Rust core](./chapters/rust-migration.md) · 后续章节待发布
-- [06 核心 Agent Loop：让工具结果推动下一轮](./chapters/agent-loop.md) · 后续章节待发布
-- 07 循环预算与重复动作 · 后续章节待发布
-- 08 取消、截止时间与资源生命周期 · 后续章节待发布
-- 09 工具宿主与声明式扩展点 · 后续章节待发布
+- 09 [管理上下文与运行状态](/roadmap/part-03.md#ch09) · 规划中 · 永久免费 · Apache-2.0
+- 10 [按需获取与压缩资料](/roadmap/part-03.md#ch10) · 规划中 · 永久免费 · Apache-2.0
+- 11 [区分指令、资料与不可信输入](/roadmap/part-03.md#ch11) · 规划中 · 永久免费 · Apache-2.0
+- 12 [控制工具权限与执行范围](/roadmap/part-03.md#ch12) · 规划中 · 永久免费 · Apache-2.0
+- 13 [把修改建议变成候选补丁](/roadmap/part-03.md#ch13) · 规划中 · 永久免费 · Apache-2.0
+- 14 [审查、批准与应用修改](/roadmap/part-03.md#ch14) · 规划中 · 永久免费 · Apache-2.0
+- 15 [验证结果与有限修复](/roadmap/part-03.md#ch15) · 规划中 · 永久免费 · Apache-2.0
+- [阶段汇总：可审查的单 Agent 修改助手](/milestones/part-03.md)
 
-## 让回答有依据、可检查
+## Agent 扩展
 
-- 10 上下文结构：历史、状态与发送预算 · 后续章节待发布
-- 11 获取外部资料：按需读取与检索 · 后续章节待发布
-- 12 将资料压缩接入循环 · 后续章节待发布
-- 13 验收条件、验证器与证据 · 后续章节待发布
+- 16 [计划模式：先组织任务，再执行](/roadmap/part-04.md#ch16) · 规划中 · 永久免费 · Apache-2.0
+- 17 [Skill：加载可复用的工作方法](/roadmap/part-04.md#ch17) · 规划中 · 永久免费 · Apache-2.0
+- 18 [扩展接口与执行 Hooks](/roadmap/part-04.md#ch18) · 规划中 · 永久免费 · Apache-2.0
+- 19 [接入 MCP 工具](/roadmap/part-04.md#ch19) · 规划中 · 永久免费 · Apache-2.0
+- 20 [多智能体与受限委派](/roadmap/part-04.md#ch20) · 规划中 · 永久免费 · Apache-2.0
+- [阶段汇总：可选扩展能力](/milestones/part-04.md)
 
-## 让修改可审查、可验证
+## 实际应用
 
-- 14 信任边界与工具权限 · 后续章节待发布
-- 15 从修改意图到可审查补丁 · 后续章节待发布
-- 16 批准、应用与修改后验证 · 后续章节待发布
-- 17 失败反馈与有限修复 · 后续章节待发布
+- 21 [设计 IDE 与 Harness 的连接方式](/roadmap/part-05.md#ch21) · 规划中 · 永久免费 · Apache-2.0
+- 22 [把编辑器上下文交给 Agent](/roadmap/part-05.md#ch22) · 规划中 · 永久免费 · Apache-2.0
+- 23 [完成一次真实开发任务](/roadmap/part-05.md#ch23) · 规划中 · 永久免费 · Apache-2.0
+- 24 [评测、打包与项目复盘](/roadmap/part-05.md#ch24) · 规划中 · 永久免费 · Apache-2.0
+- [阶段汇总：集成 Harness 的轻量 IDE](/milestones/part-05.md)
 
-## 可选能力分支与结项
+## 架构设计与持续演进
 
-- 18 计划与任务审查 · 后续章节待发布
-- 19 持久化执行与崩溃恢复 · 后续章节待发布
-- 20 扩展协议与 TypeScript SDK · 后续章节待发布
-- 21 接入 MCP：复用外部工具能力 · 后续章节待发布
-- 22 Hooks：在执行节点加入受控扩展 · 后续章节待发布
-- 23 受限委派与多智能体协作 · 后续章节待发布
-- 24 文档维护助手：评测与复盘 · 后续章节待发布
+- 25 [让 Agent 理解项目的架构](/roadmap/part-06.md#ch25) · 规划中 · 永久免费 · Apache-2.0
+- 26 [让 Agent 做出有依据的设计](/roadmap/part-06.md#ch26) · 规划中 · 永久免费 · Apache-2.0
+- 27 [让 Agent 记住设计理由](/roadmap/part-06.md#ch27) · 规划中 · 永久免费 · Apache-2.0
+- 28 [让 Agent 持续修改而不破坏系统](/roadmap/part-06.md#ch28) · 规划中 · 永久免费 · Apache-2.0
+- 29 [如何判断 Agent 真的进步了](/roadmap/part-06.md#ch29) · 规划中 · 永久免费 · Apache-2.0
+- [阶段汇总：可复审的持续演进实验](/milestones/part-06.md)
 
-## 阅读材料与历史入口
+<!-- book:toc:end -->
 
-[阅读 0](./readings/00.md)、[TS 基础](./readings/00-ts.md)和 [Rust 基础](./readings/00-rust.md)按需取用。历史章节、其余阅读材料与附录见[历史目录](./history.md)。章末提示词另见[使用说明](./prompt-examples.md)。当前自有内容统一按 [Apache-2.0 永久开放](./access.md)。
+## 阅读状态与历史资料
+
+章节状态、开放属性和导航由仓库中的 `book/chapters.json` 统一维护。第一部分正文、程序检查、真实模型表现和新手独立跟做分别判断；规划页不冒充已完成章节。六部分的详细写作边界见 `book/framework-six-parts/README.md`。
+
+当前 Python 主线开放 00–03 章及配套代码；旧正文已开放阅读，但仍需分别完成程序、真实模型和教学验收。新版 04–29 只在现行目录中标出规划或当前状态，不复制旧版的第二套目录。
+
+旧五篇 25 章清单、数字 URL、TypeScript/Rust 对照与旧阶段汇总从[历史与补充入口](./history.md)访问。旧页面的编号仍代表原主题，不在这里重复生成第二套现行目录。
+
+[阅读材料](./readings/00.md)、[深入讨论附录](./appendices/a1.md)、[开放说明](./access.md)与[提示词示例说明](./prompt-examples.md)按需阅读。
 
 ## 旧目录链接
 

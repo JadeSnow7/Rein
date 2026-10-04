@@ -1,0 +1,86 @@
+{
+  "validationScenarios": 22,
+  "functionalOwners": 18,
+  "kind": "document-consistency-only",
+  "counts": [
+    {
+      "file": "DECISIONS.md",
+      "headings": 19,
+      "links": 1,
+      "codeBlocks": 2
+    },
+    {
+      "file": "README.md",
+      "headings": 8,
+      "links": 16,
+      "codeBlocks": 5
+    },
+    {
+      "file": "REIN-DESIGN.md",
+      "headings": 48,
+      "links": 27,
+      "codeBlocks": 12
+    },
+    {
+      "file": "REIN-MODULES.md",
+      "headings": 21,
+      "links": 3,
+      "codeBlocks": 7
+    },
+    {
+      "file": "REIN-IMPLEMENTATION-PLAN.md",
+      "headings": 14,
+      "links": 15,
+      "codeBlocks": 0
+    },
+    {
+      "file": "reports/2026-09-20-rein-architecture-research.md",
+      "headings": 21,
+      "links": 41,
+      "codeBlocks": 0
+    }
+  ],
+  "specifications": 16,
+  "pinnedSourceReferences": 29,
+  "failures": [],
+  "schema": "rein-design-checks/1",
+  "checkedAt": "2026-09-20T13:35:17.902923+00:00",
+  "head": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+  "decision": "D12: core retains complete Harness and supports Coordinator role",
+  "designVersion": "0.4-draft",
+  "modulesVersion": "0.2-draft",
+  "sourceRefactorPerformed": false,
+  "runtimeTestsRun": false,
+  "thirdPartyProjectsExecuted": false,
+  "documentHashes": {
+    "DECISIONS.md": "1c4da33c48f5b4e15da87f92b422ee9f1cd9c8fa6dcbca08c730c7f0bc69dd63",
+    "README.md": "815f56c9791c1653bbaa00842d8347396b562bf5decc6414286a429a958ee017",
+    "REIN-DESIGN.md": "9d44ad2a4320b4b6c0559e6eaf1c687941ed90d3c0e267940088109651995025",
+    "REIN-MODULES.md": "ac459071ed9ab195b6bd98d0db7bc2f3ffb80458770f34253624b383daebbd4a",
+    "REIN-IMPLEMENTATION-PLAN.md": "5eea5b9ffbb21b7f846e99778bf1c7774a92e5773d0356e27ecf7488017efe2a",
+    "reports/2026-09-20-rein-architecture-research.md": "218245bc197f7c717366c2ea1e9f53f91deb103e51c2724294f515b884699c46"
+  },
+  "protectedFilesChecked": 195,
+  "protectedFilesChanged": [],
+  "historicalEvidence": {
+    "path": "reports/2026-09-20-rein-research-checks.json",
+    "preserved": true,
+    "currentApplicability": "historical_only_for_changed_documents",
+    "staleReason": "D12 changed architecture scope and coordinator acceptance requirements",
+    "changedDocuments": [
+      "README.md",
+      "REIN-DESIGN.md",
+      "REIN-MODULES.md",
+      "REIN-IMPLEMENTATION-PLAN.md",
+      "reports/2026-09-20-rein-architecture-research.md"
+    ]
+  },
+  "checks": [
+    "Markdown parsing, local file and source reference resolution",
+    "JSON examples parsed",
+    "S01-S16 each have one primary owner",
+    "F01-F18 and V01-V22 are unique and complete",
+    "Protected source, contract and teaching file hashes unchanged",
+    "git diff --check passed"
+  ]
+}

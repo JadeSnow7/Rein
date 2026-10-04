@@ -1,0 +1,68 @@
+{
+  "spec": {
+    "request": "提交并发布",
+    "confirmed_scope": "Python 00–03 chapters, companion code and connected current reading route",
+    "target": "JadeSnow7/Rein main and GitHub Pages",
+    "base": "ff32224587c150c0b73b9888c09b1ebdc04d72ec",
+    "constraints": [
+      "Preserve original dirty worktree",
+      "Retain existing TS/Rust URLs",
+      "Publish real model_error honestly",
+      "Do not publish credentials or virtualenvs"
+    ],
+    "acceptance": [
+      "Python17 tests and S1 cases",
+      "Site build and all local links",
+      "Reviewed allowlist-only commit",
+      "Pushed main SHA matches",
+      "Pages success for exact SHA",
+      "Live page contains API key and actual result"
+    ]
+  },
+  "release_directory": "/private/tmp/rein-ch01-api-publish-20260922",
+  "authorization": {
+    "commit": true,
+    "push": true,
+    "publish": true,
+    "source": "User 提交并发布 followed by explicit Python00–03 scope selection"
+  },
+  "actions": {
+    "commit": "completed",
+    "push": "completed",
+    "publish": "completed"
+  },
+  "recovery": "Revert the scoped content commit on main and allow Pages workflow to redeploy if this release must be undone. No force push.",
+  "updated_at": "2026-09-22T11:23:28.883375+00:00",
+  "validation": {
+    "python_tests": 17,
+    "S1_cases": 10,
+    "build": "passed",
+    "html_pages": 55,
+    "links_checked": 1792,
+    "broken_links": 0
+  },
+  "commit": "946ecd3d94532110876d8682434158f72b014d86",
+  "remote_branch": "main",
+  "remote_sha": "946ecd3d94532110876d8682434158f72b014d86",
+  "publication-pages": {
+    "id": 35720924810,
+    "url": "https://github.com/JadeSnow7/Rein/actions/runs/35720924810",
+    "conclusion": "success"
+  },
+  "publication-ci": {
+    "id": 35720924640,
+    "url": "https://github.com/JadeSnow7/Rein/actions/runs/35720924640",
+    "conclusion": "success"
+  },
+  "online_verification": {
+    "url": "https://jadesnow7.github.io/Rein/chapters/python-model-call.html",
+    "observed": [
+      "Python 00–03 sidebar",
+      "API key acquisition and configuration",
+      "config_missing sample",
+      "2026-09-22 live attempt model_error",
+      "previous 00 and next 02 links"
+    ],
+    "console_errors": []
+  }
+}

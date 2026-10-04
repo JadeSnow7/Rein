@@ -1,0 +1,466 @@
+{
+  "schema": "rein-research-sources/1",
+  "scope": "static source research; no third-party build or runtime validation",
+  "repositoryMetadataFetchedAt": "2026-09-20T13:00:34.106829+00:00",
+  "sourceFetchedAt": "2026-09-20T13:05:22.265757+00:00",
+  "repositories": [
+    {
+      "requestedRepo": "openai/codex",
+      "repo": "openai/codex",
+      "sha": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "commitDate": "2026-09-20T03:02:48Z",
+      "treeTruncated": false,
+      "treeEntries": 9254,
+      "license": {
+        "key": "apache-2.0",
+        "name": "Apache License 2.0",
+        "spdx_id": "Apache-2.0",
+        "url": "https://api.github.com/licenses/apache-2.0",
+        "node_id": "MDc6TGljZW5zZTI="
+      }
+    },
+    {
+      "requestedRepo": "farion1231/cc-switch",
+      "repo": "farion1231/cc-switch",
+      "sha": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "commitDate": "2026-09-20T09:44:47Z",
+      "treeTruncated": false,
+      "treeEntries": 1380,
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "requestedRepo": "badlogic/pi-mono",
+      "repo": "earendil-works/pi",
+      "sha": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "commitDate": "2026-09-20T11:04:18Z",
+      "treeTruncated": false,
+      "treeEntries": 2044,
+      "license": {
+        "key": "mit",
+        "name": "MIT License",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit",
+        "node_id": "MDc6TGljZW5zZTEz"
+      }
+    },
+    {
+      "requestedRepo": "google-gemini/gemini-cli",
+      "repo": "google-gemini/gemini-cli",
+      "sha": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "commitDate": "2026-09-18T20:34:32Z",
+      "treeTruncated": false,
+      "treeEntries": 3312,
+      "license": {
+        "key": "apache-2.0",
+        "name": "Apache License 2.0",
+        "spdx_id": "Apache-2.0",
+        "url": "https://api.github.com/licenses/apache-2.0",
+        "node_id": "MDc6TGljZW5zZTI="
+      }
+    },
+    {
+      "requestedRepo": "anthropics/claude-code",
+      "repo": "anthropics/claude-code",
+      "sha": "7974a70773fa229e4cc65aa1b356cc21f5c216c4",
+      "commitDate": "2026-09-20T08:03:16Z",
+      "treeTruncated": false,
+      "treeEntries": 1965,
+      "license": null
+    }
+  ],
+  "sources": [
+    {
+      "repo": "openai/codex",
+      "commit": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "path": "codex-rs/app-server/README.md",
+      "bytes": 20319,
+      "sha256": "2d307580a9e3c8818c9d83336d9e94eb70b7cefc589dd48694d6bee10ba70bbc",
+      "url": "https://raw.githubusercontent.com/openai/codex/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/app-server/README.md"
+    },
+    {
+      "repo": "openai/codex",
+      "commit": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "path": "codex-rs/app-server-protocol/src/protocol/common.rs",
+      "bytes": 172304,
+      "sha256": "02cd72be646c4388e90f21ed651838aeab3d6273ade14715e38f2de6c095ba99",
+      "url": "https://raw.githubusercontent.com/openai/codex/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/app-server-protocol/src/protocol/common.rs"
+    },
+    {
+      "repo": "openai/codex",
+      "commit": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "path": "codex-rs/core/src/agent/control.rs",
+      "bytes": 34469,
+      "sha256": "4fde64037e060bec1c3ee654fc8396048283f35775e0a675ed2f4498edffaaca",
+      "url": "https://raw.githubusercontent.com/openai/codex/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/core/src/agent/control.rs"
+    },
+    {
+      "repo": "openai/codex",
+      "commit": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "path": "codex-rs/core/src/agent/control/budget.rs",
+      "bytes": 1178,
+      "sha256": "a74cc33a96a5aa612179379a0e6298345a35dfdf24c8ae527a7c9f93746e4a39",
+      "url": "https://raw.githubusercontent.com/openai/codex/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/core/src/agent/control/budget.rs"
+    },
+    {
+      "repo": "openai/codex",
+      "commit": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "path": "codex-rs/state/src/lib.rs",
+      "bytes": 6134,
+      "sha256": "a677c5705d66f9c3a6d4a30bc7389a4f087859f8eb4958492124e8bf21706d88",
+      "url": "https://raw.githubusercontent.com/openai/codex/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/state/src/lib.rs"
+    },
+    {
+      "repo": "openai/codex",
+      "commit": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "path": "codex-rs/login/src/auth/storage.rs",
+      "bytes": 18076,
+      "sha256": "2e95a8998687e926675d41b5d941c3c3546a652c03d9680e6c7385e59bf459af",
+      "url": "https://raw.githubusercontent.com/openai/codex/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/login/src/auth/storage.rs"
+    },
+    {
+      "repo": "openai/codex",
+      "commit": "5c5308fc9a9ee789049d646ef11e5400384b9c6f",
+      "path": "codex-rs/login/src/auth/manager.rs",
+      "bytes": 116798,
+      "sha256": "aa6624964064793f4672afdcad9d9357ebbf50606c357dd01e0debb6af29181e",
+      "url": "https://raw.githubusercontent.com/openai/codex/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/login/src/auth/manager.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/provider.rs",
+      "bytes": 63091,
+      "sha256": "610af49554b494d56206fb02b75567131c8b0f4cb11d27c2f0ec537241099be8",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/provider.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/services/provider/mod.rs",
+      "bytes": 316028,
+      "sha256": "63142ce6195233b66fc59a073b502495324f14b2425399d720af7f7c626080cf",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/services/provider/mod.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/services/provider/live.rs",
+      "bytes": 127904,
+      "sha256": "7a5d34481ef2cc1ccacc8dcc2796f2ef7d9a5b27b89f8b43159036fccf1cbb8c",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/services/provider/live.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/services/provider/pi.rs",
+      "bytes": 33222,
+      "sha256": "eee362290c6031dd2decbef9727f9235eb17394f1e7a4285ab7c2eb2dd25264d",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/services/provider/pi.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/proxy/provider_router.rs",
+      "bytes": 23745,
+      "sha256": "50e59c543cca5ca165ddb07391fc4ccc25c3b4a17ceb2732f44f0abf05212c29",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/proxy/provider_router.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/proxy/failover_switch.rs",
+      "bytes": 4470,
+      "sha256": "d2915313050d5f073b08eb4052e30cb548cbf6d56f3776e8e5cbca9313e4431b",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/proxy/failover_switch.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/proxy/circuit_breaker.rs",
+      "bytes": 17840,
+      "sha256": "523b28e58012c677be614153c7b2c57c97e3c936d72761ed8ec1edb89ef3b0f0",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/proxy/circuit_breaker.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/proxy/providers/adapter.rs",
+      "bytes": 2537,
+      "sha256": "245515ef2139fa22e2b9fa29ce98273d0f1dde3865e20826d5f070cbc3d716fb",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/proxy/providers/adapter.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/services/usage_cache.rs",
+      "bytes": 6569,
+      "sha256": "543719b6b195848659c3d807d15993f93d2cc791c6dd02fc80fe14f897a32b43",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/services/usage_cache.rs"
+    },
+    {
+      "repo": "farion1231/cc-switch",
+      "commit": "1408f382798f0a7fccfaf36643303f3ad73bd44b",
+      "path": "src-tauri/src/database/schema.rs",
+      "bytes": 145612,
+      "sha256": "06ceafa70fef344dbfdca054e9a46477451ef34da9d3edc8e97466e1a33026bc",
+      "url": "https://raw.githubusercontent.com/farion1231/cc-switch/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/database/schema.rs"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/ai/src/types.ts",
+      "bytes": 42847,
+      "sha256": "35920286c874651f34a6060f5ea75fc0a104a3abf9d7411cd37878af493533e6",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/ai/src/types.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/agent/src/agent-loop.ts",
+      "bytes": 25456,
+      "sha256": "2f4e228055729f684e01349813a6ab903b0f646f6320d5f892ef77303561b82e",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/agent-loop.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/agent/src/types.ts",
+      "bytes": 18233,
+      "sha256": "b39a716944e8eee79562354e0c1a6a96dd5fb364078084cc6903fbcd61ed3d5a",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/types.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/agent/src/harness/runtime/harness.ts",
+      "bytes": 14469,
+      "sha256": "0d92dcd8802e5de32d15f6aa2650c349c0df3c9da206449959941594d9e69b05",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/runtime/harness.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/agent/src/harness/runtime/drive/recovery.ts",
+      "bytes": 3755,
+      "sha256": "3b731dddd703b4fc6f09e193d5ad438fc0330d25333993ae9cd774f97f2086e1",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/runtime/drive/recovery.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/agent/src/harness/session/jsonl/storage.ts",
+      "bytes": 10001,
+      "sha256": "3de2f2b426c6e8770ea882d43b601d36a70000ee551e09fe485ed2e1b0ede3d4",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/session/jsonl/storage.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/agent/src/harness/pico3/scheduler.ts",
+      "bytes": 17333,
+      "sha256": "536e944221a9ce78439db7e2e7b8581a713b14b84a3c45f8b449a8f33de9dfe4",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/pico3/scheduler.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/README.md",
+      "bytes": 33224,
+      "sha256": "26e0e37e2ab5ed724e83abe9ee84be09b27c23a5c5bd420fd2b5f107d41890c0",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/README.md"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/docs/rpc.md",
+      "bytes": 42698,
+      "sha256": "15fcd26bee72777b373fd5f2edd77091a01cadd4de95e48b08422ced0552a28d",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/docs/rpc.md"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/src/core/agent-session.ts",
+      "bytes": 127935,
+      "sha256": "3ea88a751cd830db66ae9348be9f8dfbd5218a01e74b445f3aee9fb87ad3e865",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/src/core/agent-session.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/src/core/agent-session-runtime.ts",
+      "bytes": 15127,
+      "sha256": "5b348a4db837a2564367dd93b343c67f3b0c28a2f753ff71adcb48d08b5644e7",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/src/core/agent-session-runtime.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/src/core/session-manager.ts",
+      "bytes": 58638,
+      "sha256": "860b01d430633431591393e7d14c2cafff792c1c1c374ce18067e0a7e3f59357",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/src/core/session-manager.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/src/core/auth-storage.ts",
+      "bytes": 16295,
+      "sha256": "32d36165760959766807b8797042e69b65a65c7aad7d1b79a2621c41fe29b48d",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/src/core/auth-storage.ts"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/examples/extensions/subagent/README.md",
+      "bytes": 6298,
+      "sha256": "6a888330bf974657751e09f5d375a9039872d59d6606fc217c5105c7eca51b1a",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/examples/extensions/subagent/README.md"
+    },
+    {
+      "repo": "earendil-works/pi",
+      "commit": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+      "path": "packages/coding-agent/examples/extensions/subagent/index.ts",
+      "bytes": 35714,
+      "sha256": "4facaa61c9c781748dd000eb5d2ec0a75289986d1a6e11ce13971ca5653dc252",
+      "url": "https://raw.githubusercontent.com/earendil-works/pi/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/examples/extensions/subagent/index.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/routing/modelRouterService.ts",
+      "bytes": 4510,
+      "sha256": "2043c45adc11a1f63a16bf69d900a5820114e78c875d9d82f3c25845482ac50a",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/routing/modelRouterService.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/routing/routingStrategy.ts",
+      "bytes": 2577,
+      "sha256": "3b66604e1d3e54be09f751c15e0a99615aae2380d6982775bb7dfdbe00b17b49",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/routing/routingStrategy.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/routing/strategies/compositeStrategy.ts",
+      "bytes": 3674,
+      "sha256": "9de39df3cb9e4ccdbb8ff37d4fca9dc03b20ab07948b778fc0c37eb1aa0a03c2",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/routing/strategies/compositeStrategy.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/scheduler/scheduler.ts",
+      "bytes": 30145,
+      "sha256": "75f39d7daed17f7a1f73a48bacf0c239214ead672110e7f8898fe2b846bc5f1c",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/scheduler/scheduler.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/policy/policy-engine.ts",
+      "bytes": 34286,
+      "sha256": "3483535ed1d106e75cf1953da7255815f336003ad91a8e841db5df516592cfb1",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/policy/policy-engine.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/confirmation-bus/message-bus.ts",
+      "bytes": 8351,
+      "sha256": "7afa837306964256efb079aa9453e0218cb46948b189ac5c0ca3043f9c9f7307",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/confirmation-bus/message-bus.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/agents/agent-scheduler.ts",
+      "bytes": 2894,
+      "sha256": "dfa5d8c5765e42ebf8c2f2aaf653ba1cc353feec2813cc0469bdc92cf7c4e627",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/agents/agent-scheduler.ts"
+    },
+    {
+      "repo": "google-gemini/gemini-cli",
+      "commit": "cfbcaa8df13ea4610bb379b377b56d62980c0032",
+      "path": "packages/core/src/agents/local-executor.ts",
+      "bytes": 51797,
+      "sha256": "5441708ace2518cf447a065e24d34129763b628e6714e9ed375b0ba10f1d3854",
+      "url": "https://raw.githubusercontent.com/google-gemini/gemini-cli/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/agents/local-executor.ts"
+    },
+    {
+      "repo": "anthropics/claude-code",
+      "commit": "7974a70773fa229e4cc65aa1b356cc21f5c216c4",
+      "path": "README.md",
+      "bytes": 2873,
+      "sha256": "aa0d8b80ac083e1591be0789273f447058cc9187b4331634a5614155da27778d",
+      "url": "https://raw.githubusercontent.com/anthropics/claude-code/7974a70773fa229e4cc65aa1b356cc21f5c216c4/README.md"
+    },
+    {
+      "repo": "anthropics/claude-code",
+      "commit": "7974a70773fa229e4cc65aa1b356cc21f5c216c4",
+      "path": "LICENSE.md",
+      "bytes": 150,
+      "sha256": "728158fd1037143fad6907e8fa34804177e598b7326519503fe83cafdef849e6",
+      "url": "https://raw.githubusercontent.com/anthropics/claude-code/7974a70773fa229e4cc65aa1b356cc21f5c216c4/LICENSE.md"
+    }
+  ],
+  "citations": {
+    "C1": "https://github.com/openai/codex/blob/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/app-server-protocol/src/protocol/common.rs#L507-L565",
+    "C3": "https://github.com/openai/codex/blob/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/app-server-protocol/src/protocol/common.rs#L23-L37",
+    "C4": "https://github.com/openai/codex/blob/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/core/src/agent/control.rs#L75-L154",
+    "C5": "https://github.com/openai/codex/blob/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/core/src/agent/control/budget.rs#L1-L36",
+    "C6": "https://github.com/openai/codex/blob/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/state/src/lib.rs#L1-L39",
+    "C7": "https://github.com/openai/codex/blob/5c5308fc9a9ee789049d646ef11e5400384b9c6f/codex-rs/login/src/auth/storage.rs#L167-L223",
+    "S1": "https://github.com/farion1231/cc-switch/blob/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/services/provider/live.rs#L1664-L1708",
+    "S2": "https://github.com/farion1231/cc-switch/blob/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/services/provider/pi.rs#L26-L85",
+    "S3": "https://github.com/farion1231/cc-switch/blob/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/proxy/providers/adapter.rs#L1-L60",
+    "S4": "https://github.com/farion1231/cc-switch/blob/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/proxy/provider_router.rs#L38-L131",
+    "S5": "https://github.com/farion1231/cc-switch/blob/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/proxy/provider_router.rs#L15-L20",
+    "S6": "https://github.com/farion1231/cc-switch/blob/1408f382798f0a7fccfaf36643303f3ad73bd44b/src-tauri/src/services/usage_cache.rs#L1-L59",
+    "P1": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/ai/src/types.ts#L17-L81",
+    "P2": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/types.ts#L156-L209",
+    "P3": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/agent-loop.ts#L1-L134",
+    "P4": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/src/core/session-manager.ts#L40-L87",
+    "P5": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/examples/extensions/subagent/README.md#L1-L102",
+    "P6": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/examples/extensions/subagent/index.ts#L300-L410",
+    "P7": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/examples/extensions/subagent/index.ts#L550-L660",
+    "P8": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/runtime/harness.ts#L28-L79",
+    "P9": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/session/jsonl/storage.ts#L123-L152",
+    "P10": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/pico3/scheduler.ts#L36-L84",
+    "P11": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/agent/src/harness/runtime/drive/recovery.ts#L24-L90",
+    "P12": "https://github.com/earendil-works/pi/blob/19451accdeec671c1f4da9eafac8fc270f510ef4/packages/coding-agent/docs/rpc.md#L1-L85",
+    "G1": "https://github.com/google-gemini/gemini-cli/blob/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/routing/routingStrategy.ts#L13-L78",
+    "G2": "https://github.com/google-gemini/gemini-cli/blob/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/routing/modelRouterService.ts#L27-L69",
+    "G3": "https://github.com/google-gemini/gemini-cli/blob/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/scheduler/scheduler.ts#L9-L49",
+    "G4": "https://github.com/google-gemini/gemini-cli/blob/cfbcaa8df13ea4610bb379b377b56d62980c0032/packages/core/src/agents/agent-scheduler.ts#L44-L93",
+    "A1": "https://github.com/anthropics/claude-code/blob/7974a70773fa229e4cc65aa1b356cc21f5c216c4/LICENSE.md#L1-L1",
+    "C2": "https://learn.chatgpt.com/docs/app-server",
+    "A2": "https://code.claude.com/docs/en/headless",
+    "A3": "https://code.claude.com/docs/en/agent-sdk/overview"
+  },
+  "webPages": [
+    {
+      "url": "https://learn.chatgpt.com/docs/app-server",
+      "accessedDate": "2026-09-20",
+      "versionPinned": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/headless",
+      "accessedDate": "2026-09-20",
+      "versionPinned": false
+    },
+    {
+      "url": "https://code.claude.com/docs/en/agent-sdk/overview",
+      "accessedDate": "2026-09-20",
+      "versionPinned": false
+    }
+  ]
+}

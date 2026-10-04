@@ -30,6 +30,7 @@ export interface TransportResponse {
 
 export interface SendOptions {
   readonly timeoutMs: number
+  readonly signal?: AbortSignal
 }
 
 export interface Transport {
@@ -40,7 +41,8 @@ export interface Transport {
 export function createFetchTransport(): Transport {
   return {
     async send(request, options) {
-      const signal = AbortSignal.timeout(options.timeoutMs)
+      const timeoutSignal = AbortSignal.timeout(options.timeoutMs)
+      const signal = options.signal === undefined ? timeoutSignal : AbortSignal.any([options.signal, timeoutSignal])
       let response: Response
       try {
         response = await fetch(request.url, {
@@ -51,7 +53,7 @@ export function createFetchTransport(): Transport {
         })
       } catch (cause) {
         // AbortSignal.timeout 触发时抛出 name 为 TimeoutError 的 DOMException。
-        if (isTimeoutAbort(signal, cause)) {
+        if (isTimeoutAbort(timeoutSignal, cause)) {
           throw new TimeoutError(request.url, options.timeoutMs)
         }
         throw new NetworkError(request.url, cause)
@@ -62,7 +64,7 @@ export function createFetchTransport(): Transport {
         body = await response.text()
       } catch (cause) {
         // 响应头已到，连接在读 body 的过程中断开。
-        if (isTimeoutAbort(signal, cause)) {
+        if (isTimeoutAbort(timeoutSignal, cause)) {
           throw new TimeoutError(request.url, options.timeoutMs)
         }
         throw new NetworkError(request.url, cause)

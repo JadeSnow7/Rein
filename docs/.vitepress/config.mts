@@ -1,70 +1,43 @@
 import { defineConfig } from 'vitepress'
+import book from '../../book/chapters.json'
 
-const currentChapters = [
-  { text: '00 我们要实现一个怎样的 Agent', link: '/chapters/minimal-agent.html' },
-  { text: '01 用 Python 完成第一次模型调用', link: '/chapters/python-model-call.html' },
-  { text: '02 让 AI 读取代码与日志', link: '/chapters/python-file-read.html' },
-  { text: '03 做一个终端代码修改助手', link: '/chapters/python-suggestions.html' }
+const chapterLink = (chapter: typeof book.chapters[number] | undefined) => chapter ? { text: `${String(chapter.order).padStart(2, '0')} ${chapter.title}`, link: chapter.route } : false
+const milestoneLink = (milestone: typeof book.milestones[number]) => ({ text: `阶段汇总 · ${milestone.title}`, link: milestone.path })
+const currentSidebar = [
+  { text: '开始阅读', items: [{ text: '关于本书', link: '/about.html' }, { text: '全书目录', link: '/toc.html' }, { text: '开放说明', link: '/access.html' }] },
+  ...book.parts.map((part) => ({
+    text: `${part.title}（${String(part.range[0]).padStart(2, '0')}–${String(part.range[1]).padStart(2, '0')}）`,
+    collapsed: part.id !== 'part-1',
+    items: [
+      ...book.chapters.filter((chapter) => chapter.part === part.id).map(chapterLink),
+      ...book.milestones.filter((milestone) => book.chapters[milestone.after_order]?.part === part.id).map(milestoneLink)
+    ]
+  })),
+  { text: '历史材料', collapsed: true, items: [{ text: '旧版五部分目录与页面', link: '/history.html' }, { text: '阅读材料', link: '/readings/00.html' }, { text: '实现对照与深入讨论', link: '/appendices/a1.html' }] }
 ]
 
 const chapterNavigation = (pageData: { relativePath: string; frontmatter: Record<string, unknown> }) => {
   const path = '/' + pageData.relativePath.replace(/\.md$/, '.html')
-  const index = currentChapters.findIndex((chapter) => chapter.link === path)
-  if (index < 0) return
+  const index = book.chapters.findIndex((chapter) => chapter.route.split('#')[0] === path)
+  const milestone = book.milestones.find((item) => item.path === path)
   pageData.frontmatter ||= {}
-  pageData.frontmatter.prev = index === 0 ? false : currentChapters[index - 1]
-  pageData.frontmatter.next = index === currentChapters.length - 1
-    ? { text: '全书目录', link: '/toc.html' }
-    : currentChapters[index + 1]
+  // Roadmap pages contain several planned chapters and are overview pages.
+  // Chapter arrows belong to dedicated chapter pages only.
+  if (path.startsWith('/roadmap/')) return
+  if (milestone) {
+    const chapterIndex = milestone.after_order
+    pageData.frontmatter.prev = chapterLink(book.chapters[chapterIndex])
+    pageData.frontmatter.next = chapterLink(book.chapters[chapterIndex + 1])
+  } else if (index >= 0) {
+    const prior = book.milestones.find((item) => item.after_order === index - 1)
+    const next = book.milestones.find((item) => item.after_order === index)
+    pageData.frontmatter.prev = prior ? milestoneLink(prior) : chapterLink(book.chapters[index - 1])
+    pageData.frontmatter.next = next ? milestoneLink(next) : chapterLink(book.chapters[index + 1])
+  }
 }
 
 export default defineConfig({
-  lang: 'zh-CN',
-  title: 'Rein',
-  description: '从零手写一个 Agent Harness',
-  base: '/Rein/',
-  cleanUrls: false,
-  lastUpdated: true,
+  lang: 'zh-CN', title: 'Rein', description: '从零构建 Agent：人定设计，AI 编码的 Agent Harness 工程实践', base: '/Rein/', cleanUrls: false, lastUpdated: true,
   transformPageData: chapterNavigation,
-  themeConfig: {
-    logo: '/mark.svg',
-    siteTitle: 'REIN / AGENT ENGINEERING',
-    nav: [
-      { text: '首页', link: '/' },
-      { text: '阅读指南', link: '/about.html' },
-      { text: '全书目录', link: '/toc.html' },
-      { text: '开放说明', link: '/access.html' }
-    ],
-    outline: { level: [2, 3], label: '本页内容' },
-    search: { provider: 'local' },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/JadeSnow7/Rein' }],
-    footer: {
-      message: '一条可运行、可解释、可验证的 Agent 学习路线',
-      copyright: '© JadeSnow7'
-    },
-    sidebar: {
-      '/': [
-        { text: '开始阅读', items: [{ text: '关于本书', link: '/about.html' }, { text: '全书目录', link: '/toc.html' }, { text: '开放说明', link: '/access.html' }] },
-        { text: 'Python 主线 · 生成、修复与验证', collapsed: false, items: currentChapters },
-        { text: '旧版第一部分 · 让模型完成一个小任务', collapsed: false, items: [
-          { text: '00 绪论', link: '/chapters/task-map.html' }, { text: '阅读 0 基础知识', link: '/readings/00.html' }, { text: '01 HelloWorld——从模型调用开始', link: '/chapters/model-hello.html' }, { text: '02 任务与成功标准', link: '/chapters/task-spec.html' }, { text: '03 工具调用', link: '/chapters/tool-roundtrip.html' }, { text: '阶段汇总 1', link: '/milestones/evidence-qa.html' }
-        ] },
-        { text: '第二部分 · 建立可控的混合运行时', collapsed: true, items: [
-          { text: '04 模型接口 · 后续章节待发布', link: '/chapters/provider-adapter.html' }, { text: '05 Rust 迁移 · 后续章节待发布', link: '/chapters/rust-migration.html' }, { text: '06 核心 Agent Loop · 后续章节待发布', link: '/chapters/agent-loop.html' }, { text: '07–09 后续章节待发布' }, { text: '阶段汇总 2 · 后续章节待发布' }
-        ] },
-        { text: '第三部分 · 让回答有依据、可检查', collapsed: true, items: [
-          { text: '10–13 后续章节待发布' }, { text: '阶段汇总 3 · 后续章节待发布' }
-        ] },
-        { text: '第四部分 · 让修改可审查、可验证', collapsed: true, items: [
-          { text: '14–17 后续章节待发布' }, { text: '阶段汇总 4 · 后续章节待发布' }
-        ] },
-        { text: '第五部分 · 可选能力分支与结项', collapsed: true, items: [
-          { text: '18–24 后续章节待发布' }, { text: '阶段汇总 5 · 后续章节待发布' }
-        ] },
-        { text: '补充入口', collapsed: true, items: [
-          { text: '阅读材料与附录 · 后续章节待发布' }, { text: '历史页面', link: '/history.html' }
-        ] }
-      ]
-    }
-  }
+  themeConfig: { logo: '/mark.svg', siteTitle: 'REIN / AGENT ENGINEERING', nav: [{ text: '首页', link: '/' }, { text: '阅读指南', link: '/about.html' }, { text: '全书目录', link: '/toc.html' }, { text: '开放说明', link: '/access.html' }], outline: { level: [2, 3], label: '本页内容' }, search: { provider: 'local' }, socialLinks: [{ icon: 'github', link: 'https://github.com/JadeSnow7/Rein' }], footer: { message: '一条可运行、可解释、可验证的 Agent 学习路线', copyright: '© JadeSnow7' }, sidebar: { '/': currentSidebar } }
 })

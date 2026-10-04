@@ -1,3 +1,6 @@
+# Local build caches and raw evidence artifacts.
+
+# Bundled tool/build/cache rules retained verbatim.
 node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
@@ -5,7 +8,43 @@ docs/.vitepress/cache/
 .env.local
 ts/dist/
 rust/target/
+/target/
 python/**/.venv/
 python/**/__pycache__/
 python/**/*.pyc
 .DS_Store
+__pycache__/
+*.pyc
+
+# Evidence payloads are directory-scoped; exceptions preserve every current unignored path.
+/records/*/evidence/**
+!/records/*/evidence/EVIDENCE-MANIFEST.sha256
+!/records/REIN-PART1-PUBLISH-20260922/evidence/remote-baseline.json
+!/records/REIN-PART1-PUBLISH-20260922/evidence/release-checks.json
+!/records/REIN-PART1-PUBLISH-20260922/evidence/independent-entry-review.json
+!/records/REIN-PART1-PUBLISH-20260922/evidence/release-review.json
+!/records/REIN-PART1-PUBLISH-20260922/evidence/release-checks-v2.json
+!/records/REIN-PART1-PUBLISH-20260922/evidence/actions.json
+
+# Chapter snapshots remain grouped by archive type.
+/chapter-snapshots/*.tar.gz
+
+# Record-local artifacts use directory or extension globs; exceptions retain
+# current baseline and before files that were not ignored by the source rules.
+/records/REIN-BOOK-V2-20260917/runtime-extension02-typecheck.json
+/records/REIN-CH01-API-KEY-20260922/*.json
+!/records/REIN-CH01-API-KEY-20260922/publication-ci.json
+!/records/REIN-CH01-API-KEY-20260922/publication-final-inputs.json
+!/records/REIN-CH01-API-KEY-20260922/publication-inputs.json
+!/records/REIN-CH01-API-KEY-20260922/publication-pages.json
+!/records/REIN-CH01-API-KEY-20260922/publication-state.json
+!/records/REIN-CH01-API-KEY-20260922/review-after-live.json
+!/records/REIN-CH01-API-KEY-20260922/review.json
+/records/REIN-CH04-RUST-20260923/*.txt
+/records/REIN-HELLO-THREE-20260922/baseline-status.txt
+/records/*/baseline/**
+!/records/*/baseline/EVIDENCE-MANIFEST.sha256
+!/records/REIN-VERIFLOW-REVIEW-20260916/baseline/staged.patch
+!/records/REIN-VERIFLOW-REVIEW-20260916/baseline/unstaged.patch
+/records/*/before/**
+!/records/*/before/EVIDENCE-MANIFEST.sha256

@@ -2,12 +2,18 @@
   "name": "@rein/ts",
   "version": "0.0.0",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "description": "《Rein》TypeScript 主线实现",
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "ch05:offline": "node --import tsx examples/ch05-loop.ts",
+    "ch05:compare": "node --import tsx examples/ch05-compare.ts",
+    "ch05:live": "node --import tsx examples/ch05-live.ts"
+    ,"ch06:offline": "node --import tsx examples/ch06-loop.ts"
+    ,"ch07:context": "node --import tsx examples/ch07-context.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

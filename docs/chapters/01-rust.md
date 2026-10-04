@@ -1,7 +1,7 @@
 ---
 prev:
-  text: 01 公共导读
-  link: /chapters/01.html
+  text: 阅读指南
+  link: /about.html#start
 next:
   text: 02 写一份合格的提示词 · 待撰写
   link: /chapters/02.html
@@ -23,7 +23,7 @@ next:
 
 这就是本章任务。接口使用 OpenAI 兼容的非流式 Chat Completions，消息只有一条 `user`，默认内容是 `hello`。成功退出码是 `0`，失败是 `1`。我们还会逐步补上错误处理，让终端在没收到回答时给出下一步线索。
 
-本篇与 [TypeScript 版](./01-ts.md)做同一件事。Rust 使用社区维护的 `async-openai`，它并非 OpenAI 官方 Rust SDK，来源与用法可查[项目文档](https://docs.rs/async-openai/0.29.6/async_openai/)。不用先读完另一种语言。
+本篇与 [TypeScript 正文（修订中）](./01.md)做同一件事。Rust 使用社区维护的 `async-openai`，它并非 OpenAI 官方 Rust SDK，来源与用法可查[项目文档](https://docs.rs/async-openai/0.29.6/async_openai/)。不用先读完另一种语言。
 
 <span id="first-run"></span>
 <span id="setup"></span>
@@ -87,7 +87,7 @@ REIN_API_KEY=替换为自己在控制台创建的密钥
 REIN_MODEL=deepseek-flash
 ```
 
-上面的地址和模型来自 2026-09-13 查阅的 [DeepSeek 首次调用说明](https://api-docs.deepseek.com/zh-cn/)，运行时再核对当时的文档。SDK 会请求根地址下面的 `/chat/completions`，不要重复填写完整路径。
+上面的地址和模型来自 2026-09-16 查阅的 [DeepSeek 首次调用说明](https://api-docs.deepseek.com/zh-cn/)，运行时再核对当时的文档。SDK 会请求根地址下面的 `/chat/completions`，不要重复填写完整路径。
 
 这块需要注意一下，本章从 `rust/` 启动程序，加载这里的 `.env`。已有进程环境变量可能优先于文件中的同名值，修改 `.env` 后仍调用旧配置，就检查终端里是否曾设置过变量。这里不读取 `ts/.env`。
 
@@ -309,3 +309,8 @@ PowerShell 可在练习终端设置 `$env:REIN_API_KEY=''` 后运行。检查退
 同样是一句问候，现在你能从终端发出它，也能解释回答从哪里取出、等待何时结束、失败怎样传回程序。我一直觉得，Hello World 作为入门题的那种朴素劲儿，在这里刚好合适，先让自己写的程序完成一件小事。
 
 带着这次交换继续往前。计划中的[第 02 章](./02.md)，再讨论怎样把任务说清楚。
+
+
+::: info 新版主题去向
+本页保留原章节主题、内容和锚点。新版相关内容见[01 HelloWorld：从模型调用开始](./model-hello.md)。新旧章号不是同一套编号；历史命令和快照保持原义。
+:::
