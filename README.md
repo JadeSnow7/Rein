@@ -1,12 +1,27 @@
 # Rein
 
-**REIN — Runtime for Emergent Intelligence Networks**
+Rein 的产品职责是 **单 Agent Harness / runtime 与 CLI**：模型适配、上下文构造、工具执行循环、执行权限与预算、取消、会话恢复、事件及原始产物。书稿与教学实现继续保留在本仓库。
 
-产品线采用 **Rein 作为基础设施、Web Studio 作为第一验证场景、Veriflow 作为方法论**，沿需求分析 → 规格拆解 → 基准先行 → 约束实现 → 可信验证 → 规范分发推进。三方职责、首个网页修复纵切及验收基准见 [整合规格](REIN-INTEGRATION-SPEC.md)；最小 Web Studio 客户端在 R1c 接入，多资源与 DAG 随后扩展。
+**当前 main 已包含六部分书稿、教学实现和首批离线只读 R1a 运行时，还没有统一的产品 RuntimePort API。** 《Rein：从零构建 Agent》及配套示例继续保留；下面的接口候选不表示能力已经实现。
 
-产品演进方向见 [设计文档](REIN-DESIGN.md)、[功能与模块设计](REIN-MODULES.md)和[实施改造清单](REIN-IMPLEMENTATION-PLAN.md)；设计依据见 [CLI 与聚合平台源码调研](reports/2026-09-20-rein-architecture-research.md)。运行时设计和当前教学实现分别记录，文档规划不代表功能已交付。
+## 产品职责与实现状态
 
-Rein core 保留完整 Harness，既可独立执行任务，也可作为调度 Agent，经 AgentMux 委派外部 Agent；运行时统一约束任务、权限、预算和验收。架构决定见 [D12](DECISIONS.md)。首批离线只读运行时已有可运行入口，当前验收状态见 [R1a 记录](records/REIN-RUNTIME-R1A-20260921/task-summary.md)；Coordinator 与外部 Agent 委派仍待实施。
+| 项目 | 拥有的职责 | 交接方式 |
+| --- | --- | --- |
+| Rein | 一个 Agent / 一次执行尝试的模型、上下文、工具循环、权限执行、局部预算、取消、恢复、事件和产物 | 接收有界执行请求，返回运行状态与原始回执 |
+| [Veriflow](https://github.com/JadeSnow7/Veriflow) | 验收契约、任务依赖、跨 Agent 调度、验证计划、失败诊断与修复安排、证据组织及整体验收 | 通过版本化 RuntimePort 驱动 Rein；不直接写 Rein 会话存储 |
+| [Web Studio](https://github.com/JadeSnow7/Web-Studio) | Web 工作空间、浏览器与终端环境、CDP、页面操作、截图、日志、运行时状态观测、调试及人工审阅界面 | 向执行器提供环境能力与原始观测；不替 Veriflow 判定任务通过 |
+
+Rein 保留执行一个固定检查并返回回执的能力，也可独立运行自己的单 Agent 示例；项目验收条件、跨任务门槛及修复策略由 Veriflow 管理。目标项目自己的业务契约仍是验收依据。跨 Agent 的资源选择、依赖就绪、全局预算、重试与整合不进入 Rein core。
+
+| 可核验位置 | 实际范围 |
+| --- | --- |
+| main：`python/hello_world/` | `hello / generate / diagnose / edit / check`，有界读取、局部工具循环、单文件确认写入与固定 C++ 检查 |
+| main：`python/part1/API-CONTRACT.md`、`ts/src/`、`rust/src/` | 历史只读建议器合同、模型调用与教学接口；不能当作跨项目运行 API |
+| 已合并的 [PR #3](https://github.com/JadeSnow7/Rein/pull/3)，审查提交 `44e3454` | R1a 纯步进状态机、SQLite/outbox、artifact、固定 verifier 和 `demo / show / resume / cancel / schema`；已进入 main，但不能据此宣称通用模型或调度已交付 |
+| 本轮 [RuntimePort 0.1 候选](contracts/runtime-port-v0.1.md) | 文档契约；没有新增命令、服务、SDK 或跨 Agent 执行器 |
+
+当前决定、对 PR #3 旧分工的修订及后续实现切片见 [职责边界同步](DECISIONS.md#职责边界同步2026-10-04)。后续实现必须沿用这个更新后的分工，不能恢复“Rein 负责 Coordinator / DAG、Veriflow 仅为方法论”的旧定位。
 
 ## 当前阅读：六部分框架
 

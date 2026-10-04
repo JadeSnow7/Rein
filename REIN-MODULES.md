@@ -1,5 +1,7 @@
 # Rein 功能切分与模块设计
 
+> **现行职责覆盖说明（2026-10-05）**：本文保留旧版设计及历史验收编号。涉及 Coordinator、TaskGraph/DAG、跨 Agent 资源选择、全局预算、修复策略、EvidenceBundle 与整体验收的归属，均由 [2026-10-04 职责决定](DECISIONS.md#职责边界同步2026-10-04) 替代，现归 Veriflow；本文中 Rein 拥有这些职责、Veriflow 仅作方法/投影的表述不再生效。Rein 仅保留单 Agent 运行、局部执行约束、固定检查与原始回执、effect 恢复；Web Studio 负责环境与观测。跨层连接以 [RuntimePort 候选](contracts/runtime-port-v0.1.md) 为准。旧目录和里程碑是历史方案，后续按新决定的 R1–R3 与 Veriflow V1–V4 推进；本次不搬迁源码，也不宣称候选能力已实现。
+
 **REIN — Runtime for Emergent Intelligence Networks**
 
 | 项目 | 内容 |
