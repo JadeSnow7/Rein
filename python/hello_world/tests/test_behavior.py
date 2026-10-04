@@ -210,9 +210,8 @@ class HelloWorldBehaviorTests(unittest.TestCase):
         before = (root / "hello.cpp").read_bytes(), (root / "compiler.log").read_bytes()
         self.assertEqual(core.run_bash(root, "ls -1")["returncode"], 0)
         self.assertIn("hello.cpp", core.run_bash(root, "ls -1")["stdout"])
-        self.assertIn("expected", core.run_bash(root, "cat compiler.log")["stdout"])
         self.assertIn(str(root), core.run_bash(root, "pwd")["stdout"])
-        for command in ("echo nope", "cat hello.cpp; touch hello.cpp", "pwd > compiler.log", "rm hello.cpp", "ls .."):
+        for command in ("cat compiler.log", "echo nope", "cat hello.cpp; touch hello.cpp", "pwd > compiler.log", "rm hello.cpp", "ls .."):
             with self.subTest(command=command), self.assertRaises(core.HelloError) as caught:
                 core.run_bash(root, command)
             self.assertEqual(caught.exception.code, "bash_command_invalid")
@@ -264,6 +263,61 @@ class HelloWorldBehaviorTests(unittest.TestCase):
         with self.assertRaises(core.HelloError) as caught:
             core.apply_candidate(root, FIXED_CPP, expected_digest=stale_source.digest, accept=True)
         self.assertEqual(caught.exception.code, "source_changed")
+
+    def test_b04_reject_after_source_changed_is_still_a_plain_rejection(self):
+        core, _ = load_modules()
+        directory = make_workspace(BROKEN_CPP, "error\n")
+        self.addCleanup(directory.cleanup)
+        root = Path(directory.name)
+        stale = core.safe_read(root, "hello.cpp")
+        (root / "hello.cpp").write_text("// edited while waiting\n" + BROKEN_CPP, encoding="utf-8")
+        edited = (root / "hello.cpp").read_bytes()
+        rejected = core.apply_candidate(root, FIXED_CPP, expected_digest=stale.digest, accept=False)
+        self.assertEqual(rejected.status, "rejected")
+        self.assertEqual((root / "hello.cpp").read_bytes(), edited)
+        self.assertFalse(list(root.glob("hello.cpp.bak-*")))
+
+    def test_b04_backup_holds_the_bytes_that_were_checked(self):
+        core, _ = load_modules()
+        directory = make_workspace(BROKEN_CPP, "error\n")
+        self.addCleanup(directory.cleanup)
+        root = Path(directory.name)
+        source = core.safe_read(root, "hello.cpp")
+        accepted = core.apply_candidate(root, FIXED_CPP, expected_digest=source.digest, accept=True)
+        self.assertEqual(Path(accepted.backup_path).read_text(encoding="utf-8"), BROKEN_CPP)
+
+    def test_b03_early_candidate_gets_a_reminder_and_can_succeed_after_reading(self):
+        core, model = load_modules()
+        directory = make_workspace(BROKEN_CPP, "error: expected ';'\n")
+        self.addCleanup(directory.cleanup)
+        scripted = model.ScriptedModel([
+            {"candidate": {"code": FIXED_CPP, "reason": "猜测"}},
+            {"tool_calls": [
+                {"id": "src", "name": "read_file", "arguments": {"path": "hello.cpp"}},
+                {"id": "log", "name": "read_file", "arguments": {"path": "compiler.log"}},
+                {"id": "env", "name": "read_environment", "arguments": {}},
+            ]},
+            {"candidate": {"code": FIXED_CPP, "reason": "补上分号"}},
+        ])
+        result = core.diagnose(Path(directory.name), read_mode="tool", model=scripted)
+        self.assertEqual(result.reason, "补上分号")
+        self.assertEqual(result.request_count, 3)
+        reminders = [m["content"] for m in result.messages if m.get("role") == "user" and "候选暂不接受" in m["content"]]
+        self.assertEqual(len(reminders), 1)
+        self.assertIn("compiler.log", reminders[0])
+
+    def test_b03_live_candidate_inside_markdown_fence_is_parsed(self):
+        _, model = load_modules()
+
+        class FakeCompletions:
+            def create(self, **request):
+                fenced = "```json\n" + json.dumps({"code": FIXED_CPP, "reason": "补上分号"}) + "\n```"
+                return {"choices": [{"message": {"role": "assistant", "content": fenced}}]}
+
+        adapter = model.LiveModel(client=FakeCompletions(), model="fake")
+        event = adapter.request([{"role": "user", "content": "x"}])
+        self.assertEqual(event["candidate"]["code"], FIXED_CPP)
+        self.assertEqual(model.strip_code_fence("  {\"a\": 1}  "), "{\"a\": 1}")
 
     def test_b05_check_compiles_and_runs_fixed_program_with_stable_command(self):
         if shutil.which("c++") is None:

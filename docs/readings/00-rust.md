@@ -66,7 +66,7 @@ cargo check --locked
 
 <<< ../../rust/examples/reading-00/Cargo.toml
 
-`features` 选择依赖提供的可选能力，Serde 的 `derive` 允许从结构体定义生成反序列化实现，Tokio 的 `macros` 与 `rt` 提供本篇用到的入口宏和运行时。根目录 `rust/` 尚未建立正式工程，所有运行命令都应在这个独立练习目录执行。使用它无需安装 Node.js。
+`features` 选择依赖提供的可选能力，Serde 的 `derive` 允许从结构体定义生成反序列化实现，Tokio 的 `macros` 与 `rt` 提供本篇用到的入口宏和运行时。本篇命令都在这个独立练习目录执行，运行本练习无需安装 Node.js。仓库根目录的 `rust/` 已有正式工程；其涉及 Node 宿主的示例与集成测试需按相应章节准备 Node.js。
 
 ## 结构体，把状态与正文放在一起 {#types}
 

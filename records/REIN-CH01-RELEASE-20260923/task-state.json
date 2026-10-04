@@ -1,0 +1,454 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "CH01-RELEASE-1",
+    "authority": "records/REIN-CH01-RELEASE-20260923/spec.md",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "保留原工作区",
+      "仅发布本轮明确范围",
+      "不调用真实模型"
+    ],
+    "exceptions": [
+      "真实模型与新手试读未验证"
+    ],
+    "conditions": [
+      {
+        "id": "SC-001",
+        "metric_ids": [
+          "MET-001",
+          "MET-002"
+        ],
+        "deliverables": [
+          "docs/chapters/python-model-call.md",
+          "python/hello_world/hello.py",
+          "python/hello_world/chat.py",
+          "python/hello_world/README.md",
+          "python/hello_world/tests/test_chat.py",
+          "records/REIN-CH01-RELEASE-20260923/spec.md"
+        ]
+      }
+    ],
+    "contracts": [
+      "records/REIN-CH01-RELEASE-20260923/spec.md"
+    ],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-CH01-RELEASE-20260923",
+    "title": "发布第一章精修",
+    "mode": "resume",
+    "status": "verified",
+    "source_ids": [
+      "SRC-001"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "Python 初学者",
+    "scenario": "首次请求、终端多轮对话和 C++ Hello World 验证",
+    "problem": "第一章需要可跟做的安装和 CLI 步骤",
+    "expected_outcome": "第一章精修已提交推送并上线核验",
+    "scope": "已审 5 个文件和本发布规格",
+    "acceptable_result": "本地检查通过，提交范围清楚，CI和Pages对应同一SHA，线上新内容存在"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:提交发布",
+      "summary": "提交发布第一章精修及询问 AI 运行命令的补充",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "第一章精修已提交推送并上线核验",
+      "scope": [
+        "docs/chapters/python-model-call.md",
+        "python/hello_world/hello.py",
+        "python/hello_world/chat.py",
+        "python/hello_world/README.md",
+        "python/hello_world/tests/test_chat.py",
+        "records/REIN-CH01-RELEASE-20260923/spec.md"
+      ],
+      "non_goals": [
+        "全仓库发布",
+        "真实模型验收"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "已授权通过main现有Actions发布"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-001",
+        "MET-002"
+      ],
+      "implementation_task_ids": [
+        "IT-001"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "配套功能",
+      "baseline": "远程 main 274f066 与已审第一章精修文件",
+      "target": "36 项配套测试通过",
+      "method": "原始执行回执和文件哈希",
+      "environment_data": "macOS;Python3.14;真实c++;OpenAI SDK模拟传输",
+      "evidence_ids": [
+        "EVD-001"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "发布内容与站点",
+      "baseline": "远程 main 274f066 与已审第一章精修文件",
+      "target": "5 个源文件哈希一致、范围外文件不变、构建和内部链接通过",
+      "method": "原始执行回执和文件哈希",
+      "environment_data": "macOS;Python3.14;真实c++;OpenAI SDK模拟传输",
+      "evidence_ids": [
+        "EVD-002",
+        "EVD-003",
+        "EVD-004"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "集成和发布",
+      "file_scope": [
+        "docs/chapters/python-model-call.md",
+        "python/hello_world/hello.py",
+        "python/hello_world/chat.py",
+        "python/hello_world/README.md",
+        "python/hello_world/tests/test_chat.py",
+        "records/REIN-CH01-RELEASE-20260923/spec.md",
+        "records/REIN-CH01-RELEASE-20260923"
+      ],
+      "interface_constraints": [
+        "线上历史页面保留"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001",
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002",
+        "EVD-003",
+        "EVD-004"
+      ],
+      "owner": "main-thread integration; implementation previously reviewed from coder",
+      "status": "verified"
+    }
+  ],
+  "baseline": {
+    "git_ref": "274f0668203fa2b40609754e4e9a80643df40c23",
+    "worktree_status": "dirty_dependency_confirmed",
+    "ownership": "隔离目录仅集成本轮已审文件；保留原工作区；基线仅旧发布本地回执未跟踪，已排除且保留",
+    "foreign_paths": [
+      "records/REIN-HELLO-RELEASE-20260922"
+    ],
+    "prepared_at": "2026-09-23"
+  },
+  "binding": {
+    "receipt_paths": []
+  },
+  "authorization": {
+    "commit": {
+      "status": "authorized",
+      "source_id": "SRC-001",
+      "scope": [
+        "local main"
+      ]
+    },
+    "push": {
+      "status": "authorized",
+      "source_id": "SRC-001",
+      "scope": [
+        "origin/main"
+      ]
+    },
+    "deploy": {
+      "status": "authorized",
+      "source_id": "SRC-001",
+      "scope": [
+        "https://jadesnow7.github.io/Rein/"
+      ]
+    },
+    "merge": {
+      "status": "not_authorized",
+      "source_id": null
+    }
+  },
+  "delivery": {
+    "local_validation": "passed",
+    "remote_ci": "passed",
+    "remote_ci_revision": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5"
+  },
+  "actions": [
+    {
+      "id": "ACT-001",
+      "kind": "local-commit",
+      "authorization_action": "commit",
+      "target": "local main",
+      "revision": "patch:274f0668203fa2b40609754e4e9a80643df40c23:159f7c0c4e5dbccefc0c4359d179b7b7cf1fe12e06700edfc495f68f0cc2779a:spec:25512e196197137e2b7893ff57b8bb69ad2615c3aec2d5b10984ca1ab549cf8f",
+      "status": "completed",
+      "source_id": "SRC-001",
+      "idempotency_key": "ch01-release-20260923-commit",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-23T01:56:16.318393Z",
+        "action": "commit",
+        "target": "local main",
+        "revision": "patch:274f0668203fa2b40609754e4e9a80643df40c23:159f7c0c4e5dbccefc0c4359d179b7b7cf1fe12e06700edfc495f68f0cc2779a:spec:25512e196197137e2b7893ff57b8bb69ad2615c3aec2d5b10984ca1ab549cf8f",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "local main"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:提交发布",
+          "summary": "提交发布第一章精修及询问 AI 运行命令的补充",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "local main"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:提交发布\",\"summary\":\"提交发布第一章精修及询问 AI 运行命令的补充\"}",
+        "content_sha256": "030768b72684eb5785865d48681d6a93abe3d3fc4c7c78a64eb3fd3543f6c4fd"
+      },
+      "receipt": {
+        "result": "committed",
+        "commit": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5",
+        "paths": [
+          "docs/chapters/python-model-call.md",
+          "python/hello_world/README.md",
+          "python/hello_world/chat.py",
+          "python/hello_world/hello.py",
+          "python/hello_world/tests/test_chat.py",
+          "records/REIN-CH01-RELEASE-20260923/source-manifest.json",
+          "records/REIN-CH01-RELEASE-20260923/spec.md"
+        ]
+      }
+    },
+    {
+      "id": "ACT-002",
+      "kind": "push",
+      "authorization_action": "push",
+      "target": "origin/main",
+      "revision": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5",
+      "status": "completed",
+      "source_id": "SRC-001",
+      "idempotency_key": "ch01-release-20260923-push",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-23T01:57:39.300685Z",
+        "action": "push",
+        "target": "origin/main",
+        "revision": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "origin/main"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:提交发布",
+          "summary": "提交发布第一章精修及询问 AI 运行命令的补充",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "origin/main"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:提交发布\",\"summary\":\"提交发布第一章精修及询问 AI 运行命令的补充\"}",
+        "content_sha256": "67f41f12652b24d7ff60e24d52e1ac855c89bb583b870f7db9843810001eac1e"
+      },
+      "receipt": {
+        "result": "pushed",
+        "remote": "origin/main",
+        "before": "274f0668203fa2b40609754e4e9a80643df40c23",
+        "after": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5",
+        "output": "274f066..f9c130d HEAD -> main"
+      }
+    },
+    {
+      "id": "ACT-003",
+      "kind": "deploy",
+      "authorization_action": "deploy",
+      "target": "https://jadesnow7.github.io/Rein/",
+      "revision": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5",
+      "status": "completed",
+      "source_id": "SRC-001",
+      "idempotency_key": "ch01-release-20260923-deploy",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-23T01:57:39.300873Z",
+        "action": "deploy",
+        "target": "https://jadesnow7.github.io/Rein/",
+        "revision": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "https://jadesnow7.github.io/Rein/"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:提交发布",
+          "summary": "提交发布第一章精修及询问 AI 运行命令的补充",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "https://jadesnow7.github.io/Rein/"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:提交发布\",\"summary\":\"提交发布第一章精修及询问 AI 运行命令的补充\"}",
+        "content_sha256": "4c09608c9912a4e17ad820d2ac86ac372bd8c16374a60ced4b4aa7601707b3f4"
+      },
+      "receipt": {
+        "revision": "f9c130dd5a2a8d723e8df549b2c7dc4e2758a6c5",
+        "url": "https://jadesnow7.github.io/Rein/",
+        "workflow": "https://github.com/JadeSnow7/Rein/actions/runs/35808446077",
+        "online_evidence": "evidence/online.json",
+        "result": "deployed and verified"
+      }
+    }
+  ],
+  "decisions": [],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "上线不符",
+    "steps": [
+      "核对本次SHA",
+      "诊断后针对性修复或revert本提交",
+      "重新部署并验证"
+    ],
+    "owner": "main-thread"
+  },
+  "evidence": [
+    {
+      "id": "EVD-001",
+      "path": "records/REIN-CH01-RELEASE-20260923/evidence/unit.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-23T01:55:33.794620Z",
+      "sha256": "9f0b05e692f62d0ee31aa10cd2612961badee0e8f5789bcb1dd4f3f5b7b3823b"
+    },
+    {
+      "id": "EVD-002",
+      "path": "records/REIN-CH01-RELEASE-20260923/evidence/build.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-23T01:55:47.327954Z",
+      "sha256": "647d8b807f983516b9b5087edf1b85bbb10ddf97b618332968f1074d0b78e2a9"
+    },
+    {
+      "id": "EVD-003",
+      "path": "records/REIN-CH01-RELEASE-20260923/evidence/links.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-23T01:55:47.638205Z",
+      "sha256": "a1494690aec4764fc1ead809f4c37c05c7d3ffa128eb872564989990ce367e11"
+    },
+    {
+      "id": "EVD-004",
+      "path": "records/REIN-CH01-RELEASE-20260923/evidence/scope.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-23T01:56:16.164692Z",
+      "sha256": "674e6b26df0d726a613ef09dafdaf1244d3aa72725b1b89a87e52c5596a45474"
+    }
+  ],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002"
+    ],
+    "evidence_ids": [
+      "EVD-001",
+      "EVD-002",
+      "EVD-003",
+      "EVD-004"
+    ],
+    "status": "passed"
+  },
+  "changes": [
+    {
+      "id": "CHG-001",
+      "implementation_task_ids": [
+        "IT-001"
+      ],
+      "paths": [
+        "docs/chapters/python-model-call.md",
+        "python/hello_world/hello.py",
+        "python/hello_world/chat.py",
+        "python/hello_world/README.md",
+        "python/hello_world/tests/test_chat.py",
+        "records/REIN-CH01-RELEASE-20260923/spec.md",
+        "records/REIN-CH01-RELEASE-20260923"
+      ],
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002",
+        "EVD-003",
+        "EVD-004"
+      ],
+      "revision": "patch:274f0668203fa2b40609754e4e9a80643df40c23:159f7c0c4e5dbccefc0c4359d179b7b7cf1fe12e06700edfc495f68f0cc2779a:spec:25512e196197137e2b7893ff57b8bb69ad2615c3aec2d5b10984ca1ab549cf8f",
+      "status": "reviewed"
+    }
+  ]
+}

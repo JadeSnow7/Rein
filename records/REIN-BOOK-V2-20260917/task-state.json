@@ -1,0 +1,779 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "SPEC-1",
+    "authority": "state.spec",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "保留所有现有改动、旧标签和旧数字URL主题",
+      "新入口和快照使用稳定slug",
+      "只允许按当前能力声明工具",
+      "未验证内容不得声称完成",
+      "不执行提交、推送、Git标签或发布"
+    ],
+    "exceptions": [
+      "00概念章无前驱；01从初始工程；24基础输入来自17"
+    ],
+    "conditions": [
+      {
+        "id": "SC-001",
+        "metric_ids": [
+          "MET-001"
+        ],
+        "deliverables": [
+          "book/chapters.json"
+        ]
+      },
+      {
+        "id": "SC-002",
+        "metric_ids": [
+          "MET-002"
+        ],
+        "deliverables": [
+          "docs/chapters/task-spec.md"
+        ]
+      },
+      {
+        "id": "SC-003",
+        "metric_ids": [
+          "MET-003"
+        ],
+        "deliverables": [
+          "contracts/extension-v0.2.md"
+        ]
+      },
+      {
+        "id": "SC-004",
+        "metric_ids": [
+          "MET-004"
+        ],
+        "deliverables": [
+          "docs/chapters/context-compression.md"
+        ]
+      },
+      {
+        "id": "SC-005",
+        "metric_ids": [
+          "MET-005"
+        ],
+        "deliverables": [
+          "docs/chapters/bounded-repair.md"
+        ]
+      },
+      {
+        "id": "SC-006",
+        "metric_ids": [
+          "MET-006"
+        ],
+        "deliverables": [
+          "docs/chapters/project-evaluation.md"
+        ]
+      },
+      {
+        "id": "SC-007",
+        "metric_ids": [
+          "MET-007"
+        ],
+        "deliverables": [
+          "docs/chapters/bounded-delegation.md"
+        ]
+      }
+    ],
+    "contracts": [],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-BOOK-V2-20260917",
+    "title": "Rein 全书 v2 分批落地",
+    "mode": "new",
+    "status": "in_progress",
+    "source_ids": [
+      "SRC-001",
+      "SRC-002"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "具备编程基础的 Agent 工程学习者",
+    "scenario": "从模型调用持续演进为文档维护助手",
+    "problem": "旧 17 章与混合运行时实现、正文、快照和导航需要重新衔接",
+    "expected_outcome": "25章、五汇总、配套代码与逐章证据完成，保留历史与免费承诺",
+    "scope": "本地 A–G 批次，正文、代码、导航、快照、验证与状态记录",
+    "acceptable_result": "所有交付物和对应门槛真实通过；未运行不算通过"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:2026-09-17-approved-v2-implementation",
+      "summary": "用户批准全书 A–G 实施；保留历史和脏工作区，不提交推送创建标签或发布。04 移篇，05/14/汇总1永久免费，保留 Rein。",
+      "adoption": "accepted"
+    },
+    {
+      "id": "SRC-002",
+      "kind": "user_feedback",
+      "reference": "conversation:2026-09-17-veriflow",
+      "summary": "在项目中同步检查 Veriflow skill 并记录工作状态。",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "结构基础",
+      "scope": [
+        "book",
+        "docs/.vitepress",
+        "scripts",
+        "package.json"
+      ],
+      "non_goals": [
+        "提交、推送、标签与发布"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "当前脏工作区是已授权基线"
+      ],
+      "status": "in_progress",
+      "metric_ids": [
+        "MET-001"
+      ],
+      "implementation_task_ids": [
+        "IT-001"
+      ]
+    },
+    {
+      "id": "MT-002",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "早期主线",
+      "scope": [
+        "docs/chapters",
+        "docs/milestones",
+        "fixtures"
+      ],
+      "non_goals": [
+        "提交、推送、标签与发布"
+      ],
+      "dependencies": [
+        "MT-001"
+      ],
+      "assumptions": [
+        "当前脏工作区是已授权基线"
+      ],
+      "status": "in_progress",
+      "metric_ids": [
+        "MET-002"
+      ],
+      "implementation_task_ids": [
+        "IT-002"
+      ]
+    },
+    {
+      "id": "MT-003",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "混合运行时",
+      "scope": [
+        "rust",
+        "ts",
+        "contracts"
+      ],
+      "non_goals": [
+        "提交、推送、标签与发布"
+      ],
+      "dependencies": [
+        "MT-002"
+      ],
+      "assumptions": [
+        "当前脏工作区是已授权基线"
+      ],
+      "status": "in_progress",
+      "metric_ids": [
+        "MET-003"
+      ],
+      "implementation_task_ids": [
+        "IT-003"
+      ]
+    },
+    {
+      "id": "MT-004",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "资料与验证",
+      "scope": [
+        "rust",
+        "ts",
+        "docs/chapters",
+        "fixtures"
+      ],
+      "non_goals": [
+        "提交、推送、标签与发布"
+      ],
+      "dependencies": [
+        "MT-003"
+      ],
+      "assumptions": [
+        "当前脏工作区是已授权基线"
+      ],
+      "status": "defined",
+      "metric_ids": [
+        "MET-004"
+      ],
+      "implementation_task_ids": [
+        "IT-004"
+      ]
+    },
+    {
+      "id": "MT-005",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "修改闭环",
+      "scope": [
+        "rust",
+        "ts",
+        "docs/chapters",
+        "fixtures"
+      ],
+      "non_goals": [
+        "提交、推送、标签与发布"
+      ],
+      "dependencies": [
+        "MT-004"
+      ],
+      "assumptions": [
+        "当前脏工作区是已授权基线"
+      ],
+      "status": "in_progress",
+      "metric_ids": [
+        "MET-005"
+      ],
+      "implementation_task_ids": [
+        "IT-005"
+      ]
+    },
+    {
+      "id": "MT-006",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "基础评测",
+      "scope": [
+        "examples",
+        "fixtures",
+        "docs/chapters",
+        "docs/milestones"
+      ],
+      "non_goals": [
+        "提交、推送、标签与发布"
+      ],
+      "dependencies": [
+        "MT-005"
+      ],
+      "assumptions": [
+        "当前脏工作区是已授权基线"
+      ],
+      "status": "defined",
+      "metric_ids": [
+        "MET-006"
+      ],
+      "implementation_task_ids": [
+        "IT-006"
+      ]
+    },
+    {
+      "id": "MT-007",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "进阶分支",
+      "scope": [
+        "rust",
+        "ts",
+        "docs/chapters",
+        "contracts"
+      ],
+      "non_goals": [
+        "提交、推送、标签与发布"
+      ],
+      "dependencies": [
+        "MT-006"
+      ],
+      "assumptions": [
+        "当前脏工作区是已授权基线"
+      ],
+      "status": "defined",
+      "metric_ids": [
+        "MET-007"
+      ],
+      "implementation_task_ids": [
+        "IT-007"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "结构基础交付与衔接",
+      "baseline": "旧00–16章和现有本地实现，见冻结manifest",
+      "target": "计划对应批次正文、代码、快照和验收完成；旧入口不退化",
+      "method": "检查原始diff，运行相关测试和最终正文命令，核对快照衔接",
+      "environment_data": "隔离副本、固定夹具及实际可用实机环境",
+      "evidence_ids": [],
+      "status": "undetermined",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-002",
+      "kind": "mandatory_gate",
+      "name": "早期主线交付与衔接",
+      "baseline": "旧00–16章和现有本地实现，见冻结manifest",
+      "target": "计划对应批次正文、代码、快照和验收完成；旧入口不退化",
+      "method": "检查原始diff，运行相关测试和最终正文命令，核对快照衔接",
+      "environment_data": "隔离副本、固定夹具及实际可用实机环境",
+      "evidence_ids": [],
+      "status": "undetermined",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-003",
+      "main_task_id": "MT-003",
+      "kind": "mandatory_gate",
+      "name": "混合运行时交付与衔接",
+      "baseline": "旧00–16章和现有本地实现，见冻结manifest",
+      "target": "计划对应批次正文、代码、快照和验收完成；旧入口不退化",
+      "method": "检查原始diff，运行相关测试和最终正文命令，核对快照衔接",
+      "environment_data": "隔离副本、固定夹具及实际可用实机环境",
+      "evidence_ids": [],
+      "status": "undetermined",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-004",
+      "main_task_id": "MT-004",
+      "kind": "mandatory_gate",
+      "name": "资料与验证交付与衔接",
+      "baseline": "旧00–16章和现有本地实现，见冻结manifest",
+      "target": "计划对应批次正文、代码、快照和验收完成；旧入口不退化",
+      "method": "检查原始diff，运行相关测试和最终正文命令，核对快照衔接",
+      "environment_data": "隔离副本、固定夹具及实际可用实机环境",
+      "evidence_ids": [],
+      "status": "undetermined",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-005",
+      "main_task_id": "MT-005",
+      "kind": "mandatory_gate",
+      "name": "修改闭环交付与衔接",
+      "baseline": "旧00–16章和现有本地实现，见冻结manifest",
+      "target": "计划对应批次正文、代码、快照和验收完成；旧入口不退化",
+      "method": "检查原始diff，运行相关测试和最终正文命令，核对快照衔接",
+      "environment_data": "隔离副本、固定夹具及实际可用实机环境",
+      "evidence_ids": [],
+      "status": "undetermined",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-006",
+      "main_task_id": "MT-006",
+      "kind": "mandatory_gate",
+      "name": "基础评测交付与衔接",
+      "baseline": "旧00–16章和现有本地实现，见冻结manifest",
+      "target": "计划对应批次正文、代码、快照和验收完成；旧入口不退化",
+      "method": "检查原始diff，运行相关测试和最终正文命令，核对快照衔接",
+      "environment_data": "隔离副本、固定夹具及实际可用实机环境",
+      "evidence_ids": [],
+      "status": "undetermined",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-007",
+      "main_task_id": "MT-007",
+      "kind": "mandatory_gate",
+      "name": "进阶分支交付与衔接",
+      "baseline": "旧00–16章和现有本地实现，见冻结manifest",
+      "target": "计划对应批次正文、代码、快照和验收完成；旧入口不退化",
+      "method": "检查原始diff，运行相关测试和最终正文命令，核对快照衔接",
+      "environment_data": "隔离副本、固定夹具及实际可用实机环境",
+      "evidence_ids": [],
+      "status": "undetermined",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "结构基础",
+      "file_scope": [
+        "book",
+        "docs/.vitepress",
+        "scripts",
+        "package.json",
+        "DECISIONS.md",
+        "MIGRATIONS.md",
+        "README.md",
+        "docs",
+        "chapter-snapshots",
+        "records/REIN-BOOK-V2-20260917",
+        "reports/2026-09-17-book-v2-implementation.md"
+      ],
+      "interface_constraints": [
+        "遵守 source-v2.md 与已批准计划；保留历史含义"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001"
+      ],
+      "support_reason": "",
+      "evidence_ids": [],
+      "owner": "primary + bounded coder",
+      "status": "in_progress"
+    },
+    {
+      "id": "IT-002",
+      "main_task_id": "MT-002",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "早期主线",
+      "file_scope": [
+        "docs/chapters",
+        "docs/milestones",
+        "fixtures"
+      ],
+      "interface_constraints": [
+        "遵守 source-v2.md 与已批准计划；保留历史含义"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [],
+      "owner": "primary + bounded coder",
+      "status": "in_progress"
+    },
+    {
+      "id": "IT-003",
+      "main_task_id": "MT-003",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "混合运行时",
+      "file_scope": [
+        "rust",
+        "ts",
+        "contracts"
+      ],
+      "interface_constraints": [
+        "遵守 source-v2.md 与已批准计划；保留历史含义"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-003"
+      ],
+      "support_reason": "",
+      "evidence_ids": [],
+      "owner": "primary + bounded coder",
+      "status": "in_progress"
+    },
+    {
+      "id": "IT-004",
+      "main_task_id": "MT-004",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "资料与验证",
+      "file_scope": [
+        "rust",
+        "ts",
+        "docs/chapters",
+        "fixtures"
+      ],
+      "interface_constraints": [
+        "遵守 source-v2.md 与已批准计划；保留历史含义"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-004"
+      ],
+      "support_reason": "",
+      "evidence_ids": [],
+      "owner": "primary + bounded coder",
+      "status": "in_progress"
+    },
+    {
+      "id": "IT-005",
+      "main_task_id": "MT-005",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "修改闭环",
+      "file_scope": [
+        "rust",
+        "ts",
+        "docs/chapters",
+        "fixtures"
+      ],
+      "interface_constraints": [
+        "遵守 source-v2.md 与已批准计划；保留历史含义"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-005"
+      ],
+      "support_reason": "",
+      "evidence_ids": [],
+      "owner": "primary + bounded coder",
+      "status": "in_progress"
+    },
+    {
+      "id": "IT-006",
+      "main_task_id": "MT-006",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "基础评测",
+      "file_scope": [
+        "examples",
+        "fixtures",
+        "docs/chapters",
+        "docs/milestones"
+      ],
+      "interface_constraints": [
+        "遵守 source-v2.md 与已批准计划；保留历史含义"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-006"
+      ],
+      "support_reason": "",
+      "evidence_ids": [],
+      "owner": "primary + bounded coder",
+      "status": "planned"
+    },
+    {
+      "id": "IT-007",
+      "main_task_id": "MT-007",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "进阶分支",
+      "file_scope": [
+        "rust",
+        "ts",
+        "docs/chapters",
+        "contracts"
+      ],
+      "interface_constraints": [
+        "遵守 source-v2.md 与已批准计划；保留历史含义"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-007"
+      ],
+      "support_reason": "",
+      "evidence_ids": [],
+      "owner": "primary + bounded coder",
+      "status": "in_progress"
+    }
+  ],
+  "evidence": [],
+  "changes": [],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002",
+      "MET-003",
+      "MET-004",
+      "MET-005",
+      "MET-006",
+      "MET-007"
+    ],
+    "evidence_ids": [],
+    "status": "undetermined"
+  },
+  "baseline": {
+    "git_ref": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+    "worktree_status": "dirty_dependency_confirmed",
+    "ownership": "用户明确要求保留并纳入当前脏工作区；隔离副本实施，哈希校验回写。",
+    "foreign_paths": [],
+    "prepared_at": "2026-09-16T18:19:09.354125+00:00"
+  },
+  "binding": {
+    "receipt_paths": []
+  },
+  "authorization": {
+    "commit": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "push": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "merge": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "deploy": {
+      "status": "not_authorized",
+      "source_id": null
+    },
+    "migrate": {
+      "status": "authorized",
+      "source_id": "SRC-001",
+      "scope": [
+        "local-book-v2"
+      ]
+    }
+  },
+  "delivery": {
+    "local_validation": "not_started",
+    "remote_ci": "not_started",
+    "remote_ci_revision": null
+  },
+  "actions": [
+    {
+      "id": "ACT-001",
+      "kind": "local manifest writeback A+B drafts",
+      "authorization_action": "migrate",
+      "target": "local-book-v2",
+      "revision": "9e34fbcf3676b7e26617655db69abd76522ebc05f413f79550010404405fac60",
+      "status": "completed",
+      "idempotency_key": "batch-a-9e34fbcf3676b7e26617655db69abd76522ebc05f413f79550010404405fac60",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-16T18:48:38.383057Z",
+        "action": "migrate",
+        "target": "local-book-v2",
+        "revision": "9e34fbcf3676b7e26617655db69abd76522ebc05f413f79550010404405fac60",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "local-book-v2"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:2026-09-17-approved-v2-implementation",
+          "summary": "用户批准全书 A–G 实施；保留历史和脏工作区，不提交推送创建标签或发布。04 移篇，05/14/汇总1永久免费，保留 Rein。",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "local-book-v2"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:2026-09-17-approved-v2-implementation\",\"summary\":\"用户批准全书 A–G 实施；保留历史和脏工作区，不提交推送创建标签或发布。04 移篇，05/14/汇总1永久免费，保留 Rein。\"}",
+        "content_sha256": "fa2f9bda9275eeabee1b142307075ca39f36d89590ed1b30993fadbc8ea468ff"
+      },
+      "receipt": "records/REIN-BOOK-V2-20260917/evidence/batch-a-writeback.json"
+    },
+    {
+      "id": "ACT-002",
+      "kind": "local compatibility and fixture tooling writeback",
+      "authorization_action": "migrate",
+      "target": "local-book-v2",
+      "revision": "3c15aeb8e76f6956f9bc32a5ab38e7adc6ccba1bd8cf646293bddea3d4aea159",
+      "status": "completed",
+      "idempotency_key": "batch-a2-3c15aeb8e76f6956f9bc32a5ab38e7adc6ccba1bd8cf646293bddea3d4aea159",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-17T03:19:00.893180Z",
+        "action": "migrate",
+        "target": "local-book-v2",
+        "revision": "3c15aeb8e76f6956f9bc32a5ab38e7adc6ccba1bd8cf646293bddea3d4aea159",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "local-book-v2"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:2026-09-17-approved-v2-implementation",
+          "summary": "用户批准全书 A–G 实施；保留历史和脏工作区，不提交推送创建标签或发布。04 移篇，05/14/汇总1永久免费，保留 Rein。",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "local-book-v2"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:2026-09-17-approved-v2-implementation\",\"summary\":\"用户批准全书 A–G 实施；保留历史和脏工作区，不提交推送创建标签或发布。04 移篇，05/14/汇总1永久免费，保留 Rein。\"}",
+        "content_sha256": "fc64c649805c871314fe77cb43918887cb823ccc699be191b7c9ef2323691f77"
+      },
+      "receipt": "records/REIN-BOOK-V2-20260917/evidence/batch-a2-writeback.json"
+    },
+    {
+      "id": "ACT-003",
+      "kind": "reviewed maintenance runtime and chapter writeback",
+      "authorization_action": "migrate",
+      "target": "local-book-v2",
+      "revision": "68e4b1595482d4b93acf4874bc3589310cb4ca78e1126e6c0306b78fdae38f88",
+      "status": "completed",
+      "idempotency_key": "maintenance-68e4b1595482d4b93acf4874bc3589310cb4ca78e1126e6c0306b78fdae38f88",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-17T03:38:18.134562Z",
+        "action": "migrate",
+        "target": "local-book-v2",
+        "revision": "68e4b1595482d4b93acf4874bc3589310cb4ca78e1126e6c0306b78fdae38f88",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "local-book-v2"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:2026-09-17-approved-v2-implementation",
+          "summary": "用户批准全书 A–G 实施；保留历史和脏工作区，不提交推送创建标签或发布。04 移篇，05/14/汇总1永久免费，保留 Rein。",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "local-book-v2"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:2026-09-17-approved-v2-implementation\",\"summary\":\"用户批准全书 A–G 实施；保留历史和脏工作区，不提交推送创建标签或发布。04 移篇，05/14/汇总1永久免费，保留 Rein。\"}",
+        "content_sha256": "d987cbc4756c67e5111a5b90456227f1030cacd3e4ed1ecf502b0a2cfeb8df32"
+      },
+      "receipt": "records/REIN-BOOK-V2-20260917/evidence/batch-maintenance-writeback.json"
+    }
+  ],
+  "decisions": [],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "基线冲突或迁移回归",
+    "steps": [
+      "停止受影响回写",
+      "核对原始和隔离副本的逐文件哈希",
+      "从冻结归档恢复到新的临时副本，不覆盖用户新修改"
+    ],
+    "owner": "primary"
+  }
+}

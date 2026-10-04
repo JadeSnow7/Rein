@@ -1,0 +1,15 @@
+{
+  "modes": ["normal", "budget", "duplicate", "zero", "tool-zero", "cancel-before", "cancel", "cancel-at-return", "cancel-between-tools", "timeout"],
+  "expected": {
+    "normal": {"reason":"final_answer","state":"completed","requests":3,"settledRequests":3,"modelRequests":3,"toolCalls":[{"id":"search-1","name":"search_files","arguments":{"needle":"marker: ch06"}},{"id":"read-1","name":"read_file","arguments":{"path":"README.md"}},{"id":"read-2","name":"read_file","arguments":{"path":"guide.md"}}],"skipped":[],"answer":"完成：marker: ch06 alpha | marker: ch06 beta"},
+    "budget": {"reason":"tool_budget_exhausted","state":"failed","requests":1,"settledRequests":1,"modelRequests":1,"toolCalls":[{"id":"one","name":"read_file","arguments":{"path":"README.md"}}],"skipped":[["two","tool_budget_exhausted"]]},
+    "duplicate": {"reason":"duplicate_action","state":"failed","requests":2,"settledRequests":2,"modelRequests":2,"toolCalls":[{"id":"duplicate-1","name":"read_file","arguments":{"path":"README.md"}}],"skipped":[["duplicate-2","duplicate_action"]]},
+    "zero": {"reason":"max_turns","state":"failed","requests":0,"settledRequests":0,"modelRequests":0,"toolCalls":[],"skipped":[]},
+    "tool-zero": {"reason":"tool_budget_exhausted","state":"failed","requests":1,"settledRequests":1,"modelRequests":1,"toolCalls":[],"skipped":[["one","tool_budget_exhausted"],["two","tool_budget_exhausted"]]},
+    "cancel-before": {"reason":"cancelled","state":"failed","requests":0,"settledRequests":0,"modelRequests":0,"toolCalls":[],"skipped":[]},
+    "cancel": {"reason":"cancelled","state":"failed","requests":1,"settledRequests":1,"modelRequests":1,"toolCalls":[],"skipped":[]},
+    "cancel-at-return": {"reason":"cancelled","state":"failed","requests":1,"settledRequests":1,"modelRequests":1,"toolCalls":[],"skipped":[]},
+    "cancel-between-tools": {"reason":"cancelled","state":"failed","requests":1,"settledRequests":1,"modelRequests":1,"toolCalls":[{"id":"one","name":"read_file","arguments":{"path":"README.md"}}],"skipped":[["two","cancelled"]]},
+    "timeout": {"reason":"timeout","state":"failed","requests":1,"settledRequests":1,"modelRequests":1,"toolCalls":[],"skipped":[]}
+  }
+}

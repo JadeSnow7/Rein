@@ -1,0 +1,1 @@
+This fixture is intentionally small in the baseline repository; the runtime test creates an over-limit copy without modifying this source fixture.

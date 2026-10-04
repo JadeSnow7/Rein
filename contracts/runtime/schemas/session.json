@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HarnessSession",
+  "type": "object",
+  "required": [
+    "attempt_id",
+    "completed_effects",
+    "history",
+    "revision",
+    "run_id",
+    "session_id",
+    "status",
+    "tool_budget",
+    "tool_result_refs",
+    "verification_plan_ref"
+  ],
+  "properties": {
+    "active_effect": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "active_intent": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ActiveIntent"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "attempt_id": {
+      "type": "string"
+    },
+    "completed_effects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "final_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ArtifactRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0.0
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/definitions/SessionStatus"
+    },
+    "tool_budget": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
+    },
+    "tool_result_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ArtifactRef"
+      }
+    },
+    "verification_plan_ref": {
+      "$ref": "#/definitions/ArtifactRef"
+    }
+  },
+  "definitions": {
+    "ActiveIntent": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "Model",
+            "Verify"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "Tool"
+          ],
+          "properties": {
+            "Tool": {
+              "type": "object",
+              "required": [
+                "args_ref",
+                "call_id",
+                "name"
+              ],
+              "properties": {
+                "args_ref": {
+                  "$ref": "#/definitions/ArtifactRef"
+                },
+                "call_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ArtifactRef": {
+      "type": "object",
+      "required": [
+        "hash",
+        "len"
+      ],
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "len": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "SessionStatus": {
+      "type": "string",
+      "enum": [
+        "Running",
+        "Cancelled",
+        "Completed",
+        "Accepted",
+        "OutcomeUnknown"
+      ]
+    }
+  }
+}

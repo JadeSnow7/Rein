@@ -391,7 +391,7 @@ JS
 
 最后，尝试给执行器一个额外字段，例如 `{"path":"hello.md","extra":true}`。先预测它应返回什么，再参照第 7 节的本地调用方式检查。说明为什么工具声明中写了 `additionalProperties: false`，执行器仍然需要自己验证。
 
-完成后，进入[阶段汇总 1](../milestones/evidence-qa.md)复查第一部分。下一部分从[第 04 章：模型接口](./provider-adapter.md)开始，再经由[第 05 章：Rust 迁移](./rust-migration.md)进入核心循环。
+本页属于旧五篇版本，可按原路径进入[旧阶段汇总 1](../milestones/evidence-qa.md)，再阅读当时的[模型接口](./provider-adapter.md)与[Rust 迁移](./rust-migration.md)。现行六部分路线从[04 Agent 的核心能力](./agent-capabilities.md)开始；旧页的测试和章节号不自动成为新版证据。
 
 ## 提示词示例
 

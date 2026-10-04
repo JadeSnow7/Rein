@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Intent",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "CallModel"
+      ],
+      "properties": {
+        "CallModel": {
+          "type": "object",
+          "required": [
+            "effect_id"
+          ],
+          "properties": {
+            "effect_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "ExecuteTool"
+      ],
+      "properties": {
+        "ExecuteTool": {
+          "type": "object",
+          "required": [
+            "call",
+            "effect_id"
+          ],
+          "properties": {
+            "call": {
+              "$ref": "#/definitions/ToolCall"
+            },
+            "effect_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "Verify"
+      ],
+      "properties": {
+        "Verify": {
+          "type": "object",
+          "required": [
+            "effect_id",
+            "final_ref",
+            "plan_ref"
+          ],
+          "properties": {
+            "effect_id": {
+              "type": "string"
+            },
+            "final_ref": {
+              "$ref": "#/definitions/ArtifactRef"
+            },
+            "plan_ref": {
+              "$ref": "#/definitions/ArtifactRef"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "definitions": {
+    "ArtifactRef": {
+      "type": "object",
+      "required": [
+        "hash",
+        "len"
+      ],
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "len": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "ToolCall": {
+      "type": "object",
+      "required": [
+        "args_ref",
+        "call_id",
+        "name"
+      ],
+      "properties": {
+        "args_ref": {
+          "$ref": "#/definitions/ArtifactRef"
+        },
+        "call_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

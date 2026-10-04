@@ -7,7 +7,12 @@ on:
       - 'python/**'
       - 'ts/**'
       - 'rust/**'
+      - 'core/**'
+      - 'runtime/**'
+      - 'scripts/runtime/**'
       - 'contracts/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
       - 'fixtures/**'
       - 'package.json'
       - 'package-lock.json'
@@ -17,7 +22,12 @@ on:
       - 'python/**'
       - 'ts/**'
       - 'rust/**'
+      - 'core/**'
+      - 'runtime/**'
+      - 'scripts/runtime/**'
       - 'contracts/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
       - 'fixtures/**'
       - 'package.json'
       - 'package-lock.json'
@@ -83,9 +93,32 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
+      - name: Setup Node for stdio host
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Node dependencies for stdio host
+        run: npm ci
       - name: Format
         run: cargo fmt --manifest-path rust/Cargo.toml -- --check
       - name: Check
         run: cargo check --manifest-path rust/Cargo.toml --locked
       - name: Test
         run: cargo test --manifest-path rust/Cargo.toml --locked
+
+  rein-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: cargo fmt --all -- --check
+      - run: cargo test --locked --workspace --all-targets
+      - run: node --test scripts/runtime/schema-to-ts.test.mjs
+      - run: node scripts/runtime/check-contracts.mjs --check

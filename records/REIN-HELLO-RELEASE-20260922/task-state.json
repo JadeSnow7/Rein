@@ -1,0 +1,567 @@
+{
+  "schema_version": "1.3",
+  "spec": {
+    "version": "HELLO-RELEASE-1",
+    "authority": "records/REIN-HELLO-RELEASE-20260922/spec.md",
+    "source_ids": [
+      "SRC-001"
+    ],
+    "goal_ref": "discovery.expected_outcome",
+    "scope_ref": "discovery.scope",
+    "constraints": [
+      "保留原工作区",
+      "仅发布本轮明确范围",
+      "不调用真实模型"
+    ],
+    "exceptions": [
+      "真实模型与新手试读未验证"
+    ],
+    "conditions": [
+      {
+        "id": "SC-001",
+        "metric_ids": [
+          "MET-001",
+          "MET-002"
+        ],
+        "deliverables": [
+          "README.md",
+          "docs/index.md",
+          "docs/about.md",
+          "docs/toc.md",
+          "docs/.vitepress/config.mts",
+          ".github/workflows/test.yml",
+          "reports/2026-09-22-hello-world-three-chapters-plan.md",
+          "docs/chapters/minimal-agent.md",
+          "docs/chapters/python-model-call.md",
+          "docs/chapters/python-file-read.md",
+          "docs/chapters/python-suggestions.md",
+          "python/hello_world/hello.py",
+          "python/hello_world/requirements.txt",
+          "python/hello_world/request.py",
+          "python/hello_world/__init__.py",
+          "python/hello_world/core.py",
+          "python/hello_world/model.py",
+          "python/hello_world/README.md",
+          "python/hello_world/cli.py",
+          "python/hello_world/.gitignore",
+          "python/hello_world/tests/test_cli_sdk.py",
+          "python/hello_world/tests/__init__.py",
+          "python/hello_world/tests/test_behavior.py",
+          "python/hello_world/fixtures/broken.cpp",
+          "python/hello_world/fixtures/hello.cpp",
+          "records/REIN-HELLO-RELEASE-20260922/spec.md"
+        ]
+      }
+    ],
+    "contracts": [
+      "records/REIN-HELLO-RELEASE-20260922/spec.md"
+    ],
+    "open_items": []
+  },
+  "task": {
+    "id": "REIN-HELLO-RELEASE-20260922",
+    "title": "发布Hello World三章",
+    "mode": "resume",
+    "status": "verified",
+    "source_ids": [
+      "SRC-001"
+    ]
+  },
+  "discovery": {
+    "status": "ready",
+    "user": "Python 初学者",
+    "scenario": "同一 C++ Hello World 的生成与修复",
+    "problem": "原只读 README 教学与用户新的三章主线不同",
+    "expected_outcome": "本轮三章更新已提交推送且GitHub Pages上线核验",
+    "scope": "四篇Python正文、配套代码与必要线上入口适配",
+    "acceptable_result": "本地检查通过，提交范围清楚，CI和Pages对应同一SHA，线上新内容存在"
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "kind": "user_requirement",
+      "reference": "conversation:提交发布",
+      "summary": "提交并发布刚完成的三章方案、正文及配套到现有Rein网站",
+      "adoption": "accepted"
+    }
+  ],
+  "main_tasks": [
+    {
+      "id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "goal": "本轮三章更新已提交推送且GitHub Pages上线核验",
+      "scope": [
+        "README.md",
+        "docs/index.md",
+        "docs/about.md",
+        "docs/toc.md",
+        "docs/.vitepress/config.mts",
+        ".github/workflows/test.yml",
+        "reports/2026-09-22-hello-world-three-chapters-plan.md",
+        "docs/chapters/minimal-agent.md",
+        "docs/chapters/python-model-call.md",
+        "docs/chapters/python-file-read.md",
+        "docs/chapters/python-suggestions.md",
+        "python/hello_world/hello.py",
+        "python/hello_world/requirements.txt",
+        "python/hello_world/request.py",
+        "python/hello_world/__init__.py",
+        "python/hello_world/core.py",
+        "python/hello_world/model.py",
+        "python/hello_world/README.md",
+        "python/hello_world/cli.py",
+        "python/hello_world/.gitignore",
+        "python/hello_world/tests/test_cli_sdk.py",
+        "python/hello_world/tests/__init__.py",
+        "python/hello_world/tests/test_behavior.py",
+        "python/hello_world/fixtures/broken.cpp",
+        "python/hello_world/fixtures/hello.cpp",
+        "records/REIN-HELLO-RELEASE-20260922/spec.md"
+      ],
+      "non_goals": [
+        "全仓库发布",
+        "真实模型验收"
+      ],
+      "dependencies": [],
+      "assumptions": [
+        "已授权通过main现有Actions发布"
+      ],
+      "status": "verified",
+      "metric_ids": [
+        "MET-001",
+        "MET-002"
+      ],
+      "implementation_task_ids": [
+        "IT-001"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "MET-001",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "配套功能",
+      "baseline": "远程main946ecd3及已审三章文件",
+      "target": "23项测试及按文路径通过",
+      "method": "原始执行回执和文件哈希",
+      "environment_data": "macOS;Python3.14;真实c++;OpenAI SDK模拟传输",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    },
+    {
+      "id": "MET-002",
+      "main_task_id": "MT-001",
+      "kind": "mandatory_gate",
+      "name": "发布内容与站点",
+      "baseline": "远程main946ecd3及已审三章文件",
+      "target": "四篇/代码摘要匹配、范围外文件不变、构建及链接通过",
+      "method": "原始执行回执和文件哈希",
+      "environment_data": "macOS;Python3.14;真实c++;OpenAI SDK模拟传输",
+      "evidence_ids": [
+        "EVD-003",
+        "EVD-004",
+        "EVD-005"
+      ],
+      "status": "passed",
+      "verification": "execution"
+    }
+  ],
+  "implementation_tasks": [
+    {
+      "id": "IT-001",
+      "main_task_id": "MT-001",
+      "source_ids": [
+        "SRC-001"
+      ],
+      "scope": "集成和发布",
+      "file_scope": [
+        "README.md",
+        "docs/index.md",
+        "docs/about.md",
+        "docs/toc.md",
+        "docs/.vitepress/config.mts",
+        ".github/workflows/test.yml",
+        "reports/2026-09-22-hello-world-three-chapters-plan.md",
+        "docs/chapters/minimal-agent.md",
+        "docs/chapters/python-model-call.md",
+        "docs/chapters/python-file-read.md",
+        "docs/chapters/python-suggestions.md",
+        "python/hello_world/hello.py",
+        "python/hello_world/requirements.txt",
+        "python/hello_world/request.py",
+        "python/hello_world/__init__.py",
+        "python/hello_world/core.py",
+        "python/hello_world/model.py",
+        "python/hello_world/README.md",
+        "python/hello_world/cli.py",
+        "python/hello_world/.gitignore",
+        "python/hello_world/tests/test_cli_sdk.py",
+        "python/hello_world/tests/__init__.py",
+        "python/hello_world/tests/test_behavior.py",
+        "python/hello_world/fixtures/broken.cpp",
+        "python/hello_world/fixtures/hello.cpp",
+        "records/REIN-HELLO-RELEASE-20260922/spec.md",
+        "records/REIN-HELLO-RELEASE-20260922"
+      ],
+      "interface_constraints": [
+        "线上历史页面保留"
+      ],
+      "dependencies": [],
+      "acceptance": [
+        "MET-001",
+        "MET-002"
+      ],
+      "support_reason": "",
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002",
+        "EVD-003",
+        "EVD-004",
+        "EVD-005"
+      ],
+      "owner": "main-thread + coder",
+      "status": "verified"
+    }
+  ],
+  "baseline": {
+    "git_ref": "946ecd3d94532110876d8682434158f72b014d86",
+    "worktree_status": "clean",
+    "ownership": "独立clone最新main；本轮所有修改独占，原工作区未动",
+    "foreign_paths": [],
+    "prepared_at": "2026-09-22"
+  },
+  "binding": {
+    "receipt_paths": []
+  },
+  "authorization": {
+    "commit": {
+      "status": "authorized",
+      "source_id": "SRC-001",
+      "scope": [
+        "local main"
+      ]
+    },
+    "push": {
+      "status": "authorized",
+      "source_id": "SRC-001",
+      "scope": [
+        "origin/main"
+      ]
+    },
+    "deploy": {
+      "status": "authorized",
+      "source_id": "SRC-001",
+      "scope": [
+        "https://jadesnow7.github.io/Rein/"
+      ]
+    },
+    "merge": {
+      "status": "not_authorized",
+      "source_id": null
+    }
+  },
+  "delivery": {
+    "local_validation": "passed",
+    "remote_ci": "passed",
+    "remote_ci_revision": "274f0668203fa2b40609754e4e9a80643df40c23"
+  },
+  "actions": [
+    {
+      "id": "ACT-001",
+      "kind": "local-commit",
+      "authorization_action": "commit",
+      "target": "local main",
+      "revision": "patch:946ecd3d94532110876d8682434158f72b014d86:aea496960b32d0e0d239470c48de37b24a4e5d4b872047fb03294d336fc0f8d0:spec:d0fbde8ddbdb091d64c88eee22cbf19878d5547701fd9fc11c2f2cdc4a089d12",
+      "status": "completed",
+      "source_id": "SRC-001",
+      "idempotency_key": "hello-release-20260922-commit",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-22T12:37:33.750309Z",
+        "action": "commit",
+        "target": "local main",
+        "revision": "patch:946ecd3d94532110876d8682434158f72b014d86:aea496960b32d0e0d239470c48de37b24a4e5d4b872047fb03294d336fc0f8d0:spec:d0fbde8ddbdb091d64c88eee22cbf19878d5547701fd9fc11c2f2cdc4a089d12",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "local main"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:提交发布",
+          "summary": "提交并发布刚完成的三章方案、正文及配套到现有Rein网站",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "local main"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:提交发布\",\"summary\":\"提交并发布刚完成的三章方案、正文及配套到现有Rein网站\"}",
+        "content_sha256": "1462f7fa729ad36eecebff21c2a5dd4a91ed5a88f1f27fc3d5241846e78e6377"
+      },
+      "receipt": {
+        "commit": "274f0668203fa2b40609754e4e9a80643df40c23",
+        "paths": [
+          "README.md",
+          "docs/index.md",
+          "docs/about.md",
+          "docs/toc.md",
+          "docs/.vitepress/config.mts",
+          ".github/workflows/test.yml",
+          "reports/2026-09-22-hello-world-three-chapters-plan.md",
+          "docs/chapters/minimal-agent.md",
+          "docs/chapters/python-model-call.md",
+          "docs/chapters/python-file-read.md",
+          "docs/chapters/python-suggestions.md",
+          "python/hello_world/hello.py",
+          "python/hello_world/requirements.txt",
+          "python/hello_world/request.py",
+          "python/hello_world/__init__.py",
+          "python/hello_world/core.py",
+          "python/hello_world/model.py",
+          "python/hello_world/README.md",
+          "python/hello_world/cli.py",
+          "python/hello_world/.gitignore",
+          "python/hello_world/tests/test_cli_sdk.py",
+          "python/hello_world/tests/__init__.py",
+          "python/hello_world/tests/test_behavior.py",
+          "python/hello_world/fixtures/broken.cpp",
+          "python/hello_world/fixtures/hello.cpp",
+          "records/REIN-HELLO-RELEASE-20260922/spec.md"
+        ],
+        "result": "committed"
+      }
+    },
+    {
+      "id": "ACT-002",
+      "kind": "push",
+      "authorization_action": "push",
+      "target": "origin/main",
+      "revision": "274f0668203fa2b40609754e4e9a80643df40c23",
+      "status": "completed",
+      "source_id": "SRC-001",
+      "idempotency_key": "hello-release-20260922-push",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-22T12:40:47.653122Z",
+        "action": "push",
+        "target": "origin/main",
+        "revision": "274f0668203fa2b40609754e4e9a80643df40c23",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "origin/main"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:提交发布",
+          "summary": "提交并发布刚完成的三章方案、正文及配套到现有Rein网站",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "origin/main"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:提交发布\",\"summary\":\"提交并发布刚完成的三章方案、正文及配套到现有Rein网站\"}",
+        "content_sha256": "732f611edd61d07b68827c5c7a01b7d4d35ac4c6dd383c9d39ad501543eed36c"
+      },
+      "receipt": {
+        "result": "pushed",
+        "remote": "origin/main",
+        "before": "946ecd3d94532110876d8682434158f72b014d86",
+        "after": "274f0668203fa2b40609754e4e9a80643df40c23",
+        "output": "946ecd3..274f066 HEAD -> main"
+      }
+    },
+    {
+      "id": "ACT-003",
+      "kind": "deploy",
+      "authorization_action": "deploy",
+      "target": "https://jadesnow7.github.io/Rein/",
+      "revision": "274f0668203fa2b40609754e4e9a80643df40c23",
+      "status": "completed",
+      "source_id": "SRC-001",
+      "idempotency_key": "hello-release-20260922-deploy",
+      "authorization_snapshot": {
+        "schema_version": 1,
+        "captured_at": "2026-09-22T12:40:47.653512Z",
+        "action": "deploy",
+        "target": "https://jadesnow7.github.io/Rein/",
+        "revision": "274f0668203fa2b40609754e4e9a80643df40c23",
+        "authorization": {
+          "status": "authorized",
+          "source_id": "SRC-001",
+          "scope": [
+            "https://jadesnow7.github.io/Rein/"
+          ]
+        },
+        "source": {
+          "id": "SRC-001",
+          "kind": "user_requirement",
+          "reference": "conversation:提交发布",
+          "summary": "提交并发布刚完成的三章方案、正文及配套到现有Rein网站",
+          "adoption": "accepted"
+        },
+        "source_id": "SRC-001",
+        "scope": [
+          "https://jadesnow7.github.io/Rein/"
+        ],
+        "source_content": "{\"adoption\":\"accepted\",\"id\":\"SRC-001\",\"kind\":\"user_requirement\",\"reference\":\"conversation:提交发布\",\"summary\":\"提交并发布刚完成的三章方案、正文及配套到现有Rein网站\"}",
+        "content_sha256": "7459ec1d2cb012f5d8986e994ce5c8df72cb567f1c7374283989d6fb6ae5f808"
+      },
+      "receipt": {
+        "revision": "274f0668203fa2b40609754e4e9a80643df40c23",
+        "url": "https://jadesnow7.github.io/Rein/",
+        "workflow": "https://github.com/JadeSnow7/Rein/actions/runs/35728764773",
+        "online_evidence": "evidence/online.json",
+        "result": "deployed and verified"
+      }
+    }
+  ],
+  "decisions": [],
+  "hypotheses": [],
+  "recovery_strategy": {
+    "trigger": "上线不符",
+    "steps": [
+      "核对本次SHA",
+      "诊断后针对性修复或revert本提交",
+      "重新部署并验证"
+    ],
+    "owner": "main-thread"
+  },
+  "evidence": [
+    {
+      "id": "EVD-001",
+      "path": "records/REIN-HELLO-RELEASE-20260922/evidence/unit-serial.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T12:36:12.166322Z",
+      "sha256": "b23f0b6653fb5900449490b611f412d6a2f840effe0b4077ce6d33a383ea3e14"
+    },
+    {
+      "id": "EVD-002",
+      "path": "records/REIN-HELLO-RELEASE-20260922/evidence/walkthrough.json",
+      "kind": "execution",
+      "supports": [
+        "MET-001"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T12:36:57.430082Z",
+      "sha256": "809de266022b17145c8fa77412cb57a8197f962638b44d6a95185e66c5453f4e"
+    },
+    {
+      "id": "EVD-003",
+      "path": "records/REIN-HELLO-RELEASE-20260922/evidence/build.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T12:35:35.435416Z",
+      "sha256": "4a22a384093f59f7e1ab636403192242a78bedaf1c226010382ac0cd1603faad"
+    },
+    {
+      "id": "EVD-004",
+      "path": "records/REIN-HELLO-RELEASE-20260922/evidence/links.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T12:36:05.346465Z",
+      "sha256": "66cb9733a8ddbdf5d7f67242cec29334c94b1bc5aa571b47491b2eb59e804920"
+    },
+    {
+      "id": "EVD-005",
+      "path": "records/REIN-HELLO-RELEASE-20260922/evidence/scope.json",
+      "kind": "execution",
+      "supports": [
+        "MET-002"
+      ],
+      "status": "current",
+      "result": "passed",
+      "observed_at": "2026-09-22T12:36:24.321450Z",
+      "sha256": "d4f7d7cdd04424388cd87c4b1132ccff69281cd5270d991e09d950b4ac2fccd5"
+    }
+  ],
+  "overall_acceptance": {
+    "metric_ids": [
+      "MET-001",
+      "MET-002"
+    ],
+    "evidence_ids": [
+      "EVD-001",
+      "EVD-002",
+      "EVD-003",
+      "EVD-004",
+      "EVD-005"
+    ],
+    "status": "passed"
+  },
+  "changes": [
+    {
+      "id": "CHG-001",
+      "implementation_task_ids": [
+        "IT-001"
+      ],
+      "paths": [
+        "README.md",
+        "docs/index.md",
+        "docs/about.md",
+        "docs/toc.md",
+        "docs/.vitepress/config.mts",
+        ".github/workflows/test.yml",
+        "reports/2026-09-22-hello-world-three-chapters-plan.md",
+        "docs/chapters/minimal-agent.md",
+        "docs/chapters/python-model-call.md",
+        "docs/chapters/python-file-read.md",
+        "docs/chapters/python-suggestions.md",
+        "python/hello_world/hello.py",
+        "python/hello_world/requirements.txt",
+        "python/hello_world/request.py",
+        "python/hello_world/__init__.py",
+        "python/hello_world/core.py",
+        "python/hello_world/model.py",
+        "python/hello_world/README.md",
+        "python/hello_world/cli.py",
+        "python/hello_world/.gitignore",
+        "python/hello_world/tests/test_cli_sdk.py",
+        "python/hello_world/tests/__init__.py",
+        "python/hello_world/tests/test_behavior.py",
+        "python/hello_world/fixtures/broken.cpp",
+        "python/hello_world/fixtures/hello.cpp",
+        "records/REIN-HELLO-RELEASE-20260922/spec.md",
+        "records/REIN-HELLO-RELEASE-20260922"
+      ],
+      "evidence_ids": [
+        "EVD-001",
+        "EVD-002",
+        "EVD-003",
+        "EVD-004",
+        "EVD-005"
+      ],
+      "revision": "patch:946ecd3d94532110876d8682434158f72b014d86:aea496960b32d0e0d239470c48de37b24a4e5d4b872047fb03294d336fc0f8d0:spec:d0fbde8ddbdb091d64c88eee22cbf19878d5547701fd9fc11c2f2cdc4a089d12",
+      "status": "reviewed"
+    }
+  ]
+}

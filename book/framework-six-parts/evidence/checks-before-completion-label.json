@@ -1,0 +1,149 @@
+{
+  "checked_at": "2026-09-22T08:05:53.473652+00:00",
+  "scope": "framework documents only; semantic review in review.md; no product or teaching execution acceptance",
+  "head": "1dfa82b9d90196c2294f61914d2017449e5548e3",
+  "result": "failed",
+  "markdown_files": 9,
+  "chapters": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+  ],
+  "chapter_fields": 300,
+  "teaching_subsections": 140,
+  "local_links_checked": 192,
+  "old_slugs_mapped": 25,
+  "protected_file_count": 1247,
+  "protected_changes": [],
+  "new_paths": [
+    "book/framework-six-parts/README.md",
+    "book/framework-six-parts/evidence/baseline.json",
+    "book/framework-six-parts/evidence/check-command.txt",
+    "book/framework-six-parts/evidence/checks.json",
+    "book/framework-six-parts/migration-map.md",
+    "book/framework-six-parts/part-01.md",
+    "book/framework-six-parts/part-02.md",
+    "book/framework-six-parts/part-03.md",
+    "book/framework-six-parts/part-04.md",
+    "book/framework-six-parts/part-05.md",
+    "book/framework-six-parts/part-06.md",
+    "book/framework-six-parts/review.md"
+  ],
+  "outside_new_paths": [],
+  "errors": [
+    {
+      "missing_marker": [
+        29,
+        "完成标准"
+      ]
+    }
+  ],
+  "diff_checks": [
+    {
+      "path": "README.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/README.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "migration-map.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/migration-map.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "review.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/review.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "part-01.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/part-01.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "part-02.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/part-02.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "part-03.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/part-03.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "part-04.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/part-04.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "part-05.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/part-05.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "path": "part-06.md",
+      "command": "git diff --no-index --check -- /dev/null book/framework-six-parts/part-06.md",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "diff_exit_note": "For --no-index, exit 1 with empty diagnostics means expected new-file difference, not whitespace failure.",
+  "document_sha256": {
+    "README.md": "c7bcd755855a320f68752f8b5d1f705d0eba2283eafa6a0e1ebe8c6adc9e313e",
+    "migration-map.md": "65b2b1918fe2084958ed1bb0a8e9f920c3b182256cf957f034647f3a57175269",
+    "review.md": "e7ed077965cc607fdbbecca7ffe340b94bbfc25c49428279b63ec8a1f45f3a6b",
+    "part-01.md": "a007ee41a0f5cefe0b38fe2325b70f6c21653f8487ea89d2b96a9ac8652bef98",
+    "part-02.md": "0615ec6a667c9db61b3c9df8e7207833fa8e29387c4c7d6ba285ff0ee43da9ef",
+    "part-03.md": "cdf5e57dd074ba84646e245e8ab1294150100bb1c1b00dbb936ddff460531b92",
+    "part-04.md": "800f97c5bf8cd5c2d6cfc5e03da507de6b64bf123d984627d7115a233bb91358",
+    "part-05.md": "38e0410c67c7d2dfdf2222b7657c7c9db850f6f31d6399f41291182e839a94d7",
+    "part-06.md": "8874551f4c4dc3bd5acd3bc5b27ddc9af2da74a1c46016b6b56b395200c09dc4"
+  },
+  "source_path_exceptions": {
+    "ts/ch03.ts": "explicitly identified as reader-created and absent",
+    "rust/src/rein/adapter.rs": "explicit planned path, not claimed as existing"
+  }
+}

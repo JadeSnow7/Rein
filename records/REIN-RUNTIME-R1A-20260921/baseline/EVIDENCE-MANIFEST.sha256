@@ -1,0 +1,6 @@
+# sha256	bytes	path-relative-to-this-directory
+ca6bcc40de40ebae66d989dcfd40b843b4cc0ea2b1cb003e100f82078f6f80cf	124463	git-status.z
+82f7da8f2b7c0e87255900ea76b5b6141873a880cff67c5e999d44a4a4bc0d6d	761	license-inventory.json
+bf47002ca036409e532e103499275350f15ec35e6e0e3e1caeeede4d73ffa679	38206	source-inputs.json
+accec9e050a3f46a50a84040bf0d7ec1699bbaa54e71a28b0409882ac8753389	1402871	source-inputs.tar.gz
+8ed79491db1ad31e628142c548bd22ce69bb26f3e21c9b402151b5fc9a1cc7eb	335283	working-inputs.json

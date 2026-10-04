@@ -1,0 +1,20 @@
+[package]
+name = "rein-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+rein-core = { path = "../core" }
+rusqlite = { version = "0.32", features = ["bundled"] }
+schemars = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+
+[dev-dependencies]
+tempfile = "3"
+
+[[bin]]
+name = "rein-runtime"
+path = "src/main.rs"
