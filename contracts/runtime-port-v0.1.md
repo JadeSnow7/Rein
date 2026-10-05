@@ -49,7 +49,7 @@ StartRequest 的必需字段：
 
 消费方分配的预算只是上限请求。runtime 按有效宿主策略取更严格的上限；未实现的预算维度不能被忽略后宣称已受控。并行占用、全局预算和修复次数由 Veriflow 统筹。工具白名单与路径校验不等于 OS 级沙箱。
 
-RunSnapshot 必须保留上述身份与摘要绑定，另含 `run_id / session_id / revision / runtime_status / stop_reason / cursor`，已产生的 `output_refs / receipt_refs`，以及局部检查状态（若有）。未产生的产物为空，不能伪造引用。`stop_reason` 至少区分正常结束、工具/模型失败、局部预算耗尽、取消、等待批准和结果未知。
+RunSnapshot 必须保留上述身份与摘要绑定，另含 `run_id / session_id / revision / runtime_status / stop_reason / cursor`，已产生的 `output_refs / receipt_refs`，以及局部检查状态（若有）。未产生的产物为空，不能伪造引用。`runtime_status` 与 `stop_reason` 合起来区分正常结束、工具/模型失败、局部预算耗尽、取消、等待批准和结果未知；各情况在 0.1 的支持范围见第 4 节。取消、结果未知、等待批准由 `runtime_status` 表达；`stop_reason` 只说明运行为什么不再调用模型。
 
 ## 3. 状态、事件与验证
 
@@ -64,6 +64,21 @@ RunSnapshot 必须保留上述身份与摘要绑定，另含 `run_id / session_i
 ## 4. 对已合并代码及目标类型的兼容映射与缺口
 
 **以 RESULT-SPLIT-1 实施后的类型为准，实施前本表不能用于实现。** `RunStatus`、`StopReason`、`VerificationRecord` 是状态拆分后的目标类型，目前不能把旧状态猜成这些结果。停止原因只读取正式运行结果中保存的 `StopReason`；不从原始事件或回执重建停止原因。
+
+下表描述 RESULT-SPLIT-1 实施后 0.1 可产生的组合，不表示当前已有 adapter。表内停止原因值引用源类型的枚举名；`stop_reason` 按保存的 `Option<StopReason>` 原样传递，有值不清空，无值不补造。`RunSnapshot.unreconciled_effects` 保留正式 `RunResult.unreconciled_effects` 中尚未核对的效果 ID（来自会话的 `unknown_effects`）。
+
+| 情况 | RuntimePort 字段与值 | 拆分后的来源 | 0.1 是否会产生 |
+| --- | --- | --- | --- |
+| 正常结束 | `runtime_status = finished`；`stop_reason = FinalAnswer` | `RunStatus::Finished` + `StopReason::FinalAnswer` | 会产生；仅表示执行结束，不表示局部验证通过或最终接受 |
+| 工具失败 | `runtime_status = finished`；`stop_reason = ToolFailed { call_id, error_ref }`，保留工具调用 ID 与错误引用 | `RunStatus::Finished` + `StopReason::ToolFailed` | 会产生 |
+| 工具预算耗尽 | `runtime_status = finished`；`stop_reason = ToolBudgetExhausted` | `RunStatus::Finished` + `StopReason::ToolBudgetExhausted` | 会产生 |
+| 取消 | `runtime_status = cancelled`；`stop_reason` 保留已有值或无值，不新增“取消”停止原因 | `RunStatus::Cancelled` + 已保存的 `Option<StopReason>` | 会产生 |
+| 等待验证时取消 | `runtime_status = cancelled`；`stop_reason = FinalAnswer`；没有验证记录，`local_verification` 缺省 | `RunStatus::Cancelled` + `StopReason::FinalAnswer`；按规格转换表保留停止原因，取消时没有验证结果 | 会产生；呈现为“模型已给出最终回答，但运行在等待验证时被取消”，不能映射成 `finished` 或验证通过 |
+| 结果未知 | `runtime_status = outcome_unknown`；`unreconciled_effects` 保留尚未核对的效果 ID；`stop_reason` 保留已有值或无值 | `RunStatus::OutcomeUnknown` + `RunResult.unreconciled_effects` + 已保存的 `Option<StopReason>` | 会产生；不据此猜测停止原因，不丢弃待核对效果 |
+| 模型失败 | 0.1 无对应输出，不映射成工具失败或正常结束 | core 目前没有模型失败的观察，现有 `StopReason` 无对应变体 | 不产生；接入真实模型时在 core 增加停止原因并升级契约版本 |
+| 等待批准 | 0.1 不产生 `runtime_status = waiting_approval`，适配层不声明批准能力 | 现有 `RunStatus` 无批准等待变体 | 不产生；批准实施时增加运行状态并升级契约版本 |
+
+等待验证时取消的组合直接保留 [RESULT-SPLIT-1 转换表](../reports/2026-10-02-run-verification-acceptance-split.md#32-转换表) 的语义：`FinalAnswer` 说明模型调用已经结束，`cancelled` 说明之后的验证等待被取消，两个字段不能互相覆盖。迟到的验证结果仍被拒绝；没有检查记录不能生成 `local_verification.passed`。
 
 | 已合并位置 / 待实施的目标类型 | 可复用的 primitive | adapter 必须补齐 / 避免的误用 |
 | --- | --- | --- |
