@@ -2,7 +2,7 @@
 
 本文件记录影响仓库长期结构的决定。正文写作过程中如需推翻，请在此追加修订而非直接改写历史条目。
 
-当前跨项目分工见末尾的[职责边界同步](#职责边界同步2026-10-04)；D12–D14 等旧职责归属保留为历史决定。
+当前跨项目分工见 [D19](#d19)；D9–D18 保留历史原文，具体取代范围及未决问题由 D19 说明。
 
 ## D1　代码快照策略：单一演进树 + git tag，独立章节另设 examples
 
@@ -197,40 +197,77 @@ Rein 当前自有代码、文档和教材永久开放，取代 D10 对当前内�
 
 本条修订 D17 的提示词说明：仍从 04 起附提示词，但不再笼统声明“不代表实际使用”，而是逐条标注来源——“作者实际使用”须链接开发记录，“据设计反推”须说明依据并注明未经运行，“已试用”须记录起始快照、工具与模型、实际 diff 和验收结果。04 只迁移不依赖模型协议的部分（受限读取、差异、确认写入与编译检查），模型适配放到 05 及以后。
 
-## D19（拟议，待用户确认）　任务权威外移：Veriflow 持有 Workflow/Task，Rein 持有 Session/Run/Effect（2026-10-02）
+## D19　任务权威外移：Veriflow 持有 Workflow/Task，Rein 持有 Session/Run/Effect（2026-10-02 拟议，2026-10-04 确认）
 
-来源：2026-10-02 对当前工作树的只读审计，以及用户据此提出的新分工假设。本条由审计后起草，**状态为拟议**；在用户逐项确认之前，D12、D14 及配套设计文档继续按原文生效，本条不构成实施授权。独立复核见[边界审计复核](reports/2026-10-02-boundary-audit-review.md)。
+<a id="d19"></a>
 
-拟议的权威划分：
+来源：2026-10-02 边界审计及拟议 D19、用户在 2026-10-04 确认的三方分工，以及原 [PR #4](https://github.com/JadeSnow7/Rein/pull/4) 的职责决定。本条按第四阶段授权合并两份表述，状态为**已确认的职责决定**；未决接口与实施边界单列，不由本文补定。审计来源见[边界审计复核](reports/2026-10-02-boundary-audit-review.md)。文档确认不表示相关运行能力已实现。
 
-| 对象 | 权威 | 含义 |
+### 当前职责与状态权威
+
+| 对象 | 权威 | 边界 |
 | --- | --- | --- |
-| Workflow、Task、任务图、跨运行的修复策略与总预算、目标验收与最终接受 | Veriflow | 决定“这件事做没做成、要不要再来一次”；持有 AcceptanceDecision |
-| Session、Run、Attempt、Effect、运行内预算、动作授权、执行检查点与恢复 | Rein | 决定“这一次运行怎么走、每个动作能不能做”；产出 RunResult 与 VerificationResult |
-| 任务交互、变更审阅、证据展示、人工接受的输入 | Web Studio | 不持有权威状态；运行结束、验证结果、最终接受三者分别显示 |
-| 产品需求、公开接口、项目测试 | 目标项目 | 不变 |
+| Workflow、Task、任务图、AttemptAssignment、跨运行修复策略与总预算、整体验收与最终接受 | Veriflow | 选择执行资源、提交有界尝试、判断是否修复、换 Agent 或终止；持有 AcceptanceDecision |
+| Session、Run、Effect、尝试与运行的绑定、运行内预算、动作授权、执行检查点与恢复 | Rein | 单 Agent 模型上下文、工具声明/执行/反馈、局部截止与取消、事件顺序及原始回执；不决定任务依赖、选择其他 Agent、统筹全局预算或安排业务重试 |
+| 工作空间、浏览器/终端、CDP、页面操作、截图/日志/状态采样、预览、diff 与人工审阅交互 | Web Studio | 环境与观测的提供方；通用工具调用留在 Rein，Web 能力以 provider 提供；不是 Harness 或 workflow 状态权威 |
+| 产品需求、公开接口、业务测试 | 目标项目 | Spec 与公开接口仍为业务权威 |
 
-四条配套规则。其一，运行结束、验证通过、最终接受是三个独立状态，Rein 不再产生 `Accepted`；拆分方式见[状态拆分规格](reports/2026-10-02-run-verification-acceptance-split.md)。其二，批准分两种：动作授权由 Rein 检查，绑定具体效果与候选版本；产物接受由 Veriflow 决定，绑定 Spec、产物和证据的版本，两者不能互相替代。其三，预算分两层：Rein 管本次运行，Veriflow 管跨运行累计、依赖和修复次数。其四，Rein 必须能独立运行：CLI 自带最小本地 Adapter 访问文件和终端，core 不依赖 Veriflow 或 Web Studio；Agent 在一次运行内调用测试并根据失败继续行动仍属 Rein，Agent 通过工具委派工作也不被禁止。
+Rein 可执行固定检查、保存事实回执并报告局部验证状态；Veriflow 选择检查、绑定 Spec/候选/环境、判断证据有效性并聚合整体验收。运行结束、验证通过、最终接受是三个独立状态；Rein 运行终态使用 `finished`，不能据此生成 workflow accepted。现有代码的 `Accepted` 尚待 [RESULT-SPLIT-1](reports/2026-10-02-run-verification-acceptance-split.md) 拆分，不能将目标写成已实现。
+
+动作授权由 Rein 检查并绑定具体 effect、范围与候选版本；产物接受由 Veriflow 决定并绑定 Spec、产物和证据版本，二者不能互相替代。Rein 管本次运行预算，Veriflow 管跨运行累计、依赖和修复次数。Rein 在一次运行内调用检查并根据结果继续行动仍属单次运行能力；跨任务修复与调度归 Veriflow。工具层委派的未决边界见问题 1。
+
+连接采用 [RuntimePort 0.1 候选](contracts/runtime-port-v0.1.md)。Veriflow 保存 workflow/task/attempt 的依赖与分派，Rein 保存 run/session/effect 的执行事实；二者以 ID 与不可变摘要关联，不共享可写数据库。Veriflow 交接任务目标与已验证依赖，Rein 构造模型上下文，Web Studio 提供受信环境句柄与原始观测。Rein core 不依赖 Veriflow 或 Web Studio；独立 CLI 的具体终点与输出合同见问题 2。
+
+### 取代范围与历史保留
+
+以下保留 2026-10-02 拟议稿的取代范围原文，明确哪些历史条款需要追溯、哪些机制不受影响：
 
 取代范围限定如下，其余原文保留。D12 中“core 保留完整 Harness、可作为调度 Agent 委派外部 Agent”继续有效；被取代的是第三段“任务状态、授权、预算预留与验收仍由确定性规则提交”里**任务状态与验收**归 core 的部分，动作授权与运行内预算仍归 Rein。D14 中“Rein 拥有运行状态、执行约束与 Acceptance；Veriflow 拥有方法和规则评估”改为 Rein 拥有运行状态与执行约束，Veriflow 拥有方法、规则评估、任务状态与 Acceptance；Web Studio 作为第一验证场景、目标项目 Spec 是业务权威、两条验证线分别验收、R1c 提前等内容不变。D9 的 Rust 权威运行时、D13 的纯步进机与 driver、D15–D18 不受影响；D13 文中的 TaskApplication 作为 Session/Run 级的统一提交入口保留，是否改名另定。
 
-确认后需要同步修订、本次未改动的文件：`REIN-INTEGRATION-SPEC.md` 第 1 节分工表、第 4 节“不新增平行 Task/Run/Evidence 系统”“Rein 数据库是任务运行状态权威”及 `core/acceptance` 判定链、INT-S01 与 INT-S05；`REIN-MODULES.md` 的 F01–F03、F08 与 §4.3；`REIN-DESIGN.md` §8.1 任务状态与 §9.6“核心才生成 Acceptance”；`REIN-IMPLEMENTATION-PLAN.md` 中 R1b、R3 的 Coordinator 持久委派、DAG 与有界修复；根 `README.md` 第 9 行；`architecture/decisions.json` 按 D16 新增一版登记而不刷新旧摘要。章节归属（15、16、20 等）是否调整由 `book/chapters.json` 另行修订，本条不改清单。
+其中“可作为调度 Agent 委派外部 Agent”的工具层含义，PR #4 未给出完整答案，不能据此重新授权 Rein 持有全局 Coordinator、DAG 或选择其他 Agent；已确认的当前职责以上表及 PR #4 为准，尚需澄清的委派句柄、父子等待和旧句子的适用范围列入问题 1。本次不修改 D9–D18 原文，不在未决处新增实施决定。
 
-待用户确认的问题：
+### 原五个问题：PR #4 的回答与未决项
 
-1. D12 的“调度 Agent”是否按“工具层委派留在 Rein、全局任务图归 Veriflow”理解。`REIN-MODULES.md` 已把委派树与数据依赖 DAG 分开保存，拟议做法是委派句柄与父子等待留在 Rein 的会话状态，DAG 移出。
-2. 没有 Veriflow 时，Rein CLI 的终点是否就是“报告运行结果和可选的验证结果”，不提供任何接受语义。
-3. Veriflow 的任务状态以何种形式持久化。现规格要求它“不另起任务状态机”，且目前是规则包加 CLI；本次没有读 Veriflow 仓库，它距离持有 Workflow/Task 还差多少是未知项，应在确认本条前核实。
-4. 原规格中“Veriflow 投影不能与 Rein 数据库双向独立写入”的方向是否反转为：Rein 的 RunResult 是 Veriflow 任务状态的只读输入。
-5. R1b、R3 里已规划的 Coordinator 持久委派、DAG、有界修复，是改到 Veriflow 路线实施，还是先按原计划在 Rein 实施再迁出。
+以下引文均来自原 PR #4 的固定提交 [`cf62ae8`](https://github.com/JadeSnow7/Rein/blob/cf62ae8/DECISIONS.md)，引文是设计依据，不是实现证据。
 
-状态拆分是现有设计（`REIN-MODULES.md` §4.3、`REIN-DESIGN.md` §8.2、INT-S05）已有的要求，不依赖本条是否确认，可以先行。本条只修改了本文件并新增两份报告；没有修改源码、合同、章节清单或其他设计文档，没有运行测试，也不表示任何跨项目能力已经交付。
+#### 问题 1：工具层委派是否留在 Rein，全局任务图是否归 Veriflow？
 
-## 职责边界同步（2026-10-04）
+原句：“它不决定任务依赖、选择其他 Agent、统筹全局预算或安排业务重试。”另有：“把上述设计里的 Coordinator、任务依赖、全局预算、修复策略、EvidenceBundle 和整体验收改由 Veriflow 拥有”。
 
-状态：按用户本轮明确的三方分工同步文档与接口候选；没有迁移源码或实现新运行能力。采用日期标识，避免与在途 PR #3 中已有 D9–D18 编号冲突。
+已回答：全局任务图、Coordinator 与跨 Agent 选择归 Veriflow。**未决**：拟议稿中“工具层委派留在 Rein”的具体边界、委派句柄与父子等待如何归属，以及取代范围中保留的 D12“调度 Agent”旧句应如何限定。PR #4 没有逐项定义，不能把旧句保留当作这些细节已获批准。
 
-### 审查依据与现有接口
+#### 问题 2：没有 Veriflow 时，Rein CLI 是否只报告运行结果和可选验证结果，不提供接受语义？
+
+原句：“Rein 可执行固定检查、保存事实回执并报告局部验证状态；Veriflow 选择检查、绑定 Spec/候选/环境、判断证据是否仍有效并聚合整体验收。”另有：“Runtime 的 `Accepted` 不能直接映射成 workflow `accepted`。”
+
+已回答：局部检查结果与整体验收分属两层，Rein 不产生 workflow 接受结论。**未决**：PR #4 没有直接规定独立 CLI 的终点、命令输出及本地最小 Adapter 合同。RESULT-SPLIT-1 是另一个待实施规格，不能冒充 PR #4 已回答这些 CLI 细节。
+
+#### 问题 3：Veriflow 的任务状态怎样持久化？
+
+原句：“Veriflow 保存 workflow/task/attempt 的依赖与分派，Rein 保存 run/session/effect 的执行事实；二者以 ID 和不可变摘要关联，不共享可写数据库。”
+
+已回答：保存责任与跨层关联方式。**未决**：任务状态的具体持久化形式、存储布局与可运行状态机；PR #4 的固定版本表只列规则、记录器与整合工具，没有给出这些实现。不得据此选定数据库或新增调度器。
+
+#### 问题 4：Rein 的 RunResult 是否成为 Veriflow 任务状态的只读输入？
+
+原句：“不能维护两套互相独立的 Task/Acceptance 状态机。”结合问题 3 的“不共享可写数据库”，以及“Rein 只执行已经提交的有界尝试”。
+
+已回答：Veriflow 持有任务与接受权威，消费 Rein 的运行事实；不能通过投影双向独立修改 Rein 会话状态或另立一套任务接受权威。RunResult 的具体可用类型与事件/回执映射仍以 RESULT-SPLIT-1 和 RuntimePort 后续实现为准，本文不声明该只读接入已经存在。
+
+#### 问题 5：原 R1b、R3 的 Coordinator 持久委派、DAG、有界修复在哪里实施？
+
+原句：“把上述设计里的 Coordinator、任务依赖、全局预算、修复策略、EvidenceBundle 和整体验收改由 Veriflow 拥有；R1a 固定 verifier、底层 effect 恢复与局部结果仍在 Rein。”
+
+已回答：全局 Coordinator、DAG 与跨任务有界修复按 Veriflow 路线实施，不先在 Rein 建成后再迁出；Rein 保留单次运行与底层 effect 恢复。涉及单次运行的工具层委派细节仍受问题 1 的未决项约束，不据旧里程碑扩张职责。
+
+### Web Studio 尚未定义
+
+- 任务展示订阅 Rein 还是 Veriflow。
+- provider 的形状与版本。
+
+这里只登记问题，不选择订阅来源、不补造 provider 接口；Web Studio 现有交互不能作为接口已经可用的证明。
+
+### 固定审查依据与合并后状态
 
 | 仓库 / 固定版本 | 已存在的能力与限制 |
 | --- | --- |
@@ -241,32 +278,23 @@ Rein 当前自有代码、文档和教材永久开放，取代 D10 对当前内�
 
 两仓 main 与审查的在途树均未提供生效的根 AGENTS.md。Rein 已有 DECISIONS.md；Veriflow main 没有根 DECISIONS / ADR。本轮为后者增加对应决定。Web Studio 只定义协作边界，没有审查或修改其实现，不能据此宣称其 provider 已可用。
 
-### 当前职责决定
+以上表格及其说明保留的是 **2026-10-04 审查时点**，其中“main”“未合并”不是当前状态。2026-10-05，Rein PR #3 已以 `e649708f1f8d68c2c259f150835f54f85126a44f` 合并，R1a 离线运行时与六部分书稿已进入 main；全部现有实现保留。原 PR #4 也已合并，职责内容在本条统一为 D19。
 
-- **Rein 保留 runtime primitive**：单 Agent 模型适配与上下文、工具声明/执行/反馈、单次执行的状态转换、权限执行与批准绑定、局部预算/截止/取消、会话检查点与恢复、事件顺序及原始 artifact / effect 回执。它不决定任务依赖、选择其他 Agent、统筹全局预算或安排业务重试。
-- **Veriflow 拥有 workflow 与整体验收**：AcceptanceContract、TaskGraph、AttemptAssignment、VerificationPlan / Receipt、FailureDiagnosis / RepairRequest、EvidenceBundle / ReviewDecision。失败是否修复、换 Agent 或终止由此层决定；Rein 只执行已经提交的有界尝试。
-- **Web Studio 拥有环境与观测**：工作空间、浏览器/终端、CDP、页面操作、截图/日志/状态采样、预览、diff 和人工审阅交互。通用工具调用留在 Rein，Web 能力以 provider 提供；Web Studio 不是 Harness 或工作流状态权威。
-- **验证分工**：Rein 可执行固定检查、保存事实回执并报告局部验证状态；Veriflow 选择检查、绑定 Spec/候选/环境、判断证据是否仍有效并聚合整体验收。Runtime 的 `Accepted` 不能直接映射成 workflow `accepted`。目标项目仍拥有业务契约。
+五份 REIN 设计文档入口已标明旧职责被当前决定替代，本次将其引用统一指向 D19；正文仍为历史方案，不是现行跨项目实施合同。RuntimePort 仍是候选，没有新增 adapter 或调度器。旧测试只支持其原固定版本，不刷新为本次能力验收。
 
-连接采用 [RuntimePort 0.1 候选](contracts/runtime-port-v0.1.md)。Veriflow 保存 workflow/task/attempt 的依赖与分派，Rein 保存 run/session/effect 的执行事实；二者以 ID 和不可变摘要关联，不共享可写数据库。上下文由 Veriflow 交接任务目标与已验证依赖，Rein 构造模型上下文；Web Studio 提供环境句柄与原始观测。
+### 文档维护范围与后续切片
 
-### 对在途设计的修订与合并规则
+本次仅统一决定、候选用词、登记及设计入口；下列正文仍待后续修订：`REIN-INTEGRATION-SPEC.md` 第 1、4 节及 INT-S01/INT-S05；`REIN-MODULES.md` 的 F01–F03、F08 与 §4.3；`REIN-DESIGN.md` §8.1、§9.6；`REIN-IMPLEMENTATION-PLAN.md` 的 R1b、R3；`REIN-FILE-TREE.md` 的旧任务图与 Coordinator 布局。章节归属由 `book/chapters.json` 另行决定，本次不改清单。
 
-PR #3 的 D12–D14、README、`REIN-DESIGN.md`、`REIN-MODULES.md`、`REIN-FILE-TREE.md`、`REIN-INTEGRATION-SPEC.md` 与 `REIN-IMPLEMENTATION-PLAN.md` 仍按“Rein 拥有 Coordinator / DAG / Acceptance、Veriflow 仅提供方法与投影”规划。本条替代其中的职责归属，不改写这些历史来源、不声称已经移动模块。
+`architecture/decisions.json` 追加 `DEC-CORE-BOUNDARY-V2`，保留旧登记及摘要原值。顶层 `version: 1` 是现有检查器的文件格式版本，不是 D19 修订号；新增登记不证明候选已经实现。
 
-本轮从 main 建文档分支，不合并或改写 PR #3。合并两条分支时保留本条和 README 的当前边界，把上述设计里的 Coordinator、任务依赖、全局预算、修复策略、EvidenceBundle 和整体验收改由 Veriflow 拥有；R1a 固定 verifier、底层 effect 恢复与局部结果仍在 Rein。旧 `task.submit/run` 控制草案里的任务图归 Veriflow；单次运行经 RuntimePort 适配，不能维护两套互相独立的 Task/Acceptance 状态机。
+以下沿用 PR #4 的 RuntimePort 路线编号，不是第四阶段任务提示词中的 R1/R2 编号：
 
-### 后续实现切片（均待实现、待验收）
-
-| 切片 | 最小改动 | 完成条件 |
+| 切片 | 范围与状态 | 验收边界 |
 | --- | --- | --- |
-| R0：整合在途文档 | 在 PR #3 合并时同步旧设计的归属；保留现有源码目录与历史教学接口 | README、决定和设计没有相反分工；公开状态仍区分已实现 / 在途 / 计划 |
-| R1：只读 RuntimePort adapter | 基于 R1a 的单会话 primitive，补版本/能力查询、start/get、ID 绑定与幂等请求 | 同请求重发只有一个 run；同键不同输入拒绝；不读写 Veriflow 数据库 |
-| R2：事件与恢复 | 只读事件游标、artifact 校验、cancel / resume 与未知结果查询 | 重复事件不重复推进；取消后无新派发；未知 effect 不盲重放；摘要不符拒绝 |
-| R3：权限与真实模型 | 模型/provider 适配、执行策略与批准回执逐项接入；不支持的能力明确拒绝 | 越权/过期批准拒绝；预算耗尽可区分；一个真实 Agent 纵切独立验证 |
+| R0：职责文档同步 | 当前决定及五份入口已同步；旧设计正文仍待修订 | 不宣称历史正文已全部改写，不移动源码 |
+| R1：只读 RuntimePort adapter | 待实现版本/能力查询、start/get、ID 绑定与幂等请求 | 同请求重发只有一个 run，同键不同输入拒绝，不读写 Veriflow 数据库 |
+| R2：事件与恢复 | 待实现事件游标、artifact 校验、cancel/resume 与未知结果查询 | 重复事件不重复推进；取消后无新派发；未知 effect 不盲重放；摘要不符拒绝 |
+| R3：权限与真实模型 | 待接入模型/provider、执行策略与批准回执 | 越权/过期批准拒绝；预算耗尽可区分；真实 Agent 纵切另行验证 |
 
-Veriflow 先用串行的两个依赖任务消费 R1/R2，再增加跨 Agent 与修复调度；Web Studio 的 provider 与 UI 接入另行验收。无需先建设 daemon、通用项目管理平台或迁移所有教学代码。
-
-### 合并后状态（2026-10-05）
-
-以上固定版本表保留 2026-10-04 审查时点。PR #3 已合并，R1a 离线运行时与六部分书稿已进入 main；本次保留全部现有实现。五份 REIN 设计文档入口已标明旧职责归属被本决定替代，历史方案与路径不能作为现行跨项目实施合同。RuntimePort 仍是候选，未新增 adapter 或调度器；后续按 R1–R3 与 Veriflow V1–V4 分别实现、验证。
+Veriflow 可按其后续切片先验证串行依赖任务，再增加跨 Agent 与修复调度；Web Studio provider 与 UI 另行验收。状态拆分可以先行，不以本条未决接口为前提；本次没有实现状态拆分、RuntimePort、跨项目调度或新的教学能力。

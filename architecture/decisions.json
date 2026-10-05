@@ -38,6 +38,41 @@
         "D12",
         "D13"
       ]
+    },
+    {
+      "id": "DEC-CORE-BOUNDARY-V2",
+      "title": "D19: separate single-run execution from workflow authority",
+      "status": "accepted",
+      "rationale": "This V2 registration records the confirmed D19 boundary: Rein owns single-run execution facts, Veriflow owns workflow and overall acceptance, and Web Studio provides environment and observations. The previous registration and its prerequisite hashes remain unchanged. Unresolved delegation, CLI and provider details are not implementation authorization.",
+      "scope": "D19 and the RuntimePort candidate; no runtime implementation or historical design-body rewrite",
+      "alternatives": [
+        "Keep workflow/DAG/overall acceptance in Rein",
+        "Treat local verification as overall acceptance"
+      ],
+      "prerequisites": [
+        {
+          "path": "DECISIONS.md",
+          "sha256": "64d62aa4952f0ba7af6b96398525ddc8da68b5ab6a9a8be858d31ddef25153eb"
+        },
+        {
+          "path": "contracts/runtime-port-v0.1.md",
+          "sha256": "cfd5240dc1053bb55be112821c53ccc1cb2baf9f47b08e08378545f8d0ea7321"
+        },
+        {
+          "path": "reports/2026-10-02-run-verification-acceptance-split.md",
+          "sha256": "24934199726834c2d63e3ba01e626c8df10ad854dd3e3aba03e27df2120d9f34"
+        }
+      ],
+      "reviewWhen": [
+        "Workflow or acceptance authority changes",
+        "RESULT-SPLIT-1 replaces the provisional RuntimePort mapping",
+        "D19 unresolved delegation, CLI or Web Studio provider questions are decided"
+      ],
+      "sources": [
+        "D19 (proposed 2026-10-02; confirmed 2026-10-04)",
+        "Rein PR #4 at cf62ae8",
+        "DEC-CORE-BOUNDARY (historical registration retained)"
+      ]
     }
   ]
 }

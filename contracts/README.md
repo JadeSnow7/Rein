@@ -4,7 +4,7 @@
 
 [RuntimePort 0.1](runtime-port-v0.1.md) 是 Rein 与 Veriflow 之间的语言中立契约候选，规定单次执行的输入、状态、事件、取消、恢复、权限和原始产物语义。它是**待实现的设计**，不是现有 CLI、SDK 或服务接口；与教学合同分开版本化。
 
-PR #3 的 R1a 运行时与四份 Rust 生成 schema 已合并；它们是内部运行合同，不等于 RuntimePort 已实现。候选中的“PR #3，非 main”标注保留其 2026-10-04 审查基线。正式 port 类型后续从一个权威定义源生成 schema 与消费者类型；Veriflow 维护工作流及整体验收，不复制 Rein 会话状态机。
+PR #3 的 R1a 运行时与四份 Rust 生成 schema 已合并；它们是内部运行合同，不等于 RuntimePort 已实现。候选的实现依据已更新为 PR #3 合并提交；状态映射仍须等待 RESULT-SPLIT-1 实施，不能据文档提前实现。正式 port 类型后续从一个权威定义源生成 schema 与消费者类型；Veriflow 维护工作流及整体验收，不复制 Rein 会话状态机。
 
 ## 历史教学共享合同
 

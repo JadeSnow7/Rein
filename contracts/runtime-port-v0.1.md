@@ -5,9 +5,9 @@
 | 契约标识 | `rein.runtime-port/0.1-draft` |
 | 状态 | 待实现的文档契约；main 没有对应 API；本次没有新增 SDK、服务或 CLI 命令 |
 | 所有者 | Rein：单次运行的执行语义、状态、权限与原始回执 |
-| 消费者 | Veriflow：有界尝试分派、验证与整体验收；Web Studio 可消费运行事件 |
-| 实现依据 | 未合并 [PR #3](https://github.com/JadeSnow7/Rein/pull/3) 的 R1a，固定审查提交 `44e3454337c06f53f13880a2fe9e35336a387812` |
-| 关联决定 | [职责边界同步](../DECISIONS.md#职责边界同步2026-10-04) |
+| 消费者 | Veriflow：有界尝试分派、验证与整体验收；Web Studio 任务展示的订阅来源尚未定义（见 D19） |
+| 实现依据 | [PR #3](https://github.com/JadeSnow7/Rein/pull/3) 已合并的 R1a，合并提交 `e649708f1f8d68c2c259f150835f54f85126a44f` |
+| 关联决定 | [D19](../DECISIONS.md#d19) |
 
 本文冻结候选的职责、数据归属及兼容原则，供首个 adapter 实现和验证。以下操作名是语言中立的 port 方法，不是现有命令或 HTTP 路由。传输可先用进程内调用或本地 CLI adapter，不要求 daemon、网络服务或新协议框架。缺少适配的操作返回 `unsupported_capability`，不能悄悄运行另一种行为。
 
@@ -53,7 +53,7 @@ RunSnapshot 必须保留上述身份与摘要绑定，另含 `run_id / session_i
 
 ## 3. 状态、事件与验证
 
-`runtime_status` 仅描述执行生命周期：`running / waiting_approval / completed / cancelled / outcome_unknown`。`waiting_approval` 仅在能力声明并实施时可出现。`completed` 表示本次执行结束，包括预算耗尽或失败；不等于通过验收。`outcome_unknown` 保留已有 effect 的身份，阻止新派发直到受信核对。`cancelled` 是调度停止状态，不是“所有在途外部进程均已终止”的证明。
+`runtime_status` 仅描述执行生命周期：`running / waiting_approval / finished / cancelled / outcome_unknown`。`waiting_approval` 仅在能力声明并实施时可出现。`finished` 表示本次执行结束，包括预算耗尽或失败；不等于通过验收。`outcome_unknown` 保留已有 effect 的身份，阻止新派发直到受信核对。`cancelled` 是调度停止状态，不是“所有在途外部进程均已终止”的证明。
 
 `local_verification` 若存在，只表示固定检查的 `passed / failed / undetermined` 和 receipt 引用；没有检查就缺省，不能当作 passed。Veriflow 另行维护 workflow 验收状态与证据有效性。运行退出 0、模型自报成功或 R1a 的 `Accepted` 都不能直接生成整体验收通过。
 
@@ -61,14 +61,16 @@ RunSnapshot 必须保留上述身份与摘要绑定，另含 `run_id / session_i
 
 固定检查可以由 Rein 的 verifier primitive 或受信环境 provider 执行。回执必须绑定当前 plan、输入/候选 artifact、执行器/环境版本和原始结果；Veriflow 决定它是否满足 AcceptanceContract。若检查由 Veriflow 外部执行，只返回 VerificationReceipt 引用，不将外部结论冒充成 R1a 内部的 VerifierResult，也不直接写 `HarnessSession`。
 
-## 4. 对现有代码的兼容映射与缺口
+## 4. 对已合并代码及目标类型的兼容映射与缺口
 
-| 现有位置（PR #3，非 main） | 可复用的 primitive | adapter 必须补齐 / 避免的误用 |
+**以 RESULT-SPLIT-1 实施后的类型为准，实施前本表不能用于实现。** `RunStatus`、`StopReason`、`VerificationRecord` 是状态拆分后的目标类型，目前不能把旧状态猜成这些结果。停止原因只读取正式运行结果中保存的 `StopReason`；不从原始事件或回执重建停止原因。
+
+| 已合并位置 / 待实施的目标类型 | 可复用的 primitive | adapter 必须补齐 / 避免的误用 |
 | --- | --- | --- |
 | `core/src/lib.rs`：HarnessSession、Observation、Intent、StepResult | run/session/attempt、revision、effect、纯步进和拒绝语义 | `workflow_id / task_id` 与规格摘要绑定属于 port envelope；不改成 core DAG |
 | `Runtime::start / inspect / cancel / recover_explicitly` | 单会话执行、查询、取消及未知效果恢复 | CLI demo 的 fixture 参数不是通用 StartRequest；没有版本协商、请求去重或跨客户端 events API |
-| `SessionStatus::Accepted` | R1a 固定 verifier 的局部通过 | 映射为 `completed + local_verification.passed`，保留原始 receipt；不是 workflow accepted |
-| `SessionStatus::Completed` | 本次停止，包括工具失败/预算耗尽/局部验证不通过 | 从原始事件与回执得出 stop_reason；无法区分时保留 unknown，不猜成功 |
+| `RunStatus`、`StopReason`（RESULT-SPLIT-1 待实施） | 独立的执行生命周期与持久化停止原因 | `RunStatus::Finished` 对应 `finished`；保留正式 `StopReason` 的原因与错误引用，不由验证结论推导运行状态，也不从事件猜测原因 |
+| `VerificationRecord`（RESULT-SPLIT-1 待实施） | 与计划、被验证产物、原始回执绑定的独立局部检查记录 | `local_verification` 只映射该记录的检查状态与 receipt 引用；未执行检查不能生成 passed，不表示 workflow accepted |
 | `ArtifactRef`、artifact store、FixedVerifier | 摘要产物与固定字节验证回执 | 不把固定字节 oracle 称为通用项目验证服务 |
 | `contracts/runtime/schemas/{session,observation,intent,step-result}.json` | Rust DTO 生成的运行层 schema | 属于内部运行合同；没有 StartRequest / VerificationPlan / workflow schema。port wrapper 后续从同一个权威定义源派生 |
 
