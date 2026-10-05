@@ -1,14 +1,16 @@
 import { execFileSync } from 'node:child_process'
 import { deepStrictEqual } from 'node:assert'
 import { resolve } from 'node:path'
+import { cargoTargetDir } from './build-artifacts.mjs'
 const root = process.cwd()
+const target = cargoTargetDir(root, 'target')
 const fixture = 'fixtures/cases/ch05-loop.json'
 const lastJson = text => JSON.parse(text.trim().split('\n').filter(Boolean).at(-1))
 const source = JSON.parse(await (await import('node:fs/promises')).readFile(resolve(root, fixture), 'utf8'))
 const cases = source.cases ?? [source]
 const runCase = index => {
   const ts = lastJson(execFileSync('npm', ['run', 'ch05:compare', '--workspace', 'ts', '--', `../${fixture}`, String(index)], { cwd: root, encoding: 'utf8' }))
-  const rust = lastJson(execFileSync('cargo', ['run', '--quiet', '--manifest-path', 'rust/Cargo.toml', '--example', 'ch05_compare', '--', fixture, String(index)], { cwd: root, encoding: 'utf8', env: { ...process.env, ...(process.env.CARGO_TARGET_DIR ? {} : { CARGO_TARGET_DIR: 'target' }) } }))
+  const rust = lastJson(execFileSync('cargo', ['run', '--quiet', '--manifest-path', 'rust/Cargo.toml', '--example', 'ch05_compare', '--', fixture, String(index)], { cwd: root, encoding: 'utf8', env: { ...process.env, CARGO_TARGET_DIR: target } }))
   return { ts, rust }
 }
 const message = m => ({ role: m.role, content: m.role === 'tool' ? canonicalToolContent(m.content) : m.content, toolCallId: m.toolCallId ?? null, toolCalls: (m.toolCalls ?? []).map(call) })
