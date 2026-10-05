@@ -21,7 +21,7 @@ Rein 保留执行一个固定检查并返回回执的能力，也可独立运行
 | 已合并的 [PR #3](https://github.com/JadeSnow7/Rein/pull/3)，审查提交 `44e3454` | R1a 纯步进状态机、SQLite/outbox、artifact、固定 verifier 和 `demo / show / resume / cancel / schema`；已进入 main，但不能据此宣称通用模型或调度已交付 |
 | 本轮 [RuntimePort 0.1 候选](contracts/runtime-port-v0.1.md) | 文档契约；没有新增命令、服务、SDK 或跨 Agent 执行器 |
 
-当前决定、对 PR #3 旧分工的修订及后续实现切片见 [职责边界同步](DECISIONS.md#职责边界同步2026-10-04)。后续实现必须沿用这个更新后的分工，不能恢复“Rein 负责 Coordinator / DAG、Veriflow 仅为方法论”的旧定位。
+当前决定、对 PR #3 旧分工的修订及后续实现切片见 [D19](DECISIONS.md#d19)。后续实现必须沿用这个更新后的分工，不能恢复“Rein 负责 Coordinator / DAG、Veriflow 仅为方法论”的旧定位。
 
 ## 当前阅读：六部分框架
 
