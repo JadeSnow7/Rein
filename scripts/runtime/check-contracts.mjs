@@ -2,6 +2,7 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { cargoTargetDir } from '../build-artifacts.mjs';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const out = join(root, 'contracts/runtime/schemas');
@@ -9,7 +10,7 @@ const check = process.argv.includes('--check');
 if (process.argv.slice(2).some(arg => arg !== '--check')) throw new Error('usage: node scripts/runtime/check-contracts.mjs [--check]');
 if (!check) mkdirSync(out, { recursive: true });
 function run(command, args) {
-  const targetDir = process.env.CARGO_TARGET_DIR ?? join(root, 'target');
+  const targetDir = cargoTargetDir(root, join(root, 'target'));
   const result = spawnSync(command, args, {
     cwd: root,
     stdio: 'inherit',

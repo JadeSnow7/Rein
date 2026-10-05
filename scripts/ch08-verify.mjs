@@ -3,9 +3,10 @@ import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import { cargoTargetDir } from './build-artifacts.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const target = process.env.CARGO_TARGET_DIR || resolve(root, 'rust/target')
+const target = cargoTargetDir(root, resolve(root, 'rust/target'))
 const run = (cmd, args, extra = {}) => spawnSync(cmd, args, { cwd: root, encoding: 'utf8', env: { ...process.env, CARGO_TARGET_DIR: target, CARGO_INCREMENTAL: '0', ...extra } })
 const fail = (message) => { throw new Error(message) }
 const compare = (args = []) => { const r = run('node', ['scripts/ch08-compare.mjs', ...args]); if (r.status !== 0) fail(r.stderr || `compare exited ${r.status}`); return JSON.parse(r.stdout) }
