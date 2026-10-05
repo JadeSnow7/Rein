@@ -52,7 +52,7 @@
       "prerequisites": [
         {
           "path": "DECISIONS.md",
-          "sha256": "64d62aa4952f0ba7af6b96398525ddc8da68b5ab6a9a8be858d31ddef25153eb"
+          "sha256": "06f812508ee1e617cd2a08da6b84d02d1aff8b105be6c63c6be6539950193676"
         },
         {
           "path": "contracts/runtime-port-v0.1.md",
